@@ -1,0 +1,8 @@
+{
+  "serviceName": "Check for flooding prototype",
+  "plugins": {
+    "govuk-frontend": {
+      "rebrand": true
+    }
+  }
+}
