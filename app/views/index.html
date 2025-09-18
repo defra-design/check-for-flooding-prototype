@@ -1,0 +1,103 @@
+{% extends "layouts/main.html" %}
+
+{% set title = 'Check for flooding' %}
+{% set pageName="Home" %}
+{% set pageName = title + ' - GOV.UK'%}
+{% set back = false %} 
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+ 
+    <h1 class="govuk-heading-xl">
+      {{ serviceName }}  
+      <span class="govuk-caption-l">Using GOV.UK Prototype Kit v13.18.0</span>
+    </h1>
+
+    <h2 class="govuk-heading-m" id="progress">
+      Design team contacts:
+    </h2>
+    <p>Interaction designer - <a href="#">Martin Gray </a><br>
+       Content designer - <a href="#">Poppy Davis</a><br>
+       User researcher - <a href="#">Jacqueline Buckley</a><br>
+      </p>
+
+    <h2 class="govuk-heading-m" id="progress">
+      Latest versions:
+    </h2>
+ 
+  {{ govukTable({
+    firstCellIsHeader: true,
+    head: [
+      {
+        text: "Journey",
+        classes: "govuk-!-width-one-fourth"
+      },
+      {
+        text: "Links"
+      },
+      {
+        text: "Notes",
+        classes: "govuk-!-width-one-half"
+      }
+    ],
+    rows: [
+         
+      [
+        {
+         html: "<a href='version1/'>Version one </a>"
+        },
+        {
+         html: "<li><a href='#' target='new'>Jira STOSB-620</a> </li>
+                <li><a href='#' target='new'>Mural</a></li>"
+        },
+        {
+         html: "Initial build to test prototype kit. 
+          "
+        }
+      ] 
+       
+    ]
+  }) }}
+</section> 
+  <!--
+  <h2 class="govuk-heading-m" id="progress">
+  Previous versions:
+</h2> 
+   
+{{ govukTable({
+  firstCellIsHeader: true,
+  head: [
+    {
+      text: "Journey",
+      classes: "govuk-!-width-one-fourth"
+    },
+    {
+      text: "Links"
+    },
+    {
+      text: "Notes",
+      classes: "govuk-!-width-one-half"
+    }
+  ],
+  rows: [
+    [
+      {
+       html: "<a href='date-test/'>Date filter test</a>"
+      },
+      {
+       html: "<li><a href='https://jira.tools.tax.service.gov.uk/browse/STOSB-321' target='new'>Jira STOSB-321</a> </li>
+              <li><a href='https://app.mural.co/t/digitalhmrc9032/m/digitalhmrc9032/1733478300947/7733b93cc94d0ef9d82e16d7f353f86dff1051f7?wid=0-1737543850298' target='new'>Mural</a></li>"
+      },
+      {
+       html: "Passing submited date and using date filters to add or subtract days for deadlines.</a>"
+      }
+    ]     
+    ]
+    
+      }) }}
+ -->
+  </div>
+</div>
+
+{% endblock %}
