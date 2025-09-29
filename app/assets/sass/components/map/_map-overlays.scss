@@ -1,0 +1,43 @@
+// Map keyboard access overlays
+.defra-key-symbol {
+    position:relative;
+    z-index:2;
+    display: block;
+    position: relative;
+    padding: 0px 7px;
+    min-width: 26px;
+    box-sizing: border-box;
+    text-align:center;
+    background-color: white;
+    border-radius: 3px;
+    line-height:27px !important;
+    &--selected {
+      z-index: 3;
+      box-shadow: 0 0 0 3px;
+    }
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .defra-key-symbol--stations,
+  .defra-key-symbol--rainfall {
+    margin-left:-13px;
+    margin-top:-43px;
+    &-bigZoom {
+      margin-left:-13px;
+      margin-top:-48px;
+    }
+  }
+  .defra-key-symbol--warnings {
+    margin-left:-13px;
+    margin-top:-48px;
+    &-bigZoom {
+      margin-left:-13px;
+      margin-top:-13px;
+    }
+  }
+  .defra-key-symbol--impacts,
+  .defra-key-symbol--impacts-bigZoom {
+    margin-left:-13px;
+    margin-top:-48px;
+  }
