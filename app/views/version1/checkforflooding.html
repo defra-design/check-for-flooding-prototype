@@ -1,0 +1,194 @@
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+{% if model.isErrorEmpty or model.isErrorPostcode %}
+<div class="govuk-grid-row">
+	<div class="govuk-grid-column-full">
+		<div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+			<h2 class="govuk-error-summary__title" id="error-summary-title">
+				There is a problem
+			</h2>
+			<div class="govuk-error-summary__body">
+				<ul class="govuk-list govuk-error-summary__list">
+					<li>
+						<a href="#place">
+							{% if model.isErrorEmpty %}
+							Enter where do you want to check
+							{% else %}
+							Enter a full postcode
+							{% endif %}
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+      Check for flooding
+    </h1>
+ 
+ 
+    <div class="defra-search govuk-form-group govuk-!-margin-bottom-6">
+  <form method="post" autocomplete="off">
+    <label class="govuk-label defra-search__label" for="location">
+      Search for a town, city or postcode in England
+    </label>
+    <div class="defra-search__container">
+      <input class="defra-search__input" id="location" name="location" type="search" spellcheck="false" value="">
+      <div class="defra-search__submit-container">
+        <button class="defra-search__button">
+          <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect x="0" y="0" width="50" height="50" style="fill:none;"/><path d="M12.316,14.791c-1.242,0.79 -2.716,1.248 -4.296,1.248c-4.426,0 -8.02,-3.593 -8.02,-8.019c0,-4.426 3.594,-8.02 8.02,-8.02c4.426,0 8.019,3.594 8.019,8.02c0,1.58 -0.458,3.054 -1.248,4.296l5.209,5.209l-2.475,2.475l-5.209,-5.209Zm-4.296,-12.771c3.311,0 6,2.688 6,6c0,3.311 -2.689,6 -6,6c-3.312,0 -6,-2.689 -6,-6c0,-3.312 2.688,-6 6,-6Z" style="fill:white;"/></svg>
+          <span class="govuk-visually-hidden">Search</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+ 
+    <h2 class="govuk-heading-m" id="flood-risk-today">Flood risk today</h2>
+  
+    <div class="defra-flood-status">
+      
+      <div class="defra-flood-status-item" data-gtm-vis-recent-on-screen105006042_26="255930" data-gtm-vis-first-on-screen105006042_26="255931" data-gtm-vis-total-visible-time105006042_26="100" data-gtm-vis-has-fired105006042_26="1">
+        <div class="defra-flood-status-item__text">
+          <strong>
+            No flood alerts or warnings
+          </strong>
+        </div>
+      </div>
+      
+      
+ 
+      <p class="defra-flood-status__text">
+        <a href="/alerts-and-warnings#removed">1 flood warning removed</a> in the last 24 hours
+      </p>
+      
+      
+      
+    </div>
+    
+
+    <p class="defra-flood-meta ">
+      Updated at <time datetime="2025-09-25T10:28:11+01:00">10:28am on 25 September 2025</time>
+    </p> 
+
+    <h2 class="govuk-heading-m govuk-!-margin-top-2" id="outlook">Flood forecast for the next 5 days</h2>
+    
+      
+        <p class="govuk-body defra-flood-meta--p">
+          The forecast flood risk across England for today and the next four days is very low.
+        </p>
+      
+      
+
+      <p class="defra-flood-meta">Updated at <time datetime="2025-09-25T10:30:00+01:00">10:30am on 25 September 2025</time>
+        <br>Produced by the Met Office and Environment Agency
+      </p> 
+
+    
+        
+
+    <h2 class="govuk-heading-m">Long term flood risk</h2>
+    <p>You may be at long term flood risk from rivers, the sea, surface water or groundwater.</p>
+    <p><a href="https://www.gov.uk/check-long-term-flood-risk">Check your long term flood risk</a></p>
+
+    <div class="defra-flood-meta"></div>
+
+    <h2 class="govuk-heading-m">River, sea, groundwater and rainfall levels</h2>
+    <p>Measuring stations provide the latest river, sea, groundwater and rainfall levels. These levels can help you understand your flood risk now and over the next few days.</p>
+    <p><a href="/river-and-sea-levels">Find a river, sea, groundwater or rainfall level</a></p>
+
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week
+          <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+      
+  
+       
+       
+    </div>
+ </aside>
+  </div>
+ 
+
+  <div class="govuk-grid-column-one-third">
+    <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+</div>
+
+
+{% endblock %}
+

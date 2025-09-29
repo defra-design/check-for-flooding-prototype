@@ -1,0 +1,177 @@
+// Line graph
+.defra-line-chart {
+  position:relative;
+  // border-bottom:1px solid $govuk-border-colour;
+  // padding-bottom:15px;
+  margin:0;
+}
+.defra-line-chart-data {
+  border-top:1px ;
+  padding-top:20px;
+}
+
+.defra-line-chart__caption {
+  display:block;
+  margin-bottom:30px;
+  margin-right:0px;
+  text-align:left;
+}
+.defra-line-chart__container {
+  position:relative;
+  margin:0;
+}
+.defra-line-chart svg {
+  position:relative;
+  overflow:visible;
+  height:300px;
+  width:100%;
+  }
+
+
+  .axis.y path {
+      visibility:hidden;
+  }
+  .axis.x .tick--hidden {
+      visibility: hidden;
+      pointer-events: none;
+  }
+  .axis.x .tick line {
+      visibility:hidden;
+  }
+  
+  .grid line {
+      fill: none;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+  }
+  .grid path {
+      visibility: hidden;
+  }
+  .grid.x .tick:last-of-type line {
+      visibility: hidden;
+  }
+  // Observed
+  .observed-line { 
+    
+      stroke-width: 3;
+      fill: none;
+  }
+  .observed-area { 
+
+  }
+  // Forecast
+  .forecast-line { 
+      stroke-dasharray: 4, 2; 
+      stroke-width: 3;
+      fill: none;
+  }
+  
+  // Locator
+  .locator-point {
+      stroke-width: 3;
+      fill: white; 
+  }
+  .locator-line {
+      display:none;
+      stroke-width: 1;
+      shape-rendering: crispEdges; 
+  }
+  .locator--offset .locator-line {
+      display:block;
+  }
+  .locator--forecast .locator-point {
+
+  }
+  // Tooltip
+  .tool-tip {
+      visibility: hidden;
+  }
+  .tool-tip--visible {
+      visibility: visible;
+  }
+  .tool-tip-bg {
+      fill:white;
+      stroke-width: 1;
+      shape-rendering: crispEdges;
+  }
+  .tool-tip-text {
+  }
+  .tool-tip-text__strong {
+  }
+  // Now
+  .time-line {
+      stroke-width: 1;
+      shape-rendering: crispEdges; 
+  }
+  .time-now-text {
+  }
+  // Thresholds
+  .threshold__line {
+      stroke-width: 3;
+      shape-rendering: crispEdges;
+  }
+  .threshold__bg {
+      stroke: transparent;
+      fill: transparent; 
+  }
+  .threshold__remove {
+      display:none;
+  }
+  .threshold__remove line {
+      stroke-width: 2;
+      shape-rendering: crispEdges;
+      stroke-linecap: square;
+  }
+  .threshold__remove rect {
+      stroke-width: 0;
+      stroke: transparent;
+      fill: white; 
+  }
+  .threshold__remove:hover {
+      cursor: pointer;
+  }
+  .threshold-label {
+      visibility: hidden;
+      pointer-events: none;
+  }
+  .threshold-label__bg {
+      fill:white;
+      stroke-width: 1;
+      shape-rendering: auto;
+      stroke-linecap: square;
+  }
+  .threshold-label__text {
+  }
+  .threshold.threshold--selected {
+      .threshold-label {
+          visibility: visible;
+          pointer-events: auto;
+      }
+      .threshold__remove {
+          display: block;
+      }
+      .threshold__line {
+      }
+  }
+  .threshold.threshold--mouseover {
+      cursor:pointer;
+      .threshold__line {
+      }
+  }
+  .threshold:not(.threshold--selected) .threshold__bg,
+  .threshold:not(.threshold--selected) .threshold__line {
+      cursor: pointer;
+  }
+  // Typical/Alert
+  .threshold--alert {
+      .threshold__line {
+
+      }
+  }
+  .threshold.threshold--selected.threshold--alert,
+  .threshold.threshold--mouseover.threshold--alert {
+      .threshold__line {
+
+      }
+  }
+

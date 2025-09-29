@@ -4,3 +4,141 @@
 // 
 
 // Add extra styles here
+// global styles for <a> and <p> tags
+$govuk-global-styles: true;
+$govuk-new-link-styles: true;
+
+// Tablet/desktop overide to address modern iPads 
+$govuk-breakpoints: (
+  mobile:  320px,
+  tablet:  641px,
+  desktop: 835px
+) !default;
+
+// We can't mount GOV.UK Frontend's assets at root as it's done automatically by the extensions framework.
+$govuk-assets-path: '/govuk/assets/';
+
+// Import GOV.UK Frontend and any extension styles if extensions have been configured
+//@import "lib/extensions/extensions";
+
+//
+// ITCSS
+// https://designnotes.blog.gov.uk/2018/02/19/developing-new-typography-and-spacing-for-gov-uk-frontend/
+//
+
+// Settings
+
+// Tools
+@import "tools/mixins";
+
+// Generic
+
+// Elements
+
+.defra-search__input {
+    display: table-cell;
+    position: relative;
+    z-index: 1;
+    white-space: nowrap;
+}
+
+.govuk-input, .defra-search__input, .defra-facets-filter__input {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    width: 100%;
+    height: 2.5rem;
+    margin-top: 0;
+    padding: 5px;
+    border: 2px solid #0b0c0c;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.defra-flood-meta {
+    color: #0b0c0c;
+    position: relative;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #b1b4b6;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+
+.defra-flood-status-item:last-of-type {
+    margin-bottom: 5px;
+}
+
+.defra-flood-status-item {
+    position: relative;
+    padding: 0;
+    background-color: #f3f2f1;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+.defra-flood-status-item__text strong {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.25;
+}
+p, .govuk-body, .defra-banner-warning__caption, .defra-bar-chart__caption, .defra-map-info__description, .defra-flood-status__text, .govuk-body-m {
+    color: #0b0c0c;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    margin-top: 0;
+}
+
+.govuk-inset-text, .defra-flood-status-item {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #0b0c0c;
+    padding: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    clear: both;
+    border-left: 10px solid #b1b4b6;
+}
+// Objects
+@import "objects/typography";
+@import "objects/buttons";
+
+// Components
+@import "components/related-items";
+@import "components/flood-list";
+@import "components/search";
+@import "components/search-filter";
+@import "components/flood-location-link";
+@import "components/flood-status";
+@import "components/flood-meta";
+@import "components/context-footer";
+@import "components/flood-tabs";
+@import "components/map/ol";
+@import "components/map/map";
+@import "components/map/map-key";
+@import "components/map/map-info";
+@import "components/map/map-overlays";
+@import "components/map/map-days";
+@import "components/flood-statistics";
+@import "components/line-chart";
+@import "components/toggle-list-display";
+@import "components/toggletip";
+@import "components/flood-impact-list";
+@import "components/social";
+@import "components/service-error";
+
+// Tools
+
+// Utilities

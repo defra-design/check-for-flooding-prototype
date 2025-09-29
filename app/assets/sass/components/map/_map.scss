@@ -1,0 +1,413 @@
+// Styles
+.defra-map {
+  position:fixed !important;
+  z-index: 999;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
+  background-color:white;
+  canvas { // Open layers bug fix
+    display: block !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+  
+  background-color: #a9ddef;
+  &__title {
+    @include defra-visually-hidden;
+  }
+}
+.defra-map-html {
+  height: 100vh;
+}
+.defra-map-body {
+  position: fixed;
+  overflow: hidden;
+  top:0px;
+  right:0px;
+  bottom:0px;
+  left:0px;
+}
+.defra-map-viewport {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  &:focus[keyboard-focus]:after {
+    @include focus($glow: 5px, $strong: 2px, $background: 0px, $inset: 1px);
+  }
+}
+.defra-map-key {
+  display:none;
+  background-color:white;
+  position:absolute;
+  z-index:2;
+  touch-action: none;
+  max-width: 100%;
+  }
+  
+
+// Map controls - exit
+.defra-map__exit {
+  float:left;
+  position:relative;
+  margin:10px 0px 0px 10px;
+  border:0;
+  padding:0;
+  height:40px;
+  width:40px;
+  cursor:pointer;
+  background-color:white;
+  color: govuk-colour('black');
+  font-size:16px;
+  line-height:40px;
+  color: govuk-colour('black');
+  svg {
+    display: block;
+    margin:10px;
+  }
+  
+  &:hover {
+    background-color: govuk-colour('light-grey');
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+}
+
+// Map controls - open key
+.defra-map__open-key {
+  float:left;
+  position:relative;
+  margin-left:5px;
+  margin-top:10px;
+  height:40px;
+  width:40px;
+  padding:0;
+  border:0;
+  cursor:pointer;
+  background-color:white;
+  color: govuk-colour('black');
+  font-size:16px;
+  line-height:40px;
+  text-indent: -5000px;
+  color: govuk-colour('black');
+  
+  svg {
+    display: block;
+    margin:10px;
+  }
+  &:hover {
+    background-color: govuk-colour('light-grey');
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+}
+
+// Map controls - open key
+.defra-map__keyboard {
+  &--visible {
+    position: static !important;
+    overflow: visible !important;
+    clip: auto !important;
+    -webkit-clip-path: none !important;
+    clip-path: none !important;
+    white-space: inherit !important;
+    float:left;
+    margin: 10px 0px 0px 5px !important;
+    z-index: 3;
+    border:0;
+    height:39px !important;
+    width:auto !important;
+    padding:0 10px;
+    border:0;
+    cursor:pointer;
+    background-color:white;
+    color: govuk-colour('black');
+    font-size:16px;
+    line-height:39px;
+  
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  pointer-events: auto;
+}
+
+// Map key
+.defra-map--key-open {
+  .defra-map-key {
+  
+   
+  }
+  .defra-map__exit,
+  .defra-map__back,
+  .defra-map__open-key {
+   
+  }
+}
+.defra-map-key__title {
+  display: block;
+  padding:0 15px;
+  margin:0;
+}
+.defra-map-key__content {
+  flex: 1;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Map controls - close key
+.defra-map-key__close {
+ 
+  position:absolute;
+  right:5px;
+  top:5px;
+  width:40px;
+  height:40px;
+  margin:0;
+  border:0;
+  padding:0;
+  border:0;
+  cursor:pointer;
+  background-color: #ffffff;
+  color: govuk-colour('black');
+  svg {
+    display:block;
+    margin: 10px;
+  }
+
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+
+// Map controls (bottom)
+.defra-map-controls {
+  position: absolute;
+  z-index: 1;
+  overflow: hidden;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  pointer-events: none;
+}
+.defra-map-controls__bottom {
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  right:10px;
+  pointer-events: none;
+  * {
+    pointer-events: auto;
+  }
+}
+
+// Map controls - reset location
+.defra-map-reset {
+  float:right;
+  position:relative;
+  border:0;
+  height:40px;
+  width:40px;
+  padding:0;
+  cursor:pointer;
+  background-color: white;
+  svg {
+    display: block;
+    margin: 10px;
+  }
+}
+
+
+// Map controls - zoom
+.defra-map-zoom {
+  display: none;
+
+  &-in,
+  &-out {
+    display:block;
+    position:relative;
+    border:0;
+    height:40px;
+    width:40px;
+    padding:0;
+    cursor:pointer;
+    background-color: white;
+    color: govuk-colour('black');
+  }
+  &-in svg,
+  &-out svg {
+    display: block;
+    margin: 10px;
+  }
+  &-in::-moz-focus-inner,
+  &-out::-moz-focus-inner {
+    border: 0;
+  }
+  &-in:hover,
+  &-out:hover {
+    background-color: govuk-colour('light-grey');
+  }
+  &-in:focus,
+  &-out:focus {
+    outline: none;
+  }
+  &-in:focus[keyboard-focus]:after,
+  &-out:focus[keyboard-focus]:after {
+    @include focus;
+  }
+}
+
+// Map controls - Show attributions
+.defra-map-attribution {
+  float:right;
+  clear: both;
+  position: relative;
+  border:0;
+  height:40px;
+  width:40px;
+  padding:0;
+  margin-top: 5px;
+  cursor:pointer;
+  background-color:white;
+  color: govuk-colour('black');
+  svg {
+    display: block;
+    margin: 10px;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+  &:hover {
+    background-color: govuk-colour('light-grey');
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+}
+
+// Map information dialog
+.defra-map-info {
+  position:absolute;
+  background-color:white;
+  bottom:0;
+  left:0;
+  right:0px;
+  
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    
+      @include focus($glow: 5px, $strong: 2px, $background: 0px, $inset: 1px);
+    }
+  }
+
+  
+.defra-map-info__close {
+  position:absolute;
+  top:3px;
+  right:3px;
+  width:40px;
+  height:40px;
+  padding:0;
+  border:0;
+  cursor:pointer;
+  background-color: #ffffff;
+  color: govuk-colour('black');
+  svg {
+    display: block;
+    margin: 10px;
+  }
+  &:hover {
+    background-color: govuk-colour('light-grey');
+  }
+  &:focus {
+    outline: none;
+  }
+  &:focus[keyboard-focus]:after {
+    @include focus;
+  }
+  &::-moz-focus-inner {
+    border: 0;
+  }
+}
+.defra-map--info-open .defra-map-controls__bottom {
+  visibility: hidden;
+  
+}
+
+// Viewport focus keyboard access tooltip
+.defra-map-tooltip {
+  position: absolute; 
+  bottom:10px;
+  left:10px;
+  right:10px;
+  padding:10px 12px;
+}
+
+//
+// Mapbox layer
+//
+
+// Required to depress missing css console warning
+.maplibregl-canvas-container {
+  display:none;
+}
+.mapboxgl-canary {
+  background-color: salmon;
+}
+.mapboxgl-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
