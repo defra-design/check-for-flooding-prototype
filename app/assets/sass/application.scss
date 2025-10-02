@@ -111,6 +111,27 @@ p, .govuk-body, .defra-banner-warning__caption, .defra-bar-chart__caption, .defr
     clear: both;
     border-left: 10px solid #b1b4b6;
 }
+
+.defra-button-secondary, .defra-button-secondary-s {
+    width: auto;
+    margin: 0px 0px 20px 0px !important;
+    border: 1px solid #b1b4b6 !important; 
+    box-shadow: none;
+    background-color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    color: #1d70b8;
+    text-decoration: none;
+    
+}
+
+
+.defra-button-secondary__text {
+    margin-left: 5px;
+ 
+}
+
+
 // Objects
 @import "objects/typography";
 @import "objects/buttons";
