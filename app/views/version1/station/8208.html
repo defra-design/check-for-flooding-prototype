@@ -1,0 +1,174 @@
+
+{% extends "../../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
+      River Ouse level at Viking Recorder
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-full">
+
+  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels">
+      <div class="defra-navbar__inner">
+        <a href="https://check-for-flooding.service.gov.uk/station/8208?v=map-live&amp;lyr=mv,ri,ti,gr,rf&amp;fid=stations.8208" id="map-live-btn" class="defra-link-icon-s"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">Map</span><span class="govuk-visually-hidden">(Visual only)</span></a>
+        <div class="defra-navbar__group">
+          <ul class="defra-navbar__list">
+            
+              <li class="defra-navbar__item">
+                <a href="/station/9347">Upstream</a>
+              </li>
+            
+            
+              <li class="defra-navbar__item">
+                <a href="/station/8081">Downstream</a>
+              </li>
+            
+              <li class="defra-navbar__item">
+                <a href="/river-and-sea-levels/rloi/8208">Nearby levels</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+  </div>
+
+
+</div>
+    
+<div class="defra-flood-statistics defra-flood-statistics--border">
+            <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
+              <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+                Latest at 3:30pm on 2 October
+              </h2>
+            </div>
+            <dl class="defra-flood-statistics__list" aria-label="Latest readings">
+              <div class="defra-flood-statistics__item">
+                <dt class="defra-flood-statistics__key">Height</dt>
+                <dd class="defra-flood-statistics__value">
+                  <span  data-toggletip data-toggletip-label="More information about the height" data-toggletip-content="This station measures height from a fixed point on or close to the riverbed. This point is 5.00m above sea level.">
+                    
+                      0.28m
+                    
+                </span>
+                </dd>
+              </div>
+              
+              <div class="defra-flood-statistics__item">
+                <dt class="defra-flood-statistics__key">
+                  Trend
+                </dt>
+                <dd class="defra-flood-statistics__value">
+                  <span data-toggletip data-toggletip-label="More information about the trend" data-toggletip-content="The trend is based on the last 5 readings.">
+                    Falling
+                  </span>
+                </dd>
+              </div>
+              
+            
+              
+              <div class="defra-flood-statistics__item">
+                <dt class="defra-flood-statistics__key">State</dt>
+                <dd class="defra-flood-statistics__value">
+                  <span data-toggletip data-toggletip-label="More information about the state" data-toggletip-content="There are 3 states: low, normal and high. The latest level is within the normal range. We calculate the normal range using an average of past measurements and other local factors.">
+                    Normal
+                    </span>
+                </dd>
+              </div>     
+            </dl>
+ 
+          </div>
+
+
+  
+ 
+     
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week
+          <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+      
+  
+       
+       
+    </div>
+ </aside>
+  
+ 
+
+      <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+ 
+
+{% endblock %}
+
