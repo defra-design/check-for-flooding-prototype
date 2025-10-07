@@ -44,7 +44,7 @@
     position: relative;
     display: inline-block;
     width: auto;
-    margin: 0px 0px 5px;
+    margin: 10px 0px 5px;
     border: 1px solid;
     box-shadow: none;
     background-color: white;
@@ -81,6 +81,17 @@
             margin-top: -8px;
         }
     }
+}
+
+.defra-button-secondary__icon {
+    color: #0b0c0c;
+}
+
+.defra-button-secondary svg, .defra-button-secondary-s svg {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 
 // Download button

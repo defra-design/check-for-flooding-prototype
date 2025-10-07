@@ -16,9 +16,9 @@
         display: table-cell;
         vertical-align: middle;
         width:100%;
-        padding:15px 15px 15px 0px;   
-      
+        padding:15px 15px 15px 0px;        
     }
+
     &__text-secondary {
         display: block;
     }
@@ -28,7 +28,7 @@
     .defra-flood-status-item__icon {
         display: table-cell;
         vertical-align: middle;
-        
+        padding: 7.5px 10px;  
         }
         svg {
             vertical-align: middle;
@@ -47,16 +47,19 @@
     border-color:#e3000f;
 }
 .defra-flood-status-item--alert {
-    background-color: mix(white, #f18700, 80%);
+    background-color: rgb(253.6, 243, 229.5);
     border-color:#f18700;
 }
-/*
+
+
+ .defra-flood-status-item:last-of-type {
+    margin-bottom: 20px !important;
+}
+
+ 
 .defra-flood-status-item--removed {
     .defra-flood-status-item__icon:after {
         background-position: 100% 75%;
     }
 }
-*/
-.defra-flood-status__text {
-    margin-bottom:5px;
-}
+
