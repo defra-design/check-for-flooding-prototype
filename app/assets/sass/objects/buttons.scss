@@ -83,6 +83,17 @@
     }
 }
 
+.defra-button-secondary__icon {
+    color: #0b0c0c;
+}
+
+.defra-button-secondary svg, .defra-button-secondary-s svg {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
 // Download button
 .defra-button-download {
     @extend .defra-button-text;

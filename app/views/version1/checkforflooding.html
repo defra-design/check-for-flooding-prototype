@@ -12,38 +12,13 @@
 			Beta
 		</strong>
 		<span class="govuk-phase-banner__text">
-			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
 		</span>
 	</p>
 </div>
 {% endblock %}
 
 {% block content %}
-{% if model.isErrorEmpty or model.isErrorPostcode %}
-<div class="govuk-grid-row">
-	<div class="govuk-grid-column-full">
-		<div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
-			<h2 class="govuk-error-summary__title" id="error-summary-title">
-				There is a problem
-			</h2>
-			<div class="govuk-error-summary__body">
-				<ul class="govuk-list govuk-error-summary__list">
-					<li>
-						<a href="#place">
-							{% if model.isErrorEmpty %}
-							Enter where do you want to check
-							{% else %}
-							Enter a full postcode
-							{% endif %}
-						</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</div>
-{% endif %}
-
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -73,6 +48,7 @@
  <div class="govuk-grid-column-two-thirds">
     <div class="defra-flood-status">
       
+      <!-- no flood alerts -->
       <div class="defra-flood-status-item" data-gtm-vis-recent-on-screen105006042_26="255930" data-gtm-vis-first-on-screen105006042_26="255931" data-gtm-vis-total-visible-time105006042_26="100" data-gtm-vis-has-fired105006042_26="1">
         <div class="defra-flood-status-item__text">
           <strong>
@@ -80,17 +56,33 @@
           </strong>
         </div>
       </div>
-      
-      
+      <!-- no flood alerts end-->
+
+      <!-- 5 flood alerts-->
+      <div class="defra-flood-status-item defra-flood-status-item--alert" data-gtm-vis-recent-on-screen105006042_19="202" data-gtm-vis-first-on-screen105006042_19="202" data-gtm-vis-total-visible-time105006042_19="100" data-gtm-vis-has-fired105006042_19="1">
+        <span class="defra-flood-status-item__icon">
+          <svg width="40" height="40" viewBox="0 0 40 40" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M20.133 1.116c1.292.067 2.507.811 3.159 1.926l16.317 30.253c.139.282.146.317.197.467.091.268.151.546.178.827.2 2.073-1.492 4.162-3.676 4.234H3.671c-.315-.01-.35-.022-.507-.048a3.67 3.67 0 0 1-.814-.237C.436 37.729-.601 35.253.37 33.295L16.687 3.042c.245-.419.364-.556.599-.796.747-.767 1.635-1.172 2.847-1.13z" fill="#fff"></path><path d="M20.025 2.81c.732.019 1.427.433 1.791 1.068l16.283 30.191c.639 1.26-.276 3.02-1.826 3.058H3.705c-1.415-.034-2.52-1.688-1.825-3.058L18.163 3.878a2.07 2.07 0 0 1 1.862-1.068z" fill="#f18700"></path><path d="M19.643 5.68a.39.39 0 0 1 .346-.207c.145 0 .279.079.347.207l15.485 28.731c.066.122.062.269-.009.389s-.199.192-.338.192H4.505c-.139 0-.267-.073-.339-.192s-.074-.267-.008-.389L19.643 5.68z" fill="#fff"></path><path d="M17.132 18.641v1.269l2.244-2.581a.69.69 0 0 1 .524-.238c.2 0 .391.088.523.239l6.496 7.51h0c.251.29.219.727-.071.978s-.727.218-.977-.072l-.593-.685v3.95c-.203.017-.303.071-.482.181-.199.125-.462.368-.89.565-.284.129-.639.216-1.036.214-.01.001-.019.001-.029.001a2.47 2.47 0 0 1-1.369-.424c-.325-.216-.52-.384-.691-.458a.95.95 0 0 0-.42-.084.94.94 0 0 0-.584.186c-.199.124-.461.367-.889.564-.285.13-.638.217-1.037.215-.58.005-1.057-.203-1.385-.411l-.707-.469a.6.6 0 0 0-.287-.072c-.218-.009-.591.144-1.016.378v-4.298l-.595.685c-.137.157-.33.238-.524.238-.161 0-.322-.056-.453-.17-.289-.251-.32-.689-.069-.978l2.696-3.1v-3.133h1.621z" fill="#181c1b"></path><path d="M22.164 25.147h2.073v2.28h-2.073z" fill="#fff"></path><path d="M34.083 33.747H5.889l1.524-2.813h.447c.303.259.677.551 1.07.803.227.145.46.278.703.382s.496.187.807.19c.797-.02 1.378-.403 1.937-.686.552-.302 1.055-.521 1.395-.511.172.002.289.036.441.109.225.107.504.342.907.597s.961.496 1.655.491c.478.002.897-.102 1.236-.255.51-.233.833-.529 1.099-.696.272-.169.446-.255.832-.262.27.002.437.048.603.122.247.107.5.327.895.587.388.259.956.511 1.668.504.479.001.897-.102 1.237-.255.511-.233.834-.529 1.099-.696.273-.17.447-.256.832-.263.261-.003.569.107.803.237a2.58 2.58 0 0 1 .278.174l.07.053.063.05c.395.293 1.028.7 1.917.7h.036c.806-.015 1.494-.388 2.086-.758.294-.189.555-.386.77-.562l.065-.055h.2l1.519 2.813z" fill="#00a4cd"></path></svg>
+        </span>
+        <div class="defra-flood-status-item__text">
+          <strong>
+            <a href="/alerts-and-warnings">
+              5 flood alerts
+            </a>
+          </strong>
+          
+          <span class="defra-flood-status-item__text-secondary">Flooding is possible</span>
+          
+        </div>
+      </div>
+      <!-- 5 flood alerts end -->
  
       <p class="defra-flood-status__text">
         <a href="/alerts-and-warnings#removed">1 flood warning removed</a> in the last 24 hours
       </p>
-      
-      
-      
+ 
     </div>
     
+<a href="https://check-for-flooding.service.gov.uk/?v=map-live&amp;lyr=mv,ts,tw,ta" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">View map of flood warning and alert areas</span><span class="govuk-visually-hidden">(Visual only)</span></a>
 
     <p class="defra-flood-meta ">
       Updated at <time datetime="2025-09-25T10:28:11+01:00">10:28am on 25 September 2025</time>
@@ -109,8 +101,6 @@
         <br>Produced by the Met Office and Environment Agency
       </p> 
 
-    
-        
 
     <h2 class="govuk-heading-m">Long term flood risk</h2>
     <p>You may be at long term flood risk from rivers, the sea, surface water or groundwater.</p>
