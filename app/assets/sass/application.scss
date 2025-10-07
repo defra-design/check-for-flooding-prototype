@@ -178,6 +178,87 @@ p, .govuk-body, .defra-banner-warning__caption, .defra-bar-chart__caption, .defr
     border-color: #f18700;
 }
 
+// Flood alerts and warnings list
+ 
+ul.defra-flood-warnings-list__items {
+
+    list-style-type: none;
+    padding-inline-start: 2px;
+}
+
+.defra-flood-warnings-list {
+    position: relative;
+    z-index: 0;
+    background-color : rgba(0, 0, 0, 0);
+    margin: 10px 0 0 0;
+    padding: 0px;
+    list-style: none !important;
+}
+
+ 
+
+.defra-flood-warnings-list__items {
+    margin: 10px 0px 0px;
+}
+
+.defra-flood-warnings-list-item__meta {
+    color: #505a5f;
+}
+
+.defra-flood-warnings-list-item__meta {
+    display: block;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.53;
+}
+
+.defra-flood-warnings-list__category {
+    position: relative;
+    margin: -1px 0px 0px;
+    border: 0px;
+}
+
+
+.defra-flood-warnings-list-item__icon {
+    display: table-cell;
+    padding: 10px 10px 10px 0px;
+    width: 38px;
+    vertical-align: middle;
+    border-top: 1px solid rgb(216, 217.5, 218.5);
+}
+
+.defra-flood-warnings-list-item__title {
+    position: relative;
+    display: block;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 700;
+    font-size: 1.1875rem;
+    line-height: 1.315789;
+}
+
+.defra-flood-warnings-list-item__description {
+    display: table-cell;
+    padding: 10px 0px;
+    width: 100%;
+    vertical-align: middle;
+    border-top: 1px solid rgb(216, 217.5, 218.5);
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1.3;
+}
+
+.defra-flood-warnings-list-item:last-child .defra-flood-warnings-list-item__icon, .defra-flood-warnings-list-item:last-child .defra-flood-warnings-list-item__description {
+    border-bottom: 1px solid rgb(216, 217.5, 218.5);
+}
+
 // Objects
 @import "objects/typography";
 @import "objects/buttons";
