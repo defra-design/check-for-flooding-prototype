@@ -63,3 +63,7 @@
       transform: rotate(45deg);
   }
 }
+
+.defra-toggletip:not(.defra-toggletip-target) {
+    padding-right: 26px;
+}
