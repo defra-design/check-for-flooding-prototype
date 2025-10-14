@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block content %}
-
+ 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
@@ -31,25 +31,29 @@
 
   <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels">
       <div class="defra-navbar__inner">
-        <a href="https://check-for-flooding.service.gov.uk/station/8208?v=map-live&amp;lyr=mv,ri,ti,gr,rf&amp;fid=stations.8208" id="map-live-btn" class="defra-link-icon-s"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">Map</span><span class="govuk-visually-hidden">(Visual only)</span></a>
-        <div class="defra-navbar__group">
+              
           <ul class="defra-navbar__list">
             
+               <li class="defra-navbar__item">
+                 <span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20">
+                  <path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text"> </span><span class="govuk-visually-hidden">(Visual only)</span>
+           <a href="#">Map </a>
+              </li>
+
               <li class="defra-navbar__item">
-                <a href="/station/9347">Upstream</a>
+                <a href="#">Upstream</a>
               </li>
             
-            
               <li class="defra-navbar__item">
-                <a href="/station/8081">Downstream</a>
+                <a href="#">Downstream</a>
               </li>
             
               <li class="defra-navbar__item">
-                <a href="/river-and-sea-levels/rloi/8208">Nearby levels</a>
+                <a href="#">Nearby levels</a>
             </li>
           </ul>
         </div>
-      </div>
+  
     </nav>
 
   </div>
@@ -57,51 +61,69 @@
 
 </div>
     
+ 
+
 <div class="defra-flood-statistics defra-flood-statistics--border">
             <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
-              <h2 class="govuk-heading-s govuk-!-margin-bottom-0">
+              <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
                 Latest at 3:30pm on 2 October
               </h2>
             </div>
             <dl class="defra-flood-statistics__list" aria-label="Latest readings">
               <div class="defra-flood-statistics__item">
-                <dt class="defra-flood-statistics__key">Height</dt>
-                <dd class="defra-flood-statistics__value">
-                  <span  data-toggletip data-toggletip-label="More information about the height" data-toggletip-content="This station measures height from a fixed point on or close to the riverbed. This point is 5.00m above sea level.">
-                    
-                      0.28m
-                    
-                </span>
-                </dd>
+
+                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">Height</span>0.28m </h1>
+                
               </div>
               
               <div class="defra-flood-statistics__item">
-                <dt class="defra-flood-statistics__key">
-                  Trend
-                </dt>
-                <dd class="defra-flood-statistics__value">
-                  <span data-toggletip data-toggletip-label="More information about the trend" data-toggletip-content="The trend is based on the last 5 readings.">
-                    Falling
-                  </span>
-                </dd>
+
+                <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">Trend</span>Falling </h1>
+                
               </div>
               
             
               
-              <div class="defra-flood-statistics__item">
-                <dt class="defra-flood-statistics__key">State</dt>
-                <dd class="defra-flood-statistics__value">
-                  <span data-toggletip data-toggletip-label="More information about the state" data-toggletip-content="There are 3 states: low, normal and high. The latest level is within the normal range. We calculate the normal range using an average of past measurements and other local factors.">
-                    Normal
-                    </span>
-                </dd>
-              </div>     
+            <div class="defra-flood-statistics__item">
+
+                <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">State</span>Normal </h1>
+                
+              </div>
+                  
             </dl>
- 
+
+            <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+              Normal range 0.05m to 1.90m
+            </p>
+
+              
           </div>
 
 
-  
+  <div class="defra-line-chart govuk-!-margin-bottom-4">
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-4">Height in metres over the last 5 days and up to 36 hour forecast</h2>
+
+     <div class="defra-flood-status defra-flood-status--full">
+        <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
+          <div class="defra-flood-status-item__container">
+            <span class="defra-flood-status-item__icon">
+                  <span class="govuk-caption-l" style="font-family:'Courier New', Courier, monospace"> &#9432; </span>
+            </span>
+            <div class="defra-flood-status-item__text">
+              <span class="govuk-visually-hidden">Information:</span>
+              <p class="govuk-body-s govuk-!-margin-bottom-0">This station includes an automated model. <br>The highest level in the model is 0.49m on 8 October at 10:30am. <a href="/how-we-measure-river-sea-groundwater-levels#how-we-forecast-river-levels">Read more about how we forecast river levels</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+
+      
+    </div>
  
      
     <aside class="defra-context-footer">
