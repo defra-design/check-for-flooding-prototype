@@ -87,9 +87,21 @@
     color: #0b0c0c;
 }
 
+.defra-button-secondary, .defra-button-secondary-s {
+    width: auto;
+    margin: 0px 0px 20px 0px;
+    border: 1px solid #b1b4b6;
+    box-shadow: none;
+    background-color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    color: #1d70b8;
+    text-decoration: none;
+}
+
 .defra-button-secondary svg, .defra-button-secondary-s svg {
     position: relative;
-    display: inline-block;
+   
     vertical-align: middle;
     margin-right: 8px;
 }
@@ -130,4 +142,8 @@
         top:0px;
 
     }
+}
+
+.defra-button-secondary:visited, .defra-button-secondary-s:visited {
+    color: #1d70b8;
 }

@@ -19,10 +19,9 @@
 {% endblock %}
 
 {% block content %}
-<a href="/" class="defra-flood-location-link">Check another location</a>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
       Check for flooding
     </h1>
@@ -48,17 +47,17 @@
   </div>
  <div class="govuk-grid-column-two-thirds">
     <div class="defra-flood-status">
-      
-      <!-- no flood alerts -->
-      <div class="defra-flood-status-item" data-gtm-vis-recent-on-screen105006042_26="255930" data-gtm-vis-first-on-screen105006042_26="255931" data-gtm-vis-total-visible-time105006042_26="100" data-gtm-vis-has-fired105006042_26="1">
+
+      <!--no flood alerts -->
+          <!--<div class="defra-flood-status-item" data-gtm-vis-recent-on-screen105006042_26="255930" data-gtm-vis-first-on-screen105006042_26="255931" data-gtm-vis-total-visible-time105006042_26="100" data-gtm-vis-has-fired105006042_26="1">
         <div class="defra-flood-status-item__text">
           <strong>
             No flood alerts or warnings
           </strong>
         </div>
-      </div>
+      </div>-->
       <!-- no flood alerts end-->
-
+      
       <!-- 5 flood alerts-->
       <div class="defra-flood-status-item defra-flood-status-item--alert" data-gtm-vis-recent-on-screen105006042_19="202" data-gtm-vis-first-on-screen105006042_19="202" data-gtm-vis-total-visible-time105006042_19="100" data-gtm-vis-has-fired105006042_19="1">
         <span class="defra-flood-status-item__icon">
@@ -85,7 +84,7 @@
     
 <a href="https://check-for-flooding.service.gov.uk/?v=map-live&amp;lyr=mv,ts,tw,ta" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">View map of flood warning and alert areas</span><span class="govuk-visually-hidden">(Visual only)</span></a>
 
-    <p class="defra-flood-meta ">  Updated at {{ "now" | govukTime }} on  {{ "today" | govukDate }}</p> 
+    <p class="defra-flood-meta">  Updated at {{ "now" | govukTime }} on  {{ "today" | govukDate }}</p> 
 
     <h2 class="govuk-heading-m govuk-!-margin-top-2" id="outlook">Flood forecast for the next 5 days</h2>
     
