@@ -14,13 +14,143 @@ mark {
 .defra-flood-statistics--border .defra-flood-statistics__key {
     padding-top: 15px;
 }
-.defra-flood-statistics__key {
-    color: #505a5f;
-}
-
+ 
 .defra-flood-statistics__value {
     font-family: "GDS Transport", arial, sans-serif;
     font-weight: 400;
     font-size: 1.125rem;
     line-height: 1.1111111111;
 }
+
+.defra-flood-levels-table-meta {
+    color: #505a5f;
+    font-weight: 400;
+    font-size: .875rem;
+    line-height: 1.1428571429;
+}
+
+.defra-flood-levels-table-meta {
+    display: block;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.defra-flood-levels-table-trend {
+    padding: 4px;
+    display: inline-block;
+    position: relative;
+    text-transform: uppercase;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.defra-flood-levels-table__head .defra-flood-levels-table__cell {
+    text-align: left;
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.defra-flood-levels-table__cell--location {
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+.govuk-table, .defra-flood-levels-table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+.defra-flood-levels-table__cell a:not(:hover) {
+    text-decoration: none;
+}
+
+.defra-flood-levels-table__cell a {
+    display: inline-block;
+}
+
+.defra-flood-levels-table-numeric {
+    display: inline-block;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.defra-flood-levels-table-numeric {
+    font-variant-numeric: tabular-nums;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+.defra-flood-levels-table-numeric {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.defra-flood-levels-table-trend__icon {
+    position: absolute;
+    border-radius: 100%;
+    border: 1px solid #b1b4b6;
+    width: 24px;
+    height: 24px;
+    left: 0px;
+    top: 1px;
+}
+
+.defra-flood-levels-table-trend svg {
+    position: absolute;
+    left: 4px;
+    top: 4px;
+    color: #0b0c0c;
+}
+
+.defra-flood-levels-table-trend {
+    padding-left: 30px;
+}
+ 
+.defra-flood-levels-table__cell--location {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+
+}
+
+.defra-flood-status-item__text {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+ 
+
+.govuk-table__header, .govuk-table__cell, .defra-flood-levels-table__cell {
+    padding: 10px 20px 10px 0;
+    border-bottom: 1px solid #b1b4b6;
+    text-align: left;
+    vertical-align: top;
+}
+ 
+.defra-flood-levels-table-trend {
+        padding-left: 36px;
+    }
+
+    .defra-flood-levels-table-numeric {
+        font-size: 1.1875rem;
+        line-height: 1.3157894737;
+    }
+
+ .defra-navbar--search-categories .defra-navbar__item--selected a:after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0px;
+    right: 0px;
+    border-bottom: 4px solid currentColor;
+}
+
+ 
