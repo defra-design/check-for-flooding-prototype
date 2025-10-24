@@ -26,8 +26,7 @@
       Flood alerts and warnings
     </h1>
  
- 
- <div class="defra-search govuk-form-group govuk-!-margin-bottom-6">
+ <div class="defra-search govuk-form-group govuk-!-margin-bottom-2">
     <form method="post" autocomplete="off">
     <label class="govuk-label defra-search__label" for="location">
       Search for a town, city or postcode in England
@@ -35,7 +34,7 @@
     <div class="defra-search__container">
       <input class="defra-search__input" id="location" name="location" type="search" spellcheck="false" value="">
       <div class="defra-search__submit-container">
-        <button class="defra-search__button">
+         <button class="defra-search__button">
           <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect x="0" y="0" width="50" height="50" style="fill:none;"/><path d="M12.316,14.791c-1.242,0.79 -2.716,1.248 -4.296,1.248c-4.426,0 -8.02,-3.593 -8.02,-8.019c0,-4.426 3.594,-8.02 8.02,-8.02c4.426,0 8.019,3.594 8.019,8.02c0,1.58 -0.458,3.054 -1.248,4.296l5.209,5.209l-2.475,2.475l-5.209,-5.209Zm-4.296,-12.771c3.311,0 6,2.688 6,6c0,3.311 -2.689,6 -6,6c-3.312,0 -6,-2.689 -6,-6c0,-3.312 2.688,-6 6,-6Z" style="fill:white;"/></svg>
           <span class="govuk-visually-hidden">Search</span>
         </button>
@@ -43,17 +42,17 @@
     </div>
   </form>
        <br> 
-<a href="https://check-for-flooding.service.gov.uk/?v=map-live&amp;lyr=mv,ts,tw,ta" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">View map of flood warning and alert areas</span><span class="govuk-visually-hidden">(Visual only)</span></a>
-
+<a href="https://check-for-flooding.service.gov.uk/?v=map-live&amp;lyr=mv,ts,tw,ta" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span>
+  <span class="defra-button-secondary__text">View map of flood warning and alert areas</span>
+  <span class="govuk-visually-hidden">(Visual only)</span></a>
 </div>
- 
+
 
   </div>
  <div class="govuk-grid-column-full">
-   
-    
+ 
         <h3 class="govuk-heading-m govuk-!-margin-bottom-4" id="alerts">
-          10 flood alerts  <p>Flooding is possible</p>
+          10 flood alerts <p>Flooding is possible</p>
         </h3>
        
         <ul class="defra-flood-warnings-list__items">
@@ -71,9 +70,9 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="./target-area/064Wac306" class="defra-flood-warnings-list-item__title">Coast from Fairlight to Dungeness including the Tidal Rother</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T10:27:00.000Z">11:27am on 
-                7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated {{ "now" | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -92,8 +91,9 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/052WATCSTHUN" class="defra-flood-warnings-list-item__title">Hunstanton coast in Norfolk</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T12:43:00.000Z">1:43pm on  7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(1, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -112,8 +112,11 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/113WACT2A" class="defra-flood-warnings-list-item__title">North Devon coast from Hartland Point to Lynmouth</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T12:05:00.000Z">1:05pm on  7 October 2025</time></span>
+              
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(1, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
+
               </div>
             </li>
           
@@ -132,8 +135,9 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/051WACDV4C" class="defra-flood-warnings-list-item__title">The Essex coast from Clacton to and including, St Peters Flat and the Colne and Blackwater estuaries</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T07:35:00.000Z">8:35am on  7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(1, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -152,8 +156,10 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/112WATAVN1" class="defra-flood-warnings-list-item__title">Tidal River Avon at Bristol, Pill and Shirehampton</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T11:00:00.000Z">12:00pm on   7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(1, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
+
               </div>
             </li>
           
@@ -172,11 +178,12 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/063WAT23West" class="defra-flood-warnings-list-item__title">Tidal Thames riverside from Putney Bridge to Teddington Weir</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-06T16:36:00.000Z">5:36pm on   6 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(2, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
+
               </div>
-            </li>
-          
+            </li>    
             
             <li class="defra-flood-warnings-list-item">
               <div class="defra-flood-warnings-list-item__icon">
@@ -192,12 +199,11 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/121WAT913" class="defra-flood-warnings-list-item__title">Tyne estuary</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T10:05:00.000Z">11:05am on 
-                7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(2, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
-            </li>
-          
+            </li>      
             
             <li class="defra-flood-warnings-list-item">
               <div class="defra-flood-warnings-list-item__icon">
@@ -213,11 +219,11 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/011WAFDW" class="defra-flood-warnings-list-item__title">Upper River Derwent, Stonethwaite Beck and Derwent Water</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T08:12:00.000Z">9:12am on   7 October 2025</time></span>
+                 <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(2, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
-            </li>
-          
+            </li>        
             
             <li class="defra-flood-warnings-list-item">
               <div class="defra-flood-warnings-list-item__icon">
@@ -233,8 +239,9 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/031WAT122" class="defra-flood-warnings-list-item__title">Wye Estuary in Gloucestershire</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T09:59:00.000Z">10:59am on   7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(3, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -253,8 +260,9 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/012WATWE" class="defra-flood-warnings-list-item__title">Wyre estuary from Fleetwood and Knott End to Little Eccleston</a>
-                <span class="defra-flood-warnings-list-item__meta">Updated 
-                <time datetime="2025-10-07T07:41:00.000Z">8:41am on  7 October 2025</time></span>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Updated  {{ "now" | duration(3, "minutes") | govukTime }} on  {{ "today" | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -281,8 +289,10 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/011FWFNC6KC" class="defra-flood-warnings-list-item__title">Keswick Campsite</a>
-                <span class="defra-flood-warnings-list-item__meta">Removed at 
-                <time datetime="2025-10-06T15:48:00.000Z">4:48pm on  6 October 2025</time></span>
+                 <span class="defra-flood-warnings-list-item__meta">
+                  Removed at  {{ "now" | duration(-1, "hours") | govukTime }} on 
+                     {{ "today" | duration(-1, "day") | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -299,9 +309,11 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/013WATMEW" class="defra-flood-warnings-list-item__title">Mersey Estuary at Warrington</a>
-                <span class="defra-flood-warnings-list-item__meta">Removed at 
-                <time datetime="2025-10-07T07:50:00.000Z">8:50am on   7 October 2025</time></span>
-              </div>
+                <span class="defra-flood-warnings-list-item__meta">
+                  Removed at  {{ "now" | duration(-2, "hours") | govukTime }} on 
+                     {{ "today" | duration(-1, "day") | govukDate }}
+                </span>
+                  </div>
             </li>
           
             
@@ -317,8 +329,10 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/011WAFBR" class="defra-flood-warnings-list-item__title">Rivers Brathay, Rothay and Winster</a>
-                <span class="defra-flood-warnings-list-item__meta">Removed at 
-                <time datetime="2025-10-07T08:12:00.000Z">9:12am on  7 October 2025</time></span>
+              <span class="defra-flood-warnings-list-item__meta">
+                  Removed at  {{ "now" | duration(-4, "hours") | govukTime }} on 
+                     {{ "today" | duration(-1, "day") | govukDate }}
+                </span>
               </div>
             </li>
           
@@ -335,7 +349,10 @@
               </div>
               <div class="defra-flood-warnings-list-item__description">
                 <a href="/target-area/054WATBT1" class="defra-flood-warnings-list-item__title">The tidal Rivers Bure, Ant and Thurne</a>
-                <span class="defra-flood-warnings-list-item__meta">Removed at  7 October 2025</time></span>
+                 <span class="defra-flood-warnings-list-item__meta">
+                  Removed at {{ "now" | duration(-5, "hours") | govukTime }} on 
+                     {{ "today" | duration(-1, "day") | govukDate }}
+                </span>
               </div>
             </li>
           <br>
