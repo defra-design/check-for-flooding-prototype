@@ -147,6 +147,15 @@ p, .govuk-body, .defra-banner-warning__caption, .defra-bar-chart__caption, .defr
 }
 
 // navbar map upstream downstream etc
+.defra-navbar a {
+    display: inline-block;
+    position: relative;
+    padding: 5px 5px 5px 5px !important;
+    border: 0px;
+    color: #0b0c0c;
+    bottom: 5px;
+}
+ 
 
 .defra-navbar__item {
     position: relative;
@@ -173,15 +182,7 @@ p, .govuk-body, .defra-banner-warning__caption, .defra-bar-chart__caption, .defr
 }
  
  
-.defra-navbar a {
-    display: inline-block;
-    position: relative;
-    padding: 5px 5px 5px 5px;
-    border: 0px;
-    color: #0b0c0c;
-    bottom: 5px;
-}
- 
+
 
 .contact {
     border-left: 1px solid #b1b4b6;
