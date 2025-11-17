@@ -63,7 +63,7 @@ $govuk-assets-path: '/govuk/assets/';
     color: #0b0c0c;
     position: relative;
     padding-bottom: 5px;
-    border-bottom: 1px solid #b1b4b6;
+    // border-bottom: 1px solid #b1b4b6; //
     margin-bottom: 20px;
     font-size: 1rem;
     line-height: 1.25;
@@ -300,9 +300,6 @@ ul.defra-flood-warnings-list__items {
 
 .defra-flood-warnings-list-item__meta {
     color: #505a5f;
-}
-
-.defra-flood-warnings-list-item__meta {
     display: block;
     font-family: "GDS Transport", arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -310,6 +307,12 @@ ul.defra-flood-warnings-list__items {
     font-weight: 400;
     font-size: 1rem;
     line-height: 1.53;
+
+}
+
+
+.defra-flood-warnings-list-item:last-child .defra-flood-warnings-list-item__icon, .defra-flood-warnings-list-item:last-child .defra-flood-warnings-list-item__description {
+    border-bottom: 1px solid rgb(216, 217.5, 218.5);
 }
 
 .defra-flood-warnings-list__category {
@@ -382,6 +385,85 @@ ul.defra-flood-warnings-list__items {
 .defra-flood-levels-table__cell--location {
     width: 50%;
     padding-right: 20px;
+}
+
+.defra-live {
+    position: relative;
+    border: 2px solid #1d70b8;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding: 15px;
+}
+
+.defra-live__title {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #1c70b8;
+    color: #fff;
+    word-spacing: .15em;
+}
+
+
+ .defra-live__title {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background-color: #1c70b8;
+    color: #fff;
+    word-spacing: .15em;
+}
+
+ 
+.defra-live__title {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@media (min-width: 40.0625em) {
+    .defra-live__title {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+}
+
+.govuk-tag, .defra-live__title {
+    display: inline-block;
+    max-width: 160px;
+    margin-top: -2px;
+    margin-bottom: -3px;
+    padding-top: 2px;
+    padding-right: 8px;
+    padding-bottom: 3px;
+    padding-left: 8px;
+    text-decoration: none;
+    overflow-wrap: break-word;
+}
+
+.defra-live__supplementary {
+    color: #505a5f;
+    margin: 0;
+}
+
+@media (min-width: 40.0625em) {
+    .defra-live__supplementary {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
+}
+
+@media (min-width: 40.0625em) {
+    .govuk-caption-s {
+        font-size: 1rem;
+        line-height: 1.25;
+    }
 }
 
 // Objects
