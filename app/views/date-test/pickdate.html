@@ -1,0 +1,60 @@
+{% extends "/layouts/main.html" %}
+
+
+{% block pageTitle %}
+  Enter your stamp tax due date – {{ serviceName }} – HMRC 
+{% endblock %}
+
+
+{% block content %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      <form class="form" action="displaydate" method="post">
+
+        
+          {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+
+          {{ govukDateInput({
+            id: "stamp-tax-date",
+            namePrefix: "stamp-tax-date",
+            fieldset: {
+              legend: {
+                text: "Enter your date",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              text: "For example, 27 3 2024"
+            },
+            items: [
+              {
+                name: "day",
+                classes: "govuk-input--width-2",
+                autocomplete: "stamp-tax-date-day"
+              },
+              {
+                name: "month",
+                classes: "govuk-input--width-2",
+                autocomplete: "stamp-tax-date-month"
+              },
+              {
+                name: "year",
+                classes: "govuk-input--width-4",
+                autocomplete: "stamp-tax-date-year"
+              }
+            ]
+          }) }}
+
+        {{ govukButton({
+          text: "Continue"
+        }) }}
+
+      </form>
+
+    </div>
+  </div>
+
+{% endblock %}
