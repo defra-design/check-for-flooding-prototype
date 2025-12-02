@@ -14,18 +14,31 @@
         <h2 class="govuk-heading-m"> </h2>
         <dl class="govuk-summary-list govuk-!-margin-bottom-9">
            
+
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
-              Entered date
+             Raw entered date
+            </dt>
+            <dd class="govuk-summary-list__value">
+              {{ data | isoDateFromDateInput("your-date") }}
+
+            </dd>
+            <dd class="govuk-summary-list__actions">
+                      </dd>
+          </div>
+
+          <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              With Gov UK DateFilter
             </dt>
             <dd class="govuk-summary-list__value">
 
-              {{ data | isoDateFromDateInput("stamp-tax-date") | govukDate }}
+              {{ data | isoDateFromDateInput("your-date") | govukDate }}
             
               
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a class="govuk-link" href="pickdate">Change<span class="govuk-visually-hidden"> date of birth</span></a>
+              <a class="govuk-link" href="pickdate">Change<span class="govuk-visually-hidden">your date</span></a>
             </dd>
           </div>
      
@@ -43,7 +56,7 @@
             </dt>
             <dd class="govuk-summary-list__value">
 
-              {{ data | isoDateFromDateInput("stamp-tax-date") | duration(60) | govukDate }}
+              {{ data | isoDateFromDateInput("your-date") | duration(60) | govukDate }}
              
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -52,13 +65,45 @@
             </dd>
           </div>
 
+    
+
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
-              Minus 60 Days 
+              Minus 30 Days 
             </dt>
             <dd class="govuk-summary-list__value">
 
-              {{ data | isoDateFromDateInput("stamp-tax-date") | duration(-60) | govukDate }}
+              {{ data | isoDateFromDateInput("your-date") | duration(-30) | govukDate }}
+             
+            </dd>
+            <dd class="govuk-summary-list__actions">
+            <p>    </p>
+         
+            </dd>
+          </div>
+
+           <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Plus 1 month 
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+              {{ data | isoDateFromDateInput("your-date") | duration(1, "month") | govukDate }}
+             
+            </dd>
+            <dd class="govuk-summary-list__actions">
+            <p>    </p>
+         
+            </dd>
+          </div>
+
+           <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              Minus 1 month 
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+              {{ data | isoDateFromDateInput("your-date") | duration(-1, "month") | govukDate }}
              
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -99,6 +144,21 @@
             </dd>
           </div>
 
+           <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              2 hours ago 
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+              {{ "now" | duration(-2, "hours") | govukTime }}
+             
+            </dd>
+            <dd class="govuk-summary-list__actions">
+            <p>    </p>
+         
+            </dd>
+          </div>
+
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
               60 days from now
@@ -129,15 +189,30 @@
             </dd>
           </div>
 
+                    <div class="govuk-summary-list__row">
+            <dt class="govuk-summary-list__key">
+              2 weeks ago
+            </dt>
+            <dd class="govuk-summary-list__value">
+
+              {{ "now" | duration(-2, "weeks") | govukDate }}
+             
+            </dd>
+            <dd class="govuk-summary-list__actions">
+             
+         
+            </dd>
+          </div>
+
 
           <p><br></p>
 
           <div class="govuk-summary-list__row">
             <dt class="govuk-summary-list__key">
-             Days between due date and today
+             Days between your date and today
             </dt>
             <dd class="govuk-summary-list__value">
-              ({{ data | isoDateFromDateInput("stamp-tax-date") | daysAgo  }} days ago)
+              ({{ data | isoDateFromDateInput("your-date") | daysAgo  }} days ago)
              
             </dd>
             <dd class="govuk-summary-list__actions">
@@ -145,30 +220,9 @@
          
             </dd>
           </div>
-
-          <p><br></p>
-
-          <div class="govuk-summary-list__row">
-            <dt class="govuk-summary-list__key">
-             Raw  (YYYY-MM-DD)
-            </dt>
-            <dd class="govuk-summary-list__value">
-              {{ data | isoDateFromDateInput("stamp-tax-date") }}
-             
-
-            </dd>
-            <dd class="govuk-summary-list__actions">
-            
-         
-            </dd>
-          </div>
-
-        </dl>
-
  
-    
-     
-         
+        </dl>
+ 
        
     </div>
   </div>

@@ -7,7 +7,7 @@
 {% block content %}
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-full">
  
     <h1 class="govuk-heading-xl">
       {{ serviceName }}  
@@ -17,7 +17,7 @@
     <h2 class="govuk-heading-m" id="progress">
       Design team contacts:
     </h2>
-    <p>Interaction designer - <a href="mailto:martin.gray@defra.gov.uk">Martin Gray</a><br>
+    <p class="govuk-body">Interaction designer - <a href="mailto:martin.gray@defra.gov.uk">Martin Gray</a><br>
        Content designer - <a href="mailto:poppy.davis@defra.gov.uk">Poppy Davis</a><br>
        User researcher - <a href="mailto:jacqueline.buckley@defra.gov.uk">Jacqueline Buckley</a><br>
       </p>
@@ -45,27 +45,27 @@
          
       [
         {
-         html: "<a href='version1/'>Version 1</a>"
+         html: "<p class='govuk-body'><b><a href='version1/'>Version 1</a></b></p>"
         },
         {
-         html: "<li><a href='#' target='new'>Jira ticket number</a> </li>
-                <li><a href='#' target='new'>Mural</a></li>"
+         html: "<li><a href='#' target='new' class='govuk-body'>Jira ticket number</a> </li>
+                <li><a href='#' target='new' class='govuk-body'>Mural</a></li>"
         },
         {
-         html: "Initial build to test prototype kit. 
+         html: "<p class='govuk-body'>Initial build to test prototype kit. </p>
           "
         }
       ] ,
       [
         {
-         html: "<a href='date-test/pickdate'>Date filter test</a>"
+         html: "<p class='govuk-body'><b><a href='date-test/pickdate' >Date filter test</a></b></p>"
         },
         {
-         html: "<li><a href='https://govuk-prototype-filters.x-govuk.org/date/' target='new'>X Gov date filter</a> </li>
+         html: "<li><a href='https://govuk-prototype-filters.x-govuk.org/date/' target='new' class='govuk-body'>X Gov date filter</a> </li>
                  "
         },
         {
-         html: "Page to show the X gov date filter working. 
+         html: "<p class='govuk-body'>Page to show the X gov date filter working. </p>
           "
         }
       ] 
