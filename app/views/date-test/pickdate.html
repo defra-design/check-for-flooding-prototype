@@ -17,8 +17,8 @@
           {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 
           {{ govukDateInput({
-            id: "stamp-tax-date",
-            namePrefix: "stamp-tax-date",
+            id: "your-date",
+            namePrefix: "your-date",
             fieldset: {
               legend: {
                 text: "Enter your date",
@@ -33,17 +33,17 @@
               {
                 name: "day",
                 classes: "govuk-input--width-2",
-                autocomplete: "stamp-tax-date-day"
+                autocomplete: "your-date-day"
               },
               {
                 name: "month",
                 classes: "govuk-input--width-2",
-                autocomplete: "stamp-tax-date-month"
+                autocomplete: "your-date-month"
               },
               {
                 name: "year",
                 classes: "govuk-input--width-4",
-                autocomplete: "stamp-tax-date-year"
+                autocomplete: "syour-date-year"
               }
             ]
           }) }}
