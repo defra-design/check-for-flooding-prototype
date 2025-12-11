@@ -1,17 +1,29 @@
- 
+
 {% extends "../../layouts/main.html" %}
 {% block pageTitle %}
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
 {% endblock %}
 
+<!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+
+  <style>
+    /* Small page tweaks to make the example a little lighter/cleaner */
+    body { padding: 2rem; }
+    .chart-wrap { max-width: 900px; margin: 0 auto; }
+    pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:4px; overflow:auto }
+  </style>
+
+
 {% block beforeContent %}
+
 <div class="govuk-phase-banner">
 	<p class="govuk-phase-banner__content">
 		<strong class="govuk-tag govuk-phase-banner__content__tag">
 			Beta
 		</strong>
 		<span class="govuk-phase-banner__text">
-			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
 		</span>
 	</p>
 </div>
@@ -24,8 +36,7 @@
   <div class="defra-flood-status-item defra-flood-status-item--warning">
     <span class="defra-flood-status-item__icon"><svg width="40" height="40" viewBox="0 0 40 40" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M20.133 1.117c1.292.067 2.5.798 3.159 1.926l16.316 30.251c.14.282.146.318.198.468.097.286.158.584.183.885.166 2.062-1.497 4.103-3.681 4.175H3.672c-.314-.011-.349-.022-.506-.048-.28-.047-.553-.127-.814-.237-1.925-.814-2.951-3.285-1.98-5.243L16.688 3.043c.244-.419.364-.556.598-.796.748-.767 1.637-1.172 2.847-1.13z" fill="#fff"/><path d="M20.026 2.811c.731.019 1.426.433 1.79 1.068l16.283 30.189c.639 1.26-.277 3.02-1.826 3.058H3.707c-1.416-.034-2.521-1.688-1.826-3.058L18.164 3.879a2.07 2.07 0 0 1 1.862-1.068z" fill="#e3000f"/><path d="M19.643 5.681c.069-.128.202-.207.347-.207s.278.079.347.207L35.821 34.41c.065.122.062.27-.009.389s-.199.192-.338.192H4.506c-.139 0-.267-.073-.338-.192s-.075-.267-.009-.389L19.643 5.681z" fill="#fff"/><path d="M17.096 16.51v1.272l2.25-2.586c.131-.153.324-.24.524-.239s.393.088.524.24l6.509 7.525.001.001c.251.289.219.728-.071.978s-.728.219-.979-.071l-.595-.687v3.671c-.203.017-.304.07-.483.181-.199.124-.462.368-.892.566-.286.129-.64.216-1.039.215h-.028a2.48 2.48 0 0 1-1.372-.424c-.325-.217-.52-.385-.693-.459-.116-.051-.225-.084-.42-.085-.276.007-.378.06-.585.187-.2.124-.462.368-.891.565a2.5 2.5 0 0 1-1.039.216c-.581.004-1.059-.203-1.388-.413l-.709-.469a.6.6 0 0 0-.287-.072c-.218-.01-.591.143-1.018.378v-4.018l-.596.685a.69.69 0 0 1-.524.238c-.162 0-.324-.055-.455-.17-.289-.251-.32-.69-.068-.979l2.701-3.106v-3.14h1.623z" fill="#181c1b"/><path d="M7.503 30.719l.17.154a10.59 10.59 0 0 0 1.204.919c.228.146.462.279.705.383a2.04 2.04 0 0 0 .809.19c.798-.02 1.381-.403 1.941-.687.553-.302 1.057-.522 1.398-.512.172.002.289.036.441.109.226.107.505.343.909.598a3.04 3.04 0 0 0 1.659.492c.479.002.898-.102 1.238-.255.511-.234.835-.53 1.101-.698.273-.17.448-.256.834-.263.27.002.438.049.605.123.247.107.501.327.896.588a2.95 2.95 0 0 0 1.672.505c.48.002.899-.102 1.239-.255.512-.234.835-.53 1.102-.698.273-.17.448-.256.833-.263.261-.004.57.107.805.237.117.063.214.128.279.174l.07.053.014.011.049.039c.397.294 1.03.702 1.921.702h.037c.807-.015 1.495-.389 2.089-.76a7.96 7.96 0 0 0 .771-.563l.202-.173 1.586 2.937H5.831l1.672-3.087zm1.711-3.158c.028.049.061.096.1.14a5.78 5.78 0 0 0 .843.785c.393.285.881.596 1.559.609.793-.023 1.332-.391 1.84-.647.502-.277.941-.46 1.196-.448.13.002.208.024.33.083.181.083.433.295.813.538s.926.479 1.594.474c.458.002.865-.099 1.192-.248.492-.226.793-.506 1.023-.648.236-.146.354-.207.671-.215a1.1 1.1 0 0 1 .483.098c.198.084.421.277.794.526a2.85 2.85 0 0 0 1.575.487h.033a2.84 2.84 0 0 0 1.192-.248c.493-.226.795-.505 1.025-.648.236-.147.353-.207.67-.215.197-.004.455.085.655.196.099.055.182.11.236.149l.058.044.062.05a3.94 3.94 0 0 0 .746.444 2.78 2.78 0 0 0 1.129.228c.724.002 1.302-.315 1.681-.633.12-.1.227-.203.32-.3l.724 1.34a.79.79 0 0 0-.089.085h0a3.53 3.53 0 0 1-.328.298c-.258.214-.626.479-.99.674s-.732.314-.917.307c-.493-.011-.679-.14-1.066-.408a3.92 3.92 0 0 0-.589-.39c-.37-.198-.887-.415-1.52-.418-.467-.002-.878.104-1.209.259-.499.236-.811.525-1.079.69a1.48 1.48 0 0 1-.886.267 1.37 1.37 0 0 1-.603-.123c-.249-.107-.502-.327-.897-.589a2.95 2.95 0 0 0-1.673-.504 2.83 2.83 0 0 0-1.21.259c-.499.236-.811.526-1.079.691a1.49 1.49 0 0 1-.884.266c-.49-.007-.735-.168-1.158-.462-.207-.144-.44-.32-.744-.471s-.682-.268-1.107-.266c-.855.01-1.53.39-2.103.688-.565.315-1.054.531-1.236.511 0 0-.003 0-.021-.003-.069-.009-.258-.081-.466-.201-.316-.178-.688-.452-.993-.704l-.611-.555c-.017-.02-.035-.038-.054-.056l.968-1.786z" fill="#00a4cd"/><path d="M22.139 23.029h2.077v2.285h-2.077z" fill="#fff"/></svg></span>
     <div class="defra-flood-status-item__text">
-        
-        
+             
         <strong><a class="govuk-link" href="/alerts-and-warnings?station=8208#warnings">There are flood warnings within 5 miles of this measuring station</a></strong>
  
     </div>
@@ -132,156 +143,84 @@
           </div>
         </div>
       </div>
- 
-      <!-- chart -->
 
-
-<div>
-  <canvas id="myChart"></canvas>
-</div>
-<script src="chart.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
- 
  
 
-<script>
- 
-
-  const ctx = document.getElementById('myChart');
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['5 Dec 25', '28 Nov 25', '21 Nov 25', '14 Nov 25', '7 Nov 25', '31 Oct 25', '24 Oct 25'],
-      datasets: [{
-        label: 'Highest water level',
-        data: [12, 13, 13, 15, 12, 13,7],
-        borderColor: '#1d70b8',
-        borderWidth: 3,
-        tension: 0.1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-
-</script>
-
-
-<script>
- const config = {
-  type: 'line',
-  data: data,
-  options: {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart'
-      }
-    }
-  },
-};
-</script>
-<script>
-const DATA_COUNT = 7;
-const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
-
-const labels = Utils.months({count: 7});
-const data = {
-  labels: labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: Utils.numbers(NUMBER_CFG),
-      borderColor: Utils.CHART_COLORS.red,
-      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-    },
-    {
-      label: 'Dataset 2',
-      data: Utils.numbers(NUMBER_CFG),
-      borderColor: Utils.CHART_COLORS.blue,
-      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
-    }
-  ]
-};
-
-const actions = [
-  {
-    name: 'Randomize',
-    handler(chart) {
-      chart.data.datasets.forEach(dataset => {
-        dataset.data = Utils.numbers({count: chart.data.labels.length, min: -100, max: 100});
-      });
-      chart.update();
-    }
-  },
-  {
-    name: 'Add Dataset',
-    handler(chart) {
-      const data = chart.data;
-      const dsColor = Utils.namedColor(chart.data.datasets.length);
-      const newDataset = {
-        label: 'Dataset ' + (data.datasets.length + 1),
-        backgroundColor: Utils.transparentize(dsColor, 0.5),
-        borderColor: dsColor,
-        data: Utils.numbers({count: data.labels.length, min: -100, max: 100}),
-      };
-      chart.data.datasets.push(newDataset);
-      chart.update();
-    }
-  },
-  {
-    name: 'Add Data',
-    handler(chart) {
-      const data = chart.data;
-      if (data.datasets.length > 0) {
-        data.labels = Utils.months({count: data.labels.length + 1});
-
-        for (let index = 0; index < data.datasets.length; ++index) {
-          data.datasets[index].data.push(Utils.rand(-100, 100));
-        }
-
-        chart.update();
-      }
-    }
-  },
-  {
-    name: 'Remove Dataset',
-    handler(chart) {
-      chart.data.datasets.pop();
-      chart.update();
-    }
-  },
-  {
-    name: 'Remove Data',
-    handler(chart) {
-      chart.data.labels.splice(-1, 1); // remove the label first
-
-      chart.data.datasets.forEach(dataset => {
-        dataset.data.pop();
-      });
-
-      chart.update();
-    }
-  }
-];
- 
-</script>
-
-
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-4"data-toggletip data-toggletip-label="More information about historical events" data-toggletip-content="Flooding might not happen again at the same historical levels if, for example, flood defences are now in place.">How levels here could affect nearby areas</h2>
+    <div>
+      
     </div>
+    <dl class="defra-flood-impact-list govuk-!-margin-bottom-4" id="impact-list">
+      
+      <div class="defra-flood-impact-list__row">
+        <dt class="defra-flood-impact-list__key">
+            1.52m
+        </dt>
+        
+        <dd class="defra-flood-impact-list__value"   data-id="highest" data-level="1.52" data-name="Highest level on record">
+          <div class="defra-flood-impact-list__container">
+            Water reaches the highest level recorded at this measuring station (24 December 2013)
+            
+            <span class="defra-flood-impact-list__action" data-id="threshold-highest" data-level="1.52" data-name="Highest level on record" data-threshold-add></span>
+            
+          </div>
+        </dd>
+        
+        <dd class="defra-flood-impact-list__value"   data-id="pc5" data-level="1.52" data-name="Top of normal range">
+          <div class="defra-flood-impact-list__container">
+            Top of normal range. Low-lying land flooding possible above this level
+            
+            <span class="defra-flood-impact-list__action" data-id="threshold-pc5" data-level="1.52" data-name="Top of normal range" data-threshold-add></span>
+            
+          </div>
+        </dd>
+        
+      </div>
+      
+      <div class="defra-flood-impact-list__row  defra-flood-impact-list__row--current " >
+        <dt class="defra-flood-impact-list__key">
+          
+            0.35m
+          
+          
+        </dt>
+        
+        <dd class="defra-flood-impact-list__value defra-flood-impact-list__value--latest"   data-id="latest" data-level="0.35" data-name="">
+          <div class="defra-flood-impact-list__container">
+            Latest level
+            
+          </div>
+        </dd>
+        
+      </div>
+      
+    </dl>
+  </div>
+</div>
+
+      <!-- chart --> 
+     
+       <div> 
+        
+        <p class="govuk-body">This prototype demonstrates a Chart.js line chart that is populated from a CSV file. It supports fetching <code>data.csv</code> on the same host and a file-upload fallback (drag or select a CSV file).</p>
+
+        <section class="govuk-form-group">
+          <label class="govuk-label" for="csv-file">Upload a CSV (optional)</label>
+          <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv">
+          <p class="govuk-hint">CSV format: first row headers. First column = labels (x axis). Each subsequent column = one dataset.</p>
+        </section>
+
+        <div class="chart-wrap">
+          <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
+        </div>
  
- 
-      <!-- chart -->
+              </div>
+  <!-- Chart.js -->
+   <br><br>
+
+
 
     <aside class="defra-context-footer">
     <div>
@@ -347,7 +286,115 @@ const actions = [
   </nav>
 </div>
 
+ <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+  // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+    const rows = lines.map(line => line.split(','));
+    return rows;
+  }
+
+  // Build Chart.js data from CSV rows
+  function csvRowsToChartData(rows) {
+    if (!rows || rows.length < 2) throw new Error('CSV must have at least 2 rows (header + one data row)');
+
+    const headers = rows[0]; // e.g. ["label","Apples","Oranges"]
+    const labelCol = headers[0];
+    const datasetNames = headers.slice(1);
+
+    const labels = rows.slice(1).map(r => r[0]);
+    const datasets = datasetNames.map((name, i) => {
+      const data = rows.slice(1).map(r => {
+        const v = r[i+1];
+        const n = Number(v);
+        return isNaN(n) ? null : n;
+      });
+      return {
+        label: name,
+        data,
+        fill: false,
+        tension: 0.3
+      };
+    });
+
+    return { labels, datasets };
+  }
+
+  // Create Chart.js instance (global variable so we can update it)
+  let myChart = null;
+  const ctx = document.getElementById('chart').getContext('2d');
+
+  function renderChart(data) {
+    if (myChart) {
+      // update labels and datasets
+      myChart.data.labels = data.labels;
+      myChart.data.datasets = data.datasets;
+      myChart.update();
+      return;
+    }
+
+    myChart = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'CSV-driven line chart' }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // Try fetching data.csv from the same directory
+  async function tryFetchCSV() {
+    try {
+      const resp = await fetch('data.csv', { cache: 'no-cache' });
+      if (!resp.ok) throw new Error('No data.csv found');
+      const text = await resp.text();
+      const rows = parseCSV(text);
+      const chartData = csvRowsToChartData(rows);
+      renderChart(chartData);
+    } catch (err) {
+      // If fetch fails, render an empty chart with sample labels so the page still looks OK
+      console.warn('Could not fetch data.csv:', err.message);
+      const sample = {
+        labels: ['Jan','Feb','Mar'],
+        datasets: [{ label: 'No data.csv found', data: [0,0,0], fill:false, tension:0.3 }]
+      };
+      renderChart(sample);
+    }
+  }
+
+  // Wire up file input to let the user upload a CSV
+  document.getElementById('csv-file').addEventListener('change', function (e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const rows = parseCSV(ev.target.result);
+        const chartData = csvRowsToChartData(rows);
+        renderChart(chartData);
+      } catch (err) {
+        alert('Error parsing CSV: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Initial attempt to fetch CSV on load
+  tryFetchCSV();
+  </script>
  
+
+<!-- chart end-->
+
 
 {% endblock %}
 
