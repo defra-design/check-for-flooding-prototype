@@ -204,14 +204,11 @@
      
        <div> 
         
-        <p class="govuk-body">This prototype demonstrates a Chart.js line chart that is populated from a CSV file. It supports fetching <code>data.csv</code> on the same host and a file-upload fallback (drag or select a CSV file).</p>
-
-        <section class="govuk-form-group">
-          <label class="govuk-label" for="csv-file">Upload a CSV (optional)</label>
-          <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv">
-          <p class="govuk-hint">CSV format: first row headers. First column = labels (x axis). Each subsequent column = one dataset.</p>
-        </section>
-
+         <section class="govuk-form-group">
+     
+         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
+                </section>
+ 
         <div class="chart-wrap">
           <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
         </div>
@@ -336,7 +333,7 @@
     }
 
     myChart = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: data,
       options: {
         responsive: true,
@@ -354,7 +351,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('data.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
