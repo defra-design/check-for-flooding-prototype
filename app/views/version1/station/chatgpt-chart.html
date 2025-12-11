@@ -128,7 +128,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('/data.csv', { cache: 'no-cache' });
+      const resp = await fetch('data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
