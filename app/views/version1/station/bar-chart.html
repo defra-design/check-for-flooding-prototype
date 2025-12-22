@@ -127,9 +127,10 @@
           </div>
 
 
-  <div class="defra-line-chart govuk-!-margin-bottom-4">
+<div class="defra-line-chart govuk-!-margin-bottom-4">
       <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-4">Height in metres over the last 5 days and up to 36 hour forecast</h2>
 
+      <!-- station contains automated model  -->
      <div class="defra-flood-status defra-flood-status--full">
         <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
           <div class="defra-flood-status-item__container">
@@ -143,66 +144,9 @@
           </div>
         </div>
       </div>
+<!-- dend of automated model -->
 
- 
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-s govuk-!-margin-bottom-4"data-toggletip data-toggletip-label="More information about historical events" data-toggletip-content="Flooding might not happen again at the same historical levels if, for example, flood defences are now in place.">How levels here could affect nearby areas</h2>
-    <div>
-      
-    </div>
-    <dl class="defra-flood-impact-list govuk-!-margin-bottom-4" id="impact-list">
-      
-      <div class="defra-flood-impact-list__row">
-        <dt class="defra-flood-impact-list__key">
-            1.52m
-        </dt>
-        
-        <dd class="defra-flood-impact-list__value"   data-id="highest" data-level="1.52" data-name="Highest level on record">
-          <div class="defra-flood-impact-list__container">
-            Water reaches the highest level recorded at this measuring station (24 December 2013)
-            
-            <span class="defra-flood-impact-list__action" data-id="threshold-highest" data-level="1.52" data-name="Highest level on record" data-threshold-add></span>
-            
-          </div>
-        </dd>
-        
-        <dd class="defra-flood-impact-list__value"   data-id="pc5" data-level="1.52" data-name="Top of normal range">
-          <div class="defra-flood-impact-list__container">
-            Top of normal range. Low-lying land flooding possible above this level
-            
-            <span class="defra-flood-impact-list__action" data-id="threshold-pc5" data-level="1.52" data-name="Top of normal range" data-threshold-add></span>
-            
-          </div>
-        </dd>
-        
-      </div>
-      
-      <div class="defra-flood-impact-list__row  defra-flood-impact-list__row--current " >
-        <dt class="defra-flood-impact-list__key">
-          
-            0.35m
-          
-          
-        </dt>
-        
-        <dd class="defra-flood-impact-list__value defra-flood-impact-list__value--latest"   data-id="latest" data-level="0.35" data-name="">
-          <div class="defra-flood-impact-list__container">
-            Latest level
-            
-          </div>
-        </dd>
-        
-      </div>
-      
-    </dl>
-  </div>
-</div>
-
-      <!-- chart --> 
-     
-       <div> 
+<div> 
         
          <section class="govuk-form-group">
      
@@ -216,7 +160,11 @@
               </div>
   <!-- Chart.js -->
    <br><br>
+ 
+</div>
 
+      <!-- chart --> 
+     
 
 
     <aside class="defra-context-footer">
@@ -339,7 +287,7 @@
         responsive: true,
         plugins: {
           legend: { position: 'top' },
-          title: { display: true, text: 'CSV-driven line chart' }
+          title: { display: true, text: '' }
         },
         scales: {
           y: { beginAtZero: true }
