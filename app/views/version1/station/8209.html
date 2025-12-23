@@ -38,7 +38,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
-      River Ouse level at Viking Recorder
+      River Calder level at Wakefield
     </h1>
   </div>
 
@@ -50,7 +50,8 @@
           <ul class="defra-navbar__list">
             
                <li class="defra-navbar__item">
-                 <span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20">
+                 <span class="defra-button-secondary__icon">
+                  <svg focusable="false" width="15" height="20" viewBox="0 0 15 20">
                   <path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text"> </span><span class="govuk-visually-hidden">(Visual only)</span>
            <a href="#">Map </a>
               </li>
@@ -79,69 +80,47 @@
 <div class="defra-flood-statistics defra-flood-statistics--border">
             <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
               <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
-                Latest at 3:30pm on 2 October
-              </h2>
+                Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}
+              </h2><span class="defra-toggletip__container" data-toggletip-container=""><button class="defra-toggletip__button defra-toggletip-target" aria-label="More information about the latest reading">
+    <span class="defra-toggletip__button-icon">
+    <svg focusable="false" aria-hidden="true" width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="7.5" fill="none" stroke="currentColor"></circle><path d="M9.841 11.409h1.47c.314 0 .538.057.67.171s.198.303.198.567c0 .269-.067.463-.201.581s-.357.178-.667.178H6.69c-.31 0-.532-.059-.667-.178s-.201-.312-.201-.581c0-.264.065-.453.195-.567s.354-.171.673-.171h1.47V8.087h-.773c-.305 0-.524-.058-.656-.175s-.198-.308-.198-.577.064-.461.191-.575.349-.17.663-.17h2.058c.127 0 .225.026.294.078s.102.124.102.216v4.525zM8.857 3.5c.333 0 .554.064.663.191s.164.433.164.916c0 .465-.049.753-.147.865s-.329.167-.694.167c-.355 0-.584-.052-.687-.157s-.154-.314-.154-.629c0-.583.053-.954.158-1.114s.337-.239.697-.239z" fill-rule="nonzero" fill="currentColor"></path></svg>
+    </span>
+    <span class="defra-toggletip__button-text">i</span>
+      </button><span class="defra-toggletip__info" role="status" style=""><span class="defra-toggletip__text"></span><span class="defra-toggletip__arrow" style=""></span></span></span>
             </div>
             <dl class="defra-flood-statistics__list" aria-label="Latest readings">
               <div class="defra-flood-statistics__item">
-
                  <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">Height</span>0.28m </h1>
-                
+                 <span class="govuk-caption-m">Height</span>0.38m </h1>
               </div>
               
               <div class="defra-flood-statistics__item">
-
                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">Trend</span>Falling </h1>
-                
+                <span class="govuk-caption-m">Trend</span>Rising </h1>            
               </div>
-              
-            
-              
+ 
             <div class="defra-flood-statistics__item">
-
                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">State</span>Normal </h1>
-                
-              </div>
-                  
+                <span class="govuk-caption-m">State</span>Normal </h1>             
+              </div>                
             </dl>
 
             <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-              Normal range 0.05m to 1.90m
-            </p>
-
-              
+              Normal range 0.04m to 0.85m </p>
           </div>
 
 
-  <div class="defra-line-chart govuk-!-margin-bottom-4">
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-4">Height in metres over the last 5 days and up to 36 hour forecast</h2>
+           <div class="defra-line-chart govuk-!-margin-bottom-4">
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 ">Height in metres over the last 5 days</h2>
 
-     <div class="defra-flood-status defra-flood-status--full">
-        <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
-          <div class="defra-flood-status-item__container">
-            <span class="defra-flood-status-item__icon">
-                  <span class="govuk-caption-l" style="font-family:'Courier New', Courier, monospace"> &#9432; </span>
-            </span>
-            <div class="defra-flood-status-item__text">
-              <span class="govuk-visually-hidden">Information:</span>
-              <p class="govuk-body-s govuk-!-margin-bottom-0">This station includes an automated model. <br>The highest level in the model is 0.49m on 8 October at 10:30am. <a href="/how-we-measure-river-sea-groundwater-levels#how-we-forecast-river-levels">Read more about how we forecast river levels</a>.</p>
-            </div>
-          </div>
-        </div>
-      </div>
  
       <!-- chart -->
 
-
-<div>
+ 
   <canvas id="myChart"></canvas>
-</div>
+ 
 <script src="chart.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  
- 
  
 
 <script>
@@ -276,12 +255,27 @@ const actions = [
 ];
  
 </script>
+<p></p>
+ <!-- Button to download station data CSV -->
+{{ govukButton({
+  text: "Download data CSV (12KB)",
+  classes: "govuk-button--secondary"
+}) }}
+
+  <!-- End button to download station data CSV -->
 
 
-    </div>
+</div>
+
  
  
-      <!-- chart -->
+
+
+ 
+    <p class="govuk-body-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">Flooding might not happen again at the same historical levels. This may be because flood management schemes are now in place.</p>
+<p class="govuk-text govuk-!-margin-top-3">
+      <a href="/how-we-measure-river-sea-groundwater-levels">How we measure river, sea and groundwater levels</a>
+    </p>
 
     <aside class="defra-context-footer">
     <div>
@@ -301,9 +295,7 @@ const actions = [
 		          <a href="#">Start chat</a>
        </p>
       
-  
-       
-       
+ 
     </div>
  </aside>
   
@@ -344,6 +336,7 @@ const actions = [
         </a>
       </li>
     </ul>
+    <p><br></p>
   </nav>
 </div>
 

@@ -524,3 +524,48 @@ ul.defra-flood-warnings-list__items {
   html, body {overflow: hidden;} 
 
   // charts 2
+
+
+  // defra tool tip //
+  .defra-toggletip:not(.defra-toggletip-target) {
+    padding-right: 26px;
+}
+.defra-toggletip:first-child {
+    display: inline-block;
+}
+.defra-toggletip {
+    display: inline-block;
+    position: relative;
+}
+
+.defra-toggletip__button {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 26px;
+    height: 26px;
+    background-color: #fff;
+    border: 0px;
+    padding: 0px;
+    text-align: center;
+    color: #0b0c0c;
+    cursor: help;
+}
+
+.defra-flood-impact-list {
+    margin-top: 0px;
+    border-bottom: 1px solid #b1b4b6;
+}
+
+defra-flood-impact-list {
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+.defra-flood-impact-list {
+    font-family: "GDS Transport", arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+ 

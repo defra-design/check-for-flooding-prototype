@@ -144,7 +144,7 @@
         </div>
       </div>
 
- 
+ <!-- 
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -199,7 +199,7 @@
     </dl>
   </div>
 </div>
-
+-->
       <!-- chart --> 
      
        <div> 
@@ -339,13 +339,17 @@
         responsive: true,
         plugins: {
           legend: { position: 'top' },
-          title: { display: true, text: 'CSV-driven line chart' }
+          title: { display: true, text: 'CSV-driven line chart' } 
         },
         scales: {
-          y: { beginAtZero: true }
+    myScale: {
+        type: 'linear',
+        position: 'right' 
+        }
         }
       }
-    });
+    }
+  )
   }
 
   // Try fetching data.csv from the same directory
