@@ -312,7 +312,7 @@
       return {
         label: name,
         data,
-        fill: false,
+        fill: true,
         tension: 0.3
       };
     });
@@ -338,15 +338,19 @@
       data: data,
       options: {
         responsive: true,
-        plugins: {
-          legend: { position: 'top' },
-          title: { display: true, text: 'CSV-driven line chart' } 
-        },
-       
-     scales: {
-          y: { beginAtZero: true }
-        }
-      }
+        interaction: {
+      mode: 'nearest',
+    },
+         plugins: {
+      title: {
+        display: true,
+        text: 'Chart.js Time - spanGaps: 172800000 (2 days in ms)'
+      },
+    },
+  
+         
+      },
+      
     }
   )
   }
@@ -354,7 +358,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('../../public/data/data.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/area-data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
