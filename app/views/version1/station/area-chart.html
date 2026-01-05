@@ -338,19 +338,29 @@
       data: data,
       options: {
         responsive: true,
-        interaction: {
-      mode: 'nearest',
+        plugins: {
+          legend: { position: 'none' },
+          title: { display: false, text: 'River height chart' } 
     },
-         plugins: {
-      title: {
-        display: true,
-        text: 'Chart.js Time - spanGaps: 172800000 (2 days in ms)'
-      },
-    },
-  
-         
-      },
-      
+       
+ /// add scale on the right and hide on the left //
+      scales: {
+          y: {
+            position: "none",
+          },
+          y1: {
+            position: "right",
+            afterBuildTicks: (axis) => {
+              axis.ticks = [...axis.chart.scales.y.ticks];
+              axis.min = axis.chart.scales.y.min;
+              axis.max = axis.chart.scales.y.max;
+            },
+          },
+        },
+
+
+ 
+      }
     }
   )
   }
