@@ -144,7 +144,33 @@
         </div>
       </div>
 
- <!-- 
+ 
+      <!-- chart --> 
+     
+       <div> 
+        
+         <section class="govuk-form-group">
+     
+         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
+                </section>
+ 
+        <div class="chart-wrap">
+          <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
+        </div>
+ 
+              </div>
+  <!-- Chart.js -->
+   <br><br>
+<!-- Button to download station data CSV -->
+{{ govukButton({
+  text: "Download data CSV (12KB)",
+  classes: "govuk-button--secondary"
+}) }}
+
+  <!-- End button to download station data CSV -->
+
+
+<!-- 
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -200,24 +226,6 @@
   </div>
 </div>
 -->
-      <!-- chart --> 
-     
-       <div> 
-        
-         <section class="govuk-form-group">
-     
-         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
-                </section>
- 
-        <div class="chart-wrap">
-          <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
-        </div>
- 
-              </div>
-  <!-- Chart.js -->
-   <br><br>
-
-
 
     <aside class="defra-context-footer">
     <div>
@@ -313,6 +321,8 @@
         label: name,
         data,
         fill: true,
+         borderColor: 'rgb(29, 112, 184)',
+         backgroundColor: 'rgba(29, 112, 184, .1)',
         tension: 0.3
       };
     });
@@ -336,15 +346,25 @@
     myChart = new Chart(ctx, {
       type: 'line',
       data: data,
+
+      
       options: {
+        
         responsive: true,
         plugins: {
-          legend: { position: 'none' },
+          legend: { position: 'center' },
           title: { display: false, text: 'River height chart' } 
     },
        
- /// add scale on the right and hide on the left //
+ /// limit the number of labels on x axis //
       scales: {
+         x: {
+            ticks: {
+                maxTicksLimit: 15 // Adjust this value
+            }
+        },
+
+/// add scale on the right and hide on the left //
           y: {
             position: "none",
           },
@@ -354,11 +374,15 @@
               axis.ticks = [...axis.chart.scales.y.ticks];
               axis.min = axis.chart.scales.y.min;
               axis.max = axis.chart.scales.y.max;
-            },
+            }
           },
+          
         },
+        
 
 
+   
+  
  
       }
     }
