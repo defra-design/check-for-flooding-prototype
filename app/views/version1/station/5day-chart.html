@@ -14,6 +14,7 @@
     pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:4px; overflow:auto }
   </style>
 
+
 {% block beforeContent %}
 
 <div class="govuk-phase-banner">
@@ -48,7 +49,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
-      River Ouse level at Goldbridge
+      River Ouse level at Viking Recorder
     </h1>
   </div>
 
@@ -119,7 +120,7 @@
             </dl>
 
             <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-              Normal range 0.24m to 1.75m
+              Normal range 0.05m to 1.90m
             </p>
 
               
@@ -127,9 +128,9 @@
 
 
   <div class="defra-line-chart govuk-!-margin-bottom-4">
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 18 months</h2>
-<!-- automated model ---->
-   <!--  <div class="defra-flood-status defra-flood-status--full">
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-4">Height in metres over the last 5 days and up to 36 hour forecast</h2>
+
+     <div class="defra-flood-status defra-flood-status--full">
         <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
           <div class="defra-flood-status-item__container">
             <span class="defra-flood-status-item__icon">
@@ -142,48 +143,24 @@
           </div>
         </div>
       </div>
-    -->
+
  
       <!-- chart --> 
      
- 
+       <div> 
+        
+         <section class="govuk-form-group">
      
-
-  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" >
-      <div class="defra-navbar__inner" style="float: left;">
-              
-          <ul class="defra-navbar__list">
-            
-              <li class="defra-navbar__item">
-                  <a href="#">5 days </a>
-              </li>
-
-              <li class="defra-navbar__item">
-                <a href="#">1 month</a>
-              </li>
-            
-              <li class="defra-navbar__item">
-                <a href="#">6 months</a>
-              </li>
-            
-              <li class="defra-navbar__item">
-                <a href="#" style="text-decoration: none;">18 months</a>
-            </li>
-          </ul>
-        </div>
-  
-    </nav>
+         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
+                </section>
  
         <div class="chart-wrap">
           <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
         </div>
  
-              
+              </div>
   <!-- Chart.js -->
-   <br>  <section class="govuk-form-group">
-     
-         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
-                </section> 
+   <br><br>
 <!-- Button to download station data CSV -->
 {{ govukButton({
   text: "Download data CSV (12KB)",
@@ -315,11 +292,6 @@
 </div>
 
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- 
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
- 
-
-
 
   <script>
   // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
@@ -338,7 +310,6 @@
     const labelCol = headers[0];
     const datasetNames = headers.slice(1);
 
-    
     const labels = rows.slice(1).map(r => r[0]);
     const datasets = datasetNames.map((name, i) => {
       const data = rows.slice(1).map(r => {
@@ -347,7 +318,8 @@
         return isNaN(n) ? null : n;
       });
       return {
-        label: name, data,
+        label: name,
+        data,
         fill: true,
          borderColor: 'rgb(29, 112, 184)',
          backgroundColor: 'rgba(29, 112, 184, .1)',
@@ -374,79 +346,18 @@
     myChart = new Chart(ctx, {
       type: 'line',
       data: data,
-      options: {    
-        elements: {
-    point: {
-      radius: (context) => {
-        // Increases radius when active
-        return context.active ? 10 : 3;
-      },
-      backgroundColor: 'none',
-      borderWidth: 1,
-      hoverRadius: 4,
-      hoverBorderWidth: 5,
-    }
-  },
-      interaction: {
-      intersect: false,
-      mode: 'index',},
-        plugins:  {
-           crosshair: {
-        line: { color: 'rgb(177, 180, 182)', // Crosshair color
-                width: 2      // Crosshair width
-              },
-             zoomboxBackgroundColor: '#336699)'
-                },
+      options: {     
+        responsive: true,
+        plugins: {
           legend: { position: 'center' },
-          title: { 
-            display: false, 
-            text: (ctx) => 'Tooltip position mode: ' + ctx.chart.options.plugins.tooltip.position, 
-          }, 
-
-         
-              /// change colours ////
-
-          tooltip: {
-            trigger: 'item', 
-            enabled: true,
-            displayColors: false, //hide the colour square
-            animation: true,
-            mode: 'interpolate',
-            intersect: false,
-            callbacks: {
-                  
-                label: function(tooltipItem, data ) {
-                return   tooltipItem.yLabel;
-             
-            },
-
-                    labelColor: function(context) {
-                        return {
-                            borderColor: "#FFFFFF",
-                            backgroundColor: "#FFCD2E",
-                            borderWidth: 0,
-                            borderRadius: 0,
-                            
-                        };
-                    },
-                    labelTextColor: function(context) {
-                        return '#fffff';
-                    },
-                },  
-                
-                
-            }, 
-            
-    }, 
+          title: { display: false, text: 'River height in metres' } 
+    },
        
-
-
- /// limit the number of labels on x axis and remove lefthand gap//
+ /// limit the number of labels on x axis //
       scales: {
          x: {
             ticks: {
-                maxTicksLimit: 8,  // Adjust this value
-                 align: 'inner'
+                maxTicksLimit: 5 // Adjust this value
             }
         },
 
@@ -473,7 +384,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('../../public/data/area-data.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/5day-data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
@@ -509,96 +420,6 @@
 
   // Initial attempt to fetch CSV on load
   tryFetchCSV();
-
-
-const DATA_COUNT = 7;
-const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
-const data = {
-  labels: Utils.months({count: DATA_COUNT}),
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: Utils.numbers(NUMBER_CFG),
-      fill: false,
-      borderColor: Utils.CHART_COLORS.red,
-      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-    },
-  ]
-};
-
-   
-
-const highlightPlugin = {
-  id: 'highlightCurrentPosition',
-  afterDraw(chart) {
-    const { ctx, scales: { x, y } } = chart;
-    
-    // Example: Target the last data point in the first dataset
-    const dataset = chart.data.datasets[0];
-    const lastIndex = dataset.data.length - 1;
-    const meta = chart.getDatasetMeta(0);
-    const point = meta.data[lastIndex];
-
-    if (point) {
-      const { x: xPos, y: yPos } = point.getProps(['x', 'y'], true);
-      
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(xPos, yPos, 10, 0, 2 * Math.PI); // 10 is the radius
-      ctx.strokeStyle = 'rgba(255, 99, 132, 1)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-};
-
-const actions = [
-  {
-    name: 'Position: average',
-    handler(chart) {
-      chart.options.plugins.tooltip.position = 'average';
-      chart.update();
-    }
-  },
-  {
-    name: 'Position: nearest',
-    handler(chart) {
-      chart.options.plugins.tooltip.position = 'nearest';
-      chart.update();
-    }
-  },
-  {
-    name: 'Position: bottom (custom)',
-    handler(chart) {
-      chart.options.plugins.tooltip.position = 'bottom';
-      chart.update();
-    }
-  },
-];
-
- 
-// Create a custom tooltip positioner to put at the bottom of the chart area
-components.Tooltip.positioners.bottom = function(items) {
-  const pos = components.Tooltip.positioners.nearest(items);
-
-  // Happens when nothing is found
-  if (pos === false) {
-    return false;
-  }
-
-  const chart = this.chart;
-
-  return {
-    x: pos.x,
-    y: chart.chartArea.bottom,
-    xAlign: 'center',
-    yAlign: 'bottom',
-  };
-};
-
- 
-
   </script>
  
 
