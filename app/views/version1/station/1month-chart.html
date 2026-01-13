@@ -89,7 +89,7 @@
 <div class="defra-flood-statistics defra-flood-statistics--border">
             <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
               <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
-                Latest at {{ "now" | govukTime }} on  {{ "today" | duration(-1) | govukDate }}
+                 Latest at {{ "now" | govukTime }} on  {{ "today" | duration(-1) | govukDate }}
               </h2>
             </div>
             <dl class="defra-flood-statistics__list" aria-label="Latest readings">
@@ -127,7 +127,7 @@
 
 
   <div class="defra-line-chart govuk-!-margin-bottom-4">
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 days</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last month</h2>
 <!-- automated model ---->
    <!--  <div class="defra-flood-status defra-flood-status--full">
         <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
@@ -154,12 +154,12 @@
               
           <ul class="defra-navbar__list">
             
-              <li class="defra-navbar__item">
-                  <a href="5day-chart" style="text-decoration: none;">5 days </a>
+                <li class="defra-navbar__item">
+                  <a href="5day-chart">5 days </a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="1month-chart">1 month</a>
+                <a href="1month-chart" style="text-decoration: none;">1 month</a>
               </li>
             
               <li class="defra-navbar__item">
@@ -167,7 +167,7 @@
               </li>
             
               <li class="defra-navbar__item">
-                <a href="18month-chart" >18 months</a>
+                <a href="18month-chart">18 months</a>
             </li>
           </ul>
         </div>
@@ -473,7 +473,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('../../public/data/5day-data.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/1month-data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
