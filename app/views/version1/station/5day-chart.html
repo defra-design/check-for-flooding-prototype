@@ -390,9 +390,12 @@
       interaction: {
       intersect: false,
       mode: 'index',},
-        plugins:  {
+        plugins: 
+        
+        
+        {
            crosshair: {
-        line: { color: 'rgb(177, 180, 182)', // Crosshair color
+            line: { color: 'rgb(177, 180, 182)', // Crosshair color
                 width: 2      // Crosshair width
               },
              zoomboxBackgroundColor: '#336699)'
@@ -403,6 +406,23 @@
             text: (ctx) => 'Tooltip position mode: ' + ctx.chart.options.plugins.tooltip.position, 
           }, 
 
+// chart.js horizontal line
+  animation: {
+                    onComplete: function () {
+                        const chartInstance = chart;
+                        const yScale = chartInstance.scales.y;
+                        const ctx = chartInstance.ctx;
+                        ctx.save();
+                        ctx.strokeStyle = 'red';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([5, 5]);
+                        ctx.beginPath();
+                        ctx.moveTo(chartInstance.chartArea.left, yScale.getPixelForValue(18));
+                        ctx.lineTo(chartInstance.chartArea.right, yScale.getPixelForValue(18));
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                },
          
               /// change colours ////
 
@@ -462,6 +482,10 @@
               axis.max = axis.chart.scales.y.max;
             }
           },
+          
+
+          
+          // ss //
           
         },
  

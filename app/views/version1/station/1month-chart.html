@@ -315,8 +315,8 @@
 </div>
 
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- 
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
+<script src="path/to/chartjs-plugin-annotation/dist/chartjs-plugin-annotation.min.js"></script>
  
 
 
@@ -439,8 +439,7 @@
             
     }, 
        
-
-
+ 
  /// limit the number of labels on x axis and remove lefthand gap//
       scales: {
          x: {
@@ -577,6 +576,23 @@ const actions = [
   },
 ];
 
+
+// create custoe line annotations
+const options = {
+  plugins: {
+    annotation: {
+      annotations: {
+        line1: {
+          type: 'line',
+          yMin: 18,
+          yMax: 18,
+          borderColor: 'rgb(255, 99, 132)',
+          borderWidth: 2,
+        }
+      }
+    }
+  }
+};
  
 // Create a custom tooltip positioner to put at the bottom of the chart area
 components.Tooltip.positioners.bottom = function(items) {
@@ -588,6 +604,22 @@ components.Tooltip.positioners.bottom = function(items) {
   }
 
   const chart = this.chart;
+
+  const config = {
+  type: 'line',
+  data: {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [{
+      label: 'My First Dataset',
+      data: [65, 59, 80, 81, 56, 55, 40],
+      fill: false,
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  },
+  options
+};
+
 
   return {
     x: pos.x,
