@@ -445,7 +445,7 @@
       scales: {
          x: {
             ticks: {
-                maxTicksLimit: 8,  // Adjust this value
+                maxTicksLimit: 9,  // Adjust this value
                  align: 'inner'
             }
         },
@@ -473,7 +473,7 @@
   // Try fetching data.csv from the same directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('../../public/data/area-data.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/18month-data.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
