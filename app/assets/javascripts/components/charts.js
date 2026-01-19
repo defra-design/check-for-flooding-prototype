@@ -15,6 +15,12 @@ import { select, selectAll, pointer } from 'd3-selection'
 
 import { bisector, extent } from 'd3-array'
 
+
+import { Chart } from 'chart.js';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
+Chart.register(annotationPlugin);
+
 function LineChart (containerId, data) {
   // Settings
   const windowBreakPoint = 640
@@ -61,7 +67,17 @@ function LineChart (containerId, data) {
   const parseDateShort = timeFormat('%-e/%-m')
   const parseDateLong = timeFormat('%a, %e %b')
 
-  //
+  // annotation plugin for the horizontal line
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
+// Register the annotation plugin ONCE
+Chart.register(annotationPlugin);
+
+// Optional: expose Chart globally for inline scripts
+window.Chart = Chart;
+
+
   // Private methods
   //
 
