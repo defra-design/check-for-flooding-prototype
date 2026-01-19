@@ -315,9 +315,17 @@
 </div>
 
  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- 
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
- 
+ <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
+<script>
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+
+Chart.register(annotationPlugin);
+
+
+</script>
 
 
 
@@ -358,9 +366,11 @@
     return { labels, datasets };
   }
 
-  // Create Chart.js instance (global variable so we can update it)
+   // Create Chart.js instance (global variable so we can update it)
   let myChart = null;
   const ctx = document.getElementById('chart').getContext('2d');
+  
+  const normalLevel = 18;
 
   function renderChart(data) {
     if (myChart) {
@@ -390,9 +400,9 @@
       interaction: {
       intersect: false,
       mode: 'index',},
-        plugins:  {
+        plugins: {
            crosshair: {
-        line: { color: 'rgb(177, 180, 182)', // Crosshair color
+            line: { color: 'rgb(177, 180, 182)', // Crosshair color
                 width: 2      // Crosshair width
               },
              zoomboxBackgroundColor: '#336699)'
@@ -403,7 +413,23 @@
             text: (ctx) => 'Tooltip position mode: ' + ctx.chart.options.plugins.tooltip.position, 
           }, 
 
-         
+// chart.js horizontal line
+   annotation: {
+        annotations: {
+          normal: {
+            type: 'line',
+            yMin: normalLevel,
+            yMax: normalLevel,
+            borderColor: '#000000',
+            borderWidth: 2,
+            borderDash: [5, 5],
+            label: {
+              display: true,
+              content: '20m - Top of normal range'
+            }
+          }
+        }
+      },
               /// change colours ////
 
           tooltip: {
