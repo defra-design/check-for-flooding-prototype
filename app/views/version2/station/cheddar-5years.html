@@ -127,7 +127,7 @@
 
 
   <div class="defra-line-chart govuk-!-margin-bottom-4">
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 18 months</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 years</h2>
 <!-- automated model ---->
    <!--  <div class="defra-flood-status defra-flood-status--full">
         <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
@@ -164,10 +164,10 @@
               </li>
             
               <li class="defra-navbar__item">
-                <a href="cheddar-18month" style="text-decoration: none;">18 months</a>
+                <a href="cheddar-18month" >18 months</a>
             </li>
                <li class="defra-navbar__item">
-                <a href="cheddar-5years">5 years</a>
+                <a href="cheddar-5years" style="text-decoration: none;">5 years</a>
             </li>
           </ul>
         </div>
@@ -552,7 +552,7 @@ function formatGovUKTime(iso) {
   // Fetching data.csv from the data directory
   async function tryFetchCSV() {
     try {
-      const resp = await fetch('../../public/data/cheddar-18month30.csv', { cache: 'no-cache' });
+      const resp = await fetch('../../public/data/cheddar-5year-daily.csv', { cache: 'no-cache' });
       if (!resp.ok) throw new Error('No data.csv found');
       const text = await resp.text();
       const rows = parseCSV(text);
