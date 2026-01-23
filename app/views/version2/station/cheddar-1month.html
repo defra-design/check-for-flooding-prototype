@@ -1,0 +1,588 @@
+
+{% extends "../../layouts/main.html" %}
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+<!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+
+  <style>
+    /* Small page tweaks to make the example a little lighter/cleaner */
+    body { padding: 2rem; }
+    .chart-wrap { max-width: 900px; margin: 0 auto; }
+    pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:4px; overflow:auto }
+  </style>
+
+{% block beforeContent %}
+
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+ 
+   
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
+      Cheddar Yeo level at Cheddar Gorge
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-full">
+
+  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels">
+      <div class="defra-navbar__inner">
+              
+          <ul class="defra-navbar__list">
+            
+               <li class="defra-navbar__item">
+                 <span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20">
+                  <path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text"> </span><span class="govuk-visually-hidden">(Visual only)</span>
+           <a href="#">Map </a>
+              </li>
+
+              <li class="defra-navbar__item">
+                <a href="#">Upstream</a>
+              </li>
+            
+              <li class="defra-navbar__item">
+                <a href="#">Downstream</a>
+              </li>
+            
+              <li class="defra-navbar__item">
+                <a href="#">Nearby levels</a>
+            </li>
+          </ul>
+        </div>
+  
+    </nav>
+
+  </div>
+</div>
+    
+ 
+
+<div class="defra-flood-statistics defra-flood-statistics--border">
+            <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
+              <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
+                 Latest at {{ "now" | govukTime }} on  {{ "today" | duration(-1) | govukDate }}
+              </h2>
+            </div>
+            <dl class="defra-flood-statistics__list" aria-label="Latest readings">
+              <div class="defra-flood-statistics__item">
+
+                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">Height</span>0.28m </h1>
+                
+              </div>
+              
+              <div class="defra-flood-statistics__item">
+
+                <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">Trend</span>Falling </h1>
+                
+              </div>
+              
+            
+              
+            <div class="defra-flood-statistics__item">
+
+                <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                  <span class="govuk-caption-m">State</span>Normal </h1>
+                
+              </div>
+                  
+            </dl>
+
+            <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+              Normal range 0.24m to 1.75m
+            </p>
+
+              
+          </div>
+
+
+  <div class="defra-line-chart govuk-!-margin-bottom-4">
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last month</h2>
+<!-- automated model ---->
+   <!--  <div class="defra-flood-status defra-flood-status--full">
+        <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
+          <div class="defra-flood-status-item__container">
+            <span class="defra-flood-status-item__icon">
+                  <span class="govuk-caption-l" style="font-family:'Courier New', Courier, monospace"> &#9432; </span>
+            </span>
+            <div class="defra-flood-status-item__text">
+              <span class="govuk-visually-hidden">Information:</span>
+              <p class="govuk-body-s govuk-!-margin-bottom-0">This station includes an automated model. <br>The highest level in the model is 0.49m on 8 October at 10:30am. <a href="/how-we-measure-river-sea-groundwater-levels#how-we-forecast-river-levels">Read more about how we forecast river levels</a>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    -->
+ 
+      <!-- chart --> 
+ 
+  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" >
+      <div class="defra-navbar__inner" style="float: left;">
+              
+          <ul class="defra-navbar__list">
+            
+                <li class="defra-navbar__item">
+                  <a href="cheddar-5days">5 days </a>
+              </li>
+
+              <li class="defra-navbar__item">
+                <a href="cheddar-1month" style="text-decoration: none;">1 month</a>
+              </li>
+            
+              <li class="defra-navbar__item">
+                <a href="cheddar-6month">6 months</a>
+              </li>
+            
+              <li class="defra-navbar__item">
+                <a href="cheddar-18month">18 months</a>
+            </li>
+          </ul>
+        </div>
+  
+    </nav>
+ 
+        <div class="chart-wrap">
+          <canvas id="chart" aria-label="Data line chart" role="img"> </canvas>
+        </div>
+
+ <!-- Button to download station data CSV -->
+{{ govukButton({
+  text: "Download data CSV (12KB)",
+  classes: "govuk-button--secondary"
+}) }}
+  <!-- End button to download station data CSV -->
+              
+  <!-- Chart.js -->
+   <br><section class="govuk-form-group" style="background-color: lightgrey"> 
+    <p class="govuk-body">Upload CSV for DEMO only</p>
+     
+         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
+                </section>  
+
+
+
+
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week
+          <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+ 
+    </div>
+ </aside>
+  
+ 
+
+      <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
+<script>
+     // use annotation plugin for adding horizontal line -eg, Top of Normal Range //
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
+Chart.register(annotationPlugin);
+</script>
+ 
+<script>
+   // Change chart data to  GovUk format //
+   
+function formatGovUKDateTime(isoString) {
+  const date = new Date(isoString);
+
+  const datePart = new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).format(date);
+
+  const timePart = new Intl.DateTimeFormat('en-GB', {
+    hour: 'numeric',
+    hour12: true
+  }).format(date);
+
+  return `${datePart} at ${timePart}`;
+}
+
+   // Change to shortened GovUk time and date format //
+function formatGovUKShortYearDate(isoString) {
+  const date = new Date(isoString);
+
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: '2-digit'
+  }).format(date);
+}
+
+function formatGovUKDate(iso) {
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  }).format(new Date(iso));
+}
+
+function formatGovUKTime(iso) {
+  return new Intl.DateTimeFormat('en-GB', {
+    hour: 'numeric',
+    hour12: true
+  }).format(new Date(iso)).replace(' ', '').toLowerCase();
+}
+
+</script>
+
+ <script>
+  // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+    const rows = lines.map(line => line.split(','));
+    return rows;
+  }
+  
+
+  // Build Chart.js data from CSV rows
+  function csvRowsToChartData(rows) {
+    if (!rows || rows.length < 2) throw new Error('CSV must have at least 2 rows (header + one data row)');
+
+    const headers = rows[0]; // e.g. ["label","Apples","Oranges"]
+    const labelCol = headers[0];
+    const datasetNames = headers.slice(1);
+    const labels = rows.slice(1).map(r => r[0]);
+    const datasets = datasetNames.map((name, i) => {
+      const data = rows.slice(1).map(r => {
+        const v = r[i+1];
+        const n = Number(v);
+        return isNaN(n) ? null : n;
+      });
+      return {
+        label: name, data,
+        fill: true,
+         borderColor: 'rgb(29, 112, 184)',
+         backgroundColor: 'rgba(29, 112, 184, .1)',
+        tension: 0.3
+      };
+    });
+
+    return { labels, datasets };
+  }
+
+    // Create Chart.js instance (global variable so we can update it)
+  let myChart = null;
+  const ctx = document.getElementById('chart').getContext('2d');
+  
+  // Create Normal level for each chart
+  const normalLevel = 0.36;
+
+  function renderChart(data) {
+    if (myChart) {
+      // update labels and datasets
+      myChart.data.labels = data.labels;
+      myChart.data.datasets = data.datasets;
+      myChart.update();
+      return;
+    }
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data: data,
+      options: {    
+        elements: {
+      point: {
+      radius: (context) => {
+ 
+        // Increases radius when active
+        return context.active ? 6 : 1;
+      },
+      backgroundColor: 'none',
+      borderWidth: 1,
+      hoverRadius: 6,
+      hoverBorderWidth: 2,
+      pointHoverBackgroundColor: 'rgb(255, 255, 255)',
+      pointHoverBorderColor: 'rgb(29, 112, 184)'
+    }
+  },
+      interaction: {
+      intersect: false,
+      mode: 'index',},
+        plugins: {
+           crosshair: {
+            line: { color: 'rgb(177, 180, 182)', // Crosshair color
+                width: 1      // Crosshair width
+                  },
+          zoomboxBackgroundColor: '#000000)'  },
+          legend: { position: 'average' },
+          title: { 
+            display: false, 
+            text: (ctx) => 'Tooltip position mode: ' + ctx.chart.options.plugins.tooltip.position, 
+          }, 
+
+// chart.js horizontal normal range line
+   annotation: {
+        annotations: {
+          normal: {
+            type: 'line',
+            yMin: normalLevel,
+            yMax: normalLevel,
+            borderColor: '#000000',
+            borderWidth: 3,
+            border: 1,
+            label: {
+            display: true,
+            content: '0.36m - Top of normal range'
+            }
+          }
+        }
+      },
+              /// change colours for tooltip ////
+
+          tooltip: {
+            trigger: 'item', 
+            enabled: true,
+            displayColors: false, //hide the colour square
+            animation: true,
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+                title: function(context) {
+                const isoDate = context[0].label;
+                return formatGovUKDateTime(isoDate);
+              },                 
+               label: function(context) {
+          const value = context.parsed.y;
+          return `${value} m`;      
+            },
+                labelColor: function(context) {
+                    return {
+                        borderColor: "#FFFFFF",
+                        backgroundColor: "#FFCD2E",
+                        borderWidth: 0,
+                        borderRadius: 0,                           
+                    };
+                },
+                  labelTextColor: function(context) {
+                      return '#fffff';
+                  },
+              }          
+            }
+            
+    },        
+ 
+
+ // display data in gov uk date format and split on 2 lines //
+      scales: {
+         x: {
+            ticks: {
+                callback: function(value) {
+    const iso = this.getLabelForValue(value);
+    return [
+      formatGovUKShortYearDate(iso),
+      formatGovUKTime(iso)
+    ];
+  },
+  /// limit the number of labels on x axis and remove lefthand gap //
+
+     maxTicksLimit: 5,  
+                 align: 'inner'
+            },
+      },
+
+ 
+/// add scale on the right and hide on the left //
+          y: {
+            position: "none",
+          },
+          y1: {
+            position: "right",
+            afterBuildTicks: (axis) => {
+              axis.ticks = [...axis.chart.scales.y.ticks];
+              axis.min = axis.chart.scales.y.min;
+              axis.max = axis.chart.scales.y.max;
+            }
+          },
+          
+        },
+ 
+      }
+    }
+  )
+  }
+
+  
+
+  // Fetching data.csv from the data directory
+  async function tryFetchCSV() {
+    try {
+      const resp = await fetch('../../public/data/cheddar-1month.csv', { cache: 'no-cache' });
+      if (!resp.ok) throw new Error('No data.csv found');
+      const text = await resp.text();
+      const rows = parseCSV(text);
+      const chartData = csvRowsToChartData(rows);
+      renderChart(chartData);
+    } catch (err) {
+      // If fetch fails, render an empty chart with sample labels so the page still looks OK
+      console.warn('Could not fetch data.csv:', err.message);
+      const sample = {
+        labels: ['Jan','Feb','Mar'],
+        datasets: [{ label: 'No data.csv found', data: [0,0,0], fill:false, tension:0.3 }]
+      };
+      renderChart(sample);
+    }
+  }
+
+  // Wire up file input to let the user upload a CSV
+  document.getElementById('csv-file').addEventListener('change', function (e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const rows = parseCSV(ev.target.result);
+        const chartData = csvRowsToChartData(rows);
+        renderChart(chartData);
+      } catch (err) {
+        alert('Error parsing CSV: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  });
+
+  // Initial attempt to fetch CSV on load
+  tryFetchCSV();
+
+
+const DATA_COUNT = 7;
+const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
+const data = {
+  labels: Utils.months({count: DATA_COUNT}),
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: Utils.numbers(NUMBER_CFG),
+      fill: false,
+      borderColor: Utils.CHART_COLORS.red,
+      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+    },
+  ]
+};
+
+   
+
+const highlightPlugin = {
+  id: 'highlightCurrentPosition',
+  afterDraw(chart) {
+    const { ctx, scales: { x, y } } = chart;
+    
+    // Example: Target the last data point in the first dataset
+    const dataset = chart.data.datasets[0];
+    const lastIndex = dataset.data.length - 1;
+    const meta = chart.getDatasetMeta(0);
+    const point = meta.data[lastIndex];
+
+    if (point) {
+      const { x: xPos, y: yPos } = point.getProps(['x', 'y'], true);
+      
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(xPos, yPos, 10, 0, 2 * Math.PI); // 10 is the radius
+      ctx.strokeStyle = 'rgba(255, 99, 132, 1)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+};
+
+// create custom line annotations -  top of normal range
+const options = {
+  plugins: {
+    annotation: {
+      annotations: {
+        line1: {
+          type: 'line',
+          yMin: 0.36,
+          yMax: 0.36,
+          borderColor: 'rgb(255, 99, 132)',
+          borderWidth: 2,
+        }
+      }
+    }
+  }
+};
+ 
+ 
+ 
+
+  </script>
+ 
+
+<!-- chart end-->
+
+
+{% endblock %}

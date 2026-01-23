@@ -1,0 +1,76 @@
+
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+  Check for flooding - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag">
+      Beta
+    </strong>
+    <span class="govuk-phase-banner__text">
+      This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+    </span>
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Check for flooding</h1>
+    <p class="govuk-body-text">Use this service to check:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>current flood warnings or alerts</li>
+      <li>river, sea, groundwater and rainfall levels</li>
+      <li>flood risk in the next 5 days</li>
+    </ul>
+
+    <p>If you want to know if there’s surface water flooding (also known as ‘flash flooding’) in your area, <a href="#">contact your local council</a>.</p>
+
+    <div class="govuk-inset-text">
+      <p>There are different services to check <a rel="external" href="#">flooding in Wales</a>, <a rel="external" href="#">flooding in Scotland</a> or <a rel="external" href="#">flooding in Northern Ireland</a>.</p>
+
+    </div>
+    <a href="checkforflooding" role="button" draggable="false" class="govuk-button govuk-!-margin-top-2 govuk-!-margin-bottom-8 govuk-button--start" data-module="govuk-button">
+      Start now
+      <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewBox="0 0 33 40" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"></path>
+      </svg>
+    </a>
+    <h2 class="govuk-heading-m">Before you start</h2>
+       <p>There's a different service if you want to <a href="#">check the long term flood risk</a> for an area.</p>
+     <h2 class="govuk-heading-m">Other ways to get this information</h2>
+
+<div class="contact">
+<p>Floodline<br>
+Telephone: 0345 988 1188<br>
+Textphone: 0345 602 6340<br>
+24-hour service<br>
+<a href="/call-charges">Find out about call charges</a></p>
+</div>
+     
+      </div>
+  <div class="govuk-grid-column-one-third">
+    <aside class="defra-related-items" role="complementary">
+      <h2 class="govuk-heading-s" id="subsection-title">
+        Related content
+      </h2>
+      <nav role="navigation" aria-labelledby="subsection-title">
+        <ul class="govuk-list govuk-!-font-size-16">
+          <li>
+            <a class="govuk-link" href="/help-during-flood">What to do before or during a flood</a>
+          </li>
+          <li>
+            <a class="govuk-link" href="/request-flooding-history">Find out if your property is in an area that has flooded</a>          
+          </li>    
+        </ul>
+      </nav>
+    </aside>
+  </div>
+</div>
+{% endblock %}
