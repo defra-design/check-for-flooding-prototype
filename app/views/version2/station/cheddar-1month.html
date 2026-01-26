@@ -80,26 +80,19 @@
             </div>
             <dl class="defra-flood-statistics__list" aria-label="Latest readings">
               <div class="defra-flood-statistics__item">
-
-                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">Height</span>0.28m </h1>
-                
+                <h1 class="govuk-heading-m" style="font-weight: lighter;">
+                <span class="govuk-caption-m">Height</span>0.28m </h1>             
               </div>
               
               <div class="defra-flood-statistics__item">
-
                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">Trend</span>Falling </h1>
-                
+                <span class="govuk-caption-m">Trend</span>Falling </h1>       
               </div>
               
-            
-              
+  
             <div class="defra-flood-statistics__item">
-
                 <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                  <span class="govuk-caption-m">State</span>Normal </h1>
-                
+                <span class="govuk-caption-m">State</span>Normal </h1>               
               </div>
                   
             </dl>
@@ -107,30 +100,13 @@
             <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
               Normal range 0.24m to 1.75m
             </p>
-
-              
+ 
           </div>
 
 
   <div class="defra-line-chart govuk-!-margin-bottom-4">
       <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last month</h2>
-<!-- automated model ---->
-   <!--  <div class="defra-flood-status defra-flood-status--full">
-        <div class="defra-flood-status-item defra-flood-status-item--information govuk-!-margin-bottom-4">
-          <div class="defra-flood-status-item__container">
-            <span class="defra-flood-status-item__icon">
-                  <span class="govuk-caption-l" style="font-family:'Courier New', Courier, monospace"> &#9432; </span>
-            </span>
-            <div class="defra-flood-status-item__text">
-              <span class="govuk-visually-hidden">Information:</span>
-              <p class="govuk-body-s govuk-!-margin-bottom-0">This station includes an automated model. <br>The highest level in the model is 0.49m on 8 October at 10:30am. <a href="/how-we-measure-river-sea-groundwater-levels#how-we-forecast-river-levels">Read more about how we forecast river levels</a>.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    -->
  
-      <!-- chart --> 
  
   <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" id="time" >
       <div class="defra-navbar__inner" style="float: left;">
@@ -151,7 +127,7 @@
             
               <li class="defra-navbar__item">
                 <a href="cheddar-18month#time">18 months</a>
-            </li>
+             </li>
                <li class="defra-navbar__item">
                 <a href="cheddar-5years#time">5 years</a>
             </li>
@@ -172,15 +148,7 @@
   <!-- End button to download station data CSV -->
               
   <!-- Chart.js -->
-   <br><section class="govuk-form-group" style="background-color: lightgrey"> 
-    <p class="govuk-body">Upload CSV for DEMO only</p>
-     
-         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv"> 
-                </section>  
-
-
-
-
+ 
     <aside class="defra-context-footer">
     <div>
        <header class="govuk-heading-m">Contact Floodline for advice</header>
@@ -498,24 +466,7 @@ function formatGovUKTime(iso) {
       renderChart(sample);
     }
   }
-
-  // Wire up file input to let the user upload a CSV
-  document.getElementById('csv-file').addEventListener('change', function (e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      try {
-        const rows = parseCSV(ev.target.result);
-        const chartData = csvRowsToChartData(rows);
-        renderChart(chartData);
-      } catch (err) {
-        alert('Error parsing CSV: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-  });
-
+ 
   // Initial attempt to fetch CSV on load
   tryFetchCSV();
 
