@@ -125,22 +125,21 @@
               
           </div>
 
-
-  <div class="defra-line-chart govuk-!-margin-bottom-4">
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 6 months</h2>
- 
+ <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 days</h2>
+        <div class="defra-flood-statistics defra-flood-statistics">
+   
+<!-- chart --> 
  
   <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" id="time">
       <div class="defra-navbar__inner" style="float: left;">
-              
-          <ul class="defra-navbar__list">
+           <ul class="defra-navbar__list">   
             
-                <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time">5 days </a>
+              <li class="defra-navbar__item">
+                  <a href="cheddar-5days#time" >5 days </a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-1month" >1 month</a>
+                <a href="cheddar-1month#time" >1 month</a>
               </li>
             
               <li class="defra-navbar__item">
@@ -150,32 +149,55 @@
               <li class="defra-navbar__item">
                 <a href="cheddar-18month#time">18 months</a>
             </li>
-               <li class="defra-navbar__item">
+
+              <li class="defra-navbar__item">
                 <a href="cheddar-5years#time">5 years</a>
             </li>
           </ul>
         </div>
-  
     </nav>
+     
  
+<br clear="all">
+
+ <!-- chart --> 
+
         <div class="chart-wrap">
           <canvas id="chart" aria-label="Data line chart" role="img"> </canvas>
         </div>
 
- <!-- Button to download station data CSV -->
-{{ govukButton({
-  text: "Download data CSV (12KB)",
-  classes: "govuk-button--secondary"
-}) }}
-  <!-- End button to download station data CSV -->
-              
-  <!-- Chart.js -->
+ 
+<!-- moj date picker -->
+  <div class="moj-datepicker" data-module="moj-date-picker">
+      <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
+        <label class="govuk-label--small" for="date">From:</label>
+        <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">      
+      </div> 
+    </div>
+ 
+  <div class="moj-datepicker" data-module="moj-date-picker">
+      <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;"> 
+        <label class="govuk-label--small" for="date">To:</label>
+        <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">     
+      </div> 
+  </div>
+  <div class="govuk-form-group" style="float: left;margin-left:6px; margin-right: 5px;"> 
+  <label class="govuk-label--small" for="date"><br></label>
+    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply</button>
+  </div>
+    <div> 
+  <label class="govuk-label--small" for="date"><br></label>
+     <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Download data csv (12KB)</button>
+  </div>
+  
 
+<!-- moj date picker -->
+<br clear="all">
 
  
-
     <aside class="defra-context-footer">
     <div>
+      
        <header class="govuk-heading-m">Contact Floodline for advice</header>
        <p>
           <strong>Floodline helpline</strong>
@@ -194,6 +216,7 @@
  
     </div>
  </aside>
+  
   
  
 
