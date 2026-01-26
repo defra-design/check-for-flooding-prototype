@@ -101,9 +101,7 @@
       <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 days</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
- 
-
-      <!-- chart --> 
+<!-- chart --> 
  
   <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" id="time">
       <div class="defra-navbar__inner" style="float: left;">
@@ -135,41 +133,40 @@
  
 <br clear="all">
 
-
  <!-- chart --> 
 
         <div class="chart-wrap">
           <canvas id="chart" aria-label="Data line chart" role="img"> </canvas>
         </div>
 
- <!-- Button to download station data CSV -->
- <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Download data CSV (12KB)</button>
+ 
 <!-- moj date picker -->
-  <div class="moj-datepicker" data-module="moj-date-picker" s>
+  <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
-        <label class="govuk-label--small" for="date" >  From:</label>
+        <label class="govuk-label--small" for="date">From:</label>
         <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">      
       </div> 
     </div>
  
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;"> 
-        <label class="govuk-label--small" for="date">  To:</label>
+        <label class="govuk-label--small" for="date">To:</label>
         <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">     
       </div> 
   </div>
-  <div class="govuk-form-group" style="float: left;margin-left:6px; margin-bottom: 5px;"> 
-  <label class="govuk-label--small" for="date">  <br></label>
-    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Update chart</button>
+  <div class="govuk-form-group" style="float: left;margin-left:6px; margin-right: 5px;"> 
+  <label class="govuk-label--small" for="date"><br></label>
+    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply</button>
   </div>
+    <div> 
+  <label class="govuk-label--small" for="date"><br></label>
+     <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Download data csv (12KB)</button>
+  </div>
+  
+
 <!-- moj date picker -->
 <br clear="all">
 
-   <section class="govuk-form-group" style="background-color: lightgrey"> 
-    <p class="govuk-body">Upload CSV for DEMO only</p>
- 
-         <input class="govuk-file-upload" id="csv-file" name="csv-file" type="file" accept=".csv" style=""> 
-                </section>  
  
     <aside class="defra-context-footer">
     <div>
@@ -468,8 +465,7 @@ function formatGovUKTime(iso) {
   )
   }
 
-  
-
+ 
   // Fetching data.csv from the data directory
   async function tryFetchCSV() {
     try {
@@ -490,22 +486,6 @@ function formatGovUKTime(iso) {
     }
   }
 
-  // Wire up file input to let the user upload a CSV
-  document.getElementById('csv-file').addEventListener('change', function (e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-      try {
-        const rows = parseCSV(ev.target.result);
-        const chartData = csvRowsToChartData(rows);
-        renderChart(chartData);
-      } catch (err) {
-        alert('Error parsing CSV: ' + err.message);
-      }
-    };
-    reader.readAsText(file);
-  });
 
   // Initial attempt to fetch CSV on load
   tryFetchCSV();
@@ -526,8 +506,7 @@ const data = {
   ]
 };
 
-   
-
+ 
 const highlightPlugin = {
   id: 'highlightCurrentPosition',
   afterDraw(chart) {
@@ -571,8 +550,6 @@ const options = {
 };
  
  
- 
-
   </script>
  
 
