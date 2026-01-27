@@ -1,0 +1,274 @@
+{% extends "../../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+<!-- GOV.UK Frontend CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+
+<style>
+  body { padding: 2rem; }
+  .chart-wrap { max-width: 900px; margin: 0 auto; }
+  pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
+  .zoom-pan-buttons { margin: 1rem 0; }
+  .zoom-pan-buttons .govuk-button { margin-right: 0.5rem; margin-bottom: 0.5rem; }
+</style>
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+  <p class="govuk-phase-banner__content">
+    <strong class="govuk-tag govuk-phase-banner__content__tag">Beta</strong>
+    <span class="govuk-phase-banner__text">
+      This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+    </span>
+  </p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page heading -->
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">Cheddar Yeo level at Cheddar Gorge</h1>
+  </div>
+</div>
+
+<!-- Navigation bar -->
+<nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels">
+  <div class="defra-navbar__inner">
+    <ul class="defra-navbar__list">
+      <li class="defra-navbar__item"><a href="#">Map</a></li>
+      <li class="defra-navbar__item"><a href="#">Upstream</a></li>
+      <li class="defra-navbar__item"><a href="#">Downstream</a></li>
+      <li class="defra-navbar__item"><a href="#">Nearby levels</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Latest readings -->
+<div class="defra-flood-statistics defra-flood-statistics--border">
+  <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
+      Latest at {{ "now" | govukTime }} on {{ "today" | duration(-1) | govukDate }}
+    </h2>
+  </div>
+
+  <dl class="defra-flood-statistics__list" aria-label="Latest readings">
+    <div class="defra-flood-statistics__item">
+      <h1 class="govuk-heading-m" style="font-weight: lighter;">
+        <span class="govuk-caption-m">Height</span>0.28m
+      </h1>
+    </div>
+    <div class="defra-flood-statistics__item">
+      <h1 class="govuk-heading-m" style="font-weight: lighter;">
+        <span class="govuk-caption-m">Trend</span>Falling
+      </h1>
+    </div>
+    <div class="defra-flood-statistics__item">
+      <h1 class="govuk-heading-m" style="font-weight: lighter;">
+        <span class="govuk-caption-m">State</span>Normal
+      </h1>
+    </div>
+  </dl>
+
+  <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
+    Normal range 0.24m to 0.36m
+  </p>
+</div>
+
+<h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 days</h2>
+
+<!-- Time range navigation -->
+<nav class="defra-navbar defra-navbar--secondary" aria-label="Time ranges">
+  <div class="defra-navbar__inner">
+    <ul class="defra-navbar__list">
+      <li class="defra-navbar__item"><a href="cheddar-5days#time">5 days</a></li>
+      <li class="defra-navbar__item"><a href="cheddar-1month#time">1 month</a></li>
+      <li class="defra-navbar__item"><a href="cheddar-6month#time">6 months</a></li>
+      <li class="defra-navbar__item"><a href="cheddar-18month#time">18 months</a></li>
+      <li class="defra-navbar__item"><a href="cheddar-5years#time">5 years</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Chart -->
+<div class="chart-wrap">
+  <canvas id="chart" aria-label="Data line chart" role="img"></canvas>
+</div>
+
+<!-- Zoom / Pan Buttons -->
+<div class="zoom-pan-buttons">
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn">Zoom In</button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">Zoom Out</button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="panLeftBtn">Pan Left</button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="panRightBtn">Pan Right</button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn">Reset Zoom</button>
+</div>
+
+<!-- Date picker -->
+<div class="moj-datepicker" data-module="moj-date-picker">
+  <div class="govuk-form-group" style="max-width: 35%; float: left; margin-left: 6px;">
+    <label class="govuk-label--small">From:</label>
+    <input class="govuk-input moj-js-datepicker-input" id="startdate" type="text" autocomplete="off">
+  </div>
+</div>
+
+<div class="moj-datepicker" data-module="moj-date-picker">
+  <div class="govuk-form-group" style="max-width: 35%; float: left; margin-left: 6px;">
+    <label class="govuk-label--small">To:</label>
+    <input class="govuk-input moj-js-datepicker-input" id="enddate" type="text" autocomplete="off">
+  </div>
+</div>
+
+<div class="govuk-form-group" style="float: left; margin-left: 6px;">
+  <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply</button>
+</div>
+
+<br clear="all">
+
+<div style="margin: 0;">
+  <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Download data CSV (12KB)</button>
+</div>
+
+<br clear="all">
+
+<!-- Footer & Related content -->
+<aside class="defra-context-footer">
+  <header class="govuk-heading-m">Contact Floodline for advice</header>
+  <p><strong>Floodline helpline</strong><br>
+     Telephone: 0345 988 1188<br>
+     Textphone: 0345 602 6340<br>
+     Open 24 hours a day, 7 days a week<br>
+     <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+  </p>
+  <p><strong>Talk to a Floodline adviser over webchat</strong><br>
+     <a href="#">Start chat</a>
+  </p>
+</aside>
+
+<div class="defra-related-items">
+  <h2 class="govuk-heading-s">Related content</h2>
+  <ul class="govuk-list govuk-!-font-size-16">
+    <li><a class="govuk-link" href="https://www.gov.uk/sign-up-for-flood-warnings">Get flood warnings by phone, text or email</a></li>
+    <li><a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">Prepare for flooding</a></li>
+    <li><a class="govuk-link" href="https://www.gov.uk/help-during-flood">What to do before or during a flood</a></li>
+    <li><a class="govuk-link" href="https://www.gov.uk/after-flood">What to do after a flood</a></li>
+    <li><a class="govuk-link" href="https://www.gov.uk/report-flood-cause">Report a flood</a></li>
+  </ul>
+</div>
+
+<!-- Chart.js and Plugins -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.2.0/dist/chartjs-plugin-crosshair.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+
+<script>
+  // ----- Utility Functions -----
+  function formatGovUKDateTime(iso) {
+    const date = new Date(iso);
+    return `${new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'short', year:'2-digit' }).format(date)} at ${new Intl.DateTimeFormat('en-GB', { hour:'numeric', hour12:true }).format(date)}`;
+  }
+
+  function formatGovUKShortYearDate(iso) {
+    return new Intl.DateTimeFormat('en-GB', { day:'numeric', month:'short', year:'2-digit' }).format(new Date(iso));
+  }
+
+  function formatGovUKTime(iso) {
+    return new Intl.DateTimeFormat('en-GB', { hour:'numeric', hour12:true }).format(new Date(iso)).replace(' ','').toLowerCase();
+  }
+
+  function parseCSV(text) {
+    return text.trim().split(/\r?\n/).map(line => line.trim().split(','));
+  }
+
+  function csvRowsToChartData(rows) {
+    if (!rows || rows.length < 2) throw new Error('CSV must have at least 2 rows');
+    const headers = rows[0];
+    const labels = rows.slice(1).map(r => r[0]);
+    const datasets = headers.slice(1).map((name,i) => ({
+      label: name,
+      data: rows.slice(1).map(r => ({ x: r[0], y: Number(r[i+1]) })),
+      fill: true,
+      borderColor: 'rgb(29, 112, 184)',
+      backgroundColor: 'rgba(29, 112, 184, 0.1)',
+      tension: 0.3
+    }));
+    return { labels, datasets };
+  }
+
+  // ----- Chart Initialization -----
+  let myChart;
+  const ctx = document.getElementById('chart').getContext('2d');
+  const ZOOM_FACTOR = 1.2;
+  const PAN_PIXELS = 50;
+
+  async function renderCSVChart() {
+    try {
+      const resp = await fetch('../../public/data/cheddar-5days30.csv', { cache:'no-cache' });
+      if (!resp.ok) throw new Error('No CSV found');
+      const text = await resp.text();
+      const chartData = csvRowsToChartData(parseCSV(text));
+      renderChart(chartData);
+    } catch(e) {
+      console.warn(e.message);
+      renderChart({ labels:['Jan','Feb','Mar'], datasets:[{ label:'No data.csv found', data:[0,0,0], fill:false, tension:0.3 }] });
+    }
+  }
+
+  function renderChart(data) {
+    if (myChart) {
+      myChart.data = data;
+      myChart.update();
+      return;
+    }
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data,
+      options: {
+        responsive:true,
+        elements: { point: { radius: ctx => ctx.active ? 6 : 1, backgroundColor:'none', borderWidth:1 } },
+        interaction: { intersect:false, mode:'index' },
+        scales: {
+          x: { ticks:{ maxRotation:0, maxTicksLimit:5, align:'inner', callback: function(value){ return [formatGovUKShortYearDate(this.getLabelForValue(value)), formatGovUKTime(this.getLabelForValue(value))]; } } },
+          y: { position:'none' },
+          y1: { position:'right', afterBuildTicks: axis => { axis.ticks = [...axis.chart.scales.y.ticks]; axis.min=axis.chart.scales.y.min; axis.max=axis.chart.scales.y.max; } }
+        },
+        plugins: {
+          crosshair: { line:{ color:'rgb(177,180,182)', width:1 } },
+          legend: { position:'average' },
+          annotation: {
+            annotations: { normal:{ type:'line', yMin:0.36, yMax:0.36, borderColor:'#000', borderWidth:3, label:{ display:true, content:'0.36m - Top of normal range' } } }
+          },
+          zoom: {
+            pan:{ enabled:true, mode:'x' },
+            zoom:{ wheel:{enabled:true}, pinch:{enabled:true}, drag:{ enabled:true, borderColor:'rgba(0,0,0,0.5)', borderWidth:1, backgroundColor:'rgba(128,128,128,0.3)' }, mode:'x' }
+          },
+          tooltip: {
+            enabled:true, mode:'index', intersect:false, displayColors:false,
+            callbacks:{ title: ctx => formatGovUKDateTime(ctx[0].label), label: ctx => `${ctx.parsed.y} m` }
+          }
+        }
+      }
+    });
+  }
+
+  // ----- Zoom / Pan Buttons -----
+  function addChartControls() {
+    document.getElementById('zoomInBtn').onclick = () => myChart?.zoom(ZOOM_FACTOR);
+    document.getElementById('zoomOutBtn').onclick = () => myChart?.zoom(1/ZOOM_FACTOR);
+    document.getElementById('panLeftBtn').onclick = () => myChart?.pan({ x:PAN_PIXELS, y:0 });
+    document.getElementById('panRightBtn').onclick = () => myChart?.pan({ x:-PAN_PIXELS, y:0 });
+    document.getElementById('resetZoomBtn').onclick = () => myChart?.resetZoom();
+  }
+
+  renderCSVChart();
+  addChartControls();
+</script>
+
+{% endblock %}
