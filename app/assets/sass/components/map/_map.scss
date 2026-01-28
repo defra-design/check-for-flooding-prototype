@@ -133,7 +133,7 @@
 
 // Map controls - open key
 .defra-map__keyboard {
-  &--visible {
+  &:visible {
     position: static !important;
     overflow: visible !important;
     clip: auto !important;
