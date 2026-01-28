@@ -160,19 +160,34 @@
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
         <label class="govuk-label--small" for="date">From:</label>
-        <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">      
+              <!-- From -->
+<input
+  class="govuk-input moj-js-datepicker-input" id="from-date"
+  name="from-date" type="text" autocomplete="off">
+     
       </div> 
     </div>
  
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;"> 
         <label class="govuk-label--small" for="date">To:</label>
-        <input class="govuk-input moj-js-datepicker-input " id="startdate" name="startdate" type="text" aria-describedby="date-hint" autocomplete="off">     
+     <!-- To -->
+<input
+  class="govuk-input moj-js-datepicker-input"
+  id="to-date"
+  name="to-date"
+  type="text"
+  autocomplete="off">  
       </div> 
   </div>
   <div class="govuk-form-group" style="float: left;margin-left:6px; margin-right: 5px; margin-bottom: 0px;"> 
   <label class="govuk-label--small" for="date"><br></label>
-    <button type="submit" class="govuk-button govuk-button--secondary" data-module="govuk-button">Apply</button>
+    <button
+  type="button"
+  class="govuk-button govuk-button--secondary"
+  id="applyDateRange">
+  Apply
+</button>
   </div>
     <br clear="all">
   <div style="margin: 0px;"> 
@@ -297,6 +312,42 @@ function formatGovUKTime(iso) {
 }
 
  
+// date picker helper
+function ukDateToISO(ukDate) {
+  // Expects DD/MM/YYYY
+  const [day, month, year] = ukDate.split('/');
+  return new Date(`${year}-${month}-${day}`).toISOString();
+}
+
+const fromInput = document.getElementById('from-date');
+const toInput = document.getElementById('to-date');
+
+function applyDateRange() {
+  if (!myChart) return;
+
+  const xScale = myChart.options.scales.x;
+
+  // FROM
+  if (fromInput.value) {
+    xScale.min = ukDateToISO(fromInput.value);
+  } else {
+    xScale.min = undefined;
+  }
+
+  // TO (end of day – DEFRA behaviour)
+  if (toInput.value) {
+    const end = new Date(ukDateToISO(toInput.value));
+    end.setHours(23, 59, 59, 999);
+    xScale.max = end.toISOString();
+  } else {
+    xScale.max = undefined;
+  }
+
+  myChart.update('none'); // no animation – GOV style
+}
+
+
+
   // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/).map(l => l.trim());
@@ -428,18 +479,19 @@ function renderChart(data) {
         x: {
 
           max: (context) => {
-    const labels = context.chart.data.labels;
-    return labels[labels.length - 1];
-  },
-          ticks: {
-            maxRotation: 0,
-            callback: function(value) {
-              const iso = this.getLabelForValue(value);
-              
-              return [formatGovUKShortYearDate(iso), formatGovUKTime(iso)];
-              if (iso === axis.max) return '';
+            const labels = context.chart.data.labels;
+            return labels[labels.length - 1];
+          },
+                  ticks: {
+                    maxRotation: 0,
+                callback(value) {
+          const iso = this.getLabelForValue(value);
+          return [
+            formatGovUKShortYearDate(iso),
+            formatGovUKTime(iso)
+          ];
+        },
 
-            },
             maxTicksLimit: 6,
             align: 'inner',
           }
@@ -456,6 +508,8 @@ function renderChart(data) {
       }
     }
   });
+
+  
 
   // Add buttons after chart is created
   const ZOOM_FACTOR = 1.2;
@@ -573,7 +627,13 @@ document.getElementById('resetZoomBtn').addEventListener('click', () => {
   if (myChart) myChart.resetZoom(); // reset zoom
 });
 
- 
+//
+document
+  .getElementById('applyDateRange')
+  .addEventListener('click', applyDateRange);
+
+
+
   </script>
  
 
