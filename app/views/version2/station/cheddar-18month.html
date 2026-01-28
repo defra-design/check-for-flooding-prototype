@@ -391,14 +391,36 @@ function renderChart(data) {
             }
           }
         },
-        tooltip: {
+      tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
-          displayColors: false,
+
+          backgroundColor: '#ffffff',   // white like GOV.UK panels
+          titleColor: '#0b0c0c',         // GOV.UK body text
+          bodyColor: '#0b0c0c',          // GOV.UK body text
+          borderColor: '#b1b4b6',        // light grey GOV.UK border
+          borderWidth: 1,
+
+          cornerRadius: 0,               // no rounding, GOV.UK style
+          caretSize: 0,                  // removes arrow pointer
+          displayColors: false,          // hides colour squares
+
+          padding: 10,
+
+          titleFont: {
+            family: 'GDS Transport, Arial, sans-serif',
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            family: 'GDS Transport, Arial, sans-serif',
+            size: 14
+          },
+
           callbacks: {
-            title: (ctx) => formatGovUKDateTime(ctx[0].label),
-            label: (ctx) => `${ctx.parsed.y} m`
+            title: (items) => formatGovUKDateTime(items[0].label),
+            label: (item) => `${item.parsed.y} m`
           }
         }
       },
