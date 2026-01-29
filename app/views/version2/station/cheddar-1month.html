@@ -244,7 +244,7 @@
   </nav>
 </div>
 
-<script>
+<<script>
 
  
      // use zoom plugin //
@@ -297,6 +297,42 @@ function formatGovUKTime(iso) {
 }
 
  
+// date picker helper
+function ukDateToISO(ukDate) {
+  // Expects DD/MM/YYYY
+  const [day, month, year] = ukDate.split('/');
+  return new Date(`${year}-${month}-${day}`).toISOString();
+}
+
+const fromInput = document.getElementById('from-date');
+const toInput = document.getElementById('to-date');
+
+function applyDateRange() {
+  if (!myChart) return;
+
+  const xScale = myChart.options.scales.x;
+
+  // FROM
+  if (fromInput.value) {
+    xScale.min = ukDateToISO(fromInput.value);
+  } else {
+    xScale.min = undefined;
+  }
+
+  // TO (end of day – DEFRA behaviour)
+  if (toInput.value) {
+    const end = new Date(ukDateToISO(toInput.value));
+    end.setHours(23, 59, 59, 999);
+    xScale.max = end.toISOString();
+  } else {
+    xScale.max = undefined;
+  }
+
+  myChart.update('none'); // no animation – GOV style
+}
+
+
+
   // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
   function parseCSV(text) {
     const lines = text.trim().split(/\r?\n/).map(l => l.trim());
@@ -348,7 +384,17 @@ function renderChart(data) {
     options: {    
       responsive: true,
       elements: {
-        point: { radius: (ctx) => ctx.active ? 6 : 1, backgroundColor: 'none', borderWidth: 1 }
+        point: {
+    radius: 0,          // hidden normally
+    hitRadius: 10,      // easy to hover
+    hoverRadius: 6,     // size of rollover point
+
+    backgroundColor: 'transparent',
+
+    hoverBackgroundColor: '#ffffff',          // 👈 white fill
+    hoverBorderColor: 'rgb(29, 112, 184)',     // 👈 GOV.UK blue
+    hoverBorderWidth: 2
+  }
       },
       interaction: { intersect: false, mode: 'index' },
       plugins: {
@@ -391,27 +437,58 @@ function renderChart(data) {
             }
           }
         },
-        tooltip: {
+     tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
-          displayColors: false,
+
+          backgroundColor: '#ffffff',   // white like GOV.UK panels
+          titleColor: '#0b0c0c',         // GOV.UK body text
+          bodyColor: '#0b0c0c',          // GOV.UK body text
+          borderColor: '#b1b4b6',        // light grey GOV.UK border
+          borderWidth: 1,
+          caretPadding: 12, // 👈 pushes tooltip away from the point
+          cornerRadius: 0,               // no rounding, GOV.UK style
+          caretSize: 0,                  // removes arrow pointer
+          displayColors: false,          // hides colour squares
+
+          padding: 10,
+
+          titleFont: {
+            family: 'GDS Transport, Arial, sans-serif',
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            family: 'GDS Transport, Arial, sans-serif',
+            size: 14
+          },
+
           callbacks: {
-            title: (ctx) => formatGovUKDateTime(ctx[0].label),
-            label: (ctx) => `${ctx.parsed.y} m`
+            title: (items) => formatGovUKDateTime(items[0].label),
+            label: (item) => `${item.parsed.y} m`
           }
         }
       },
       scales: {
         x: {
-          ticks: {
-            maxRotation: 0,
-            callback: function(value) {
-              const iso = this.getLabelForValue(value);
-              return [formatGovUKShortYearDate(iso), formatGovUKTime(iso)];
-            },
-            maxTicksLimit: 5,
-            align: 'inner'
+
+          max: (context) => {
+            const labels = context.chart.data.labels;
+            return labels[labels.length - 1];
+          },
+                  ticks: {
+                    maxRotation: 0,
+                callback(value) {
+          const iso = this.getLabelForValue(value);
+          return [
+            formatGovUKShortYearDate(iso),
+            formatGovUKTime(iso)
+          ];
+        },
+
+            maxTicksLimit: 6,
+            align: 'inner',
           }
         },
         y: { position: 'none' },
@@ -426,6 +503,8 @@ function renderChart(data) {
       }
     }
   });
+
+  
 
   // Add buttons after chart is created
   const ZOOM_FACTOR = 1.2;
