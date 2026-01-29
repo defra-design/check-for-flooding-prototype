@@ -399,7 +399,17 @@ function renderChart(data) {
     options: {    
       responsive: true,
       elements: {
-        point: { radius: (ctx) => ctx.active ? 6 : 1, backgroundColor: 'none', borderWidth: 1 }
+        point: {
+    radius: 0,          // hidden normally
+    hitRadius: 10,      // easy to hover
+    hoverRadius: 6,     // size of rollover point
+
+    backgroundColor: 'transparent',
+
+    hoverBackgroundColor: '#ffffff',          // 👈 white fill
+    hoverBorderColor: 'rgb(29, 112, 184)',     // 👈 GOV.UK blue
+    hoverBorderWidth: 2
+  }
       },
       interaction: { intersect: false, mode: 'index' },
       plugins: {
@@ -452,7 +462,7 @@ function renderChart(data) {
           bodyColor: '#0b0c0c',          // GOV.UK body text
           borderColor: '#b1b4b6',        // light grey GOV.UK border
           borderWidth: 1,
-
+          caretPadding: 12, // 👈 pushes tooltip away from the point
           cornerRadius: 0,               // no rounding, GOV.UK style
           caretSize: 0,                  // removes arrow pointer
           displayColors: false,          // hides colour squares
