@@ -4,6 +4,10 @@
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
 {% endblock %}
 
+
+ 
+
+
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 
@@ -98,32 +102,33 @@
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0">Height in metres over the last 5 years</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
  
-  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" id="time">
+  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" >
       <div class="defra-navbar__inner" style="float: left;">
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time"  style="text-decoration: none;" >5 days </a>
+                  <a href="cheddar-5days#time" style="text-decoration: none;" >5 days </a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-1month#time">1 month</a>
+                <a href="cheddar-6month#time">6 months</a>
               </li>
             
               <li class="defra-navbar__item">
-                <a href="cheddar-6month#time"  >6 months</a>
-              </li>
-            
-              <li class="defra-navbar__item">
-               <a href="cheddar-3years#time">3 years</a>
+               <a href="cheddar-1year#time">1 year</a>
+               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-5years#time">5 years</a>
+                <a href="cheddar-18month#time">18 months</a>
+              </li>
+
+              <li class="defra-navbar__item">
+                <a href="cheddar-3years#time">3 years</a>
             </li>
           </ul>
         </div>
@@ -146,13 +151,17 @@
 </div>
 
  
-<!-- Zoom / Pan controls -->
- <div style="margin-top: 10px; margin-bottom: 20px;">
-  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn">Zoom in</button>
-  <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">Zoom out</button>
-  <!-- <button type="button" class="govuk-button govuk-button--secondary" id="panLeftBtn">Pan left</button> -->
-  <!-- <button type="button" class="govuk-button govuk-button--secondary" id="panRightBtn">Pan right</button> -->
-  <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn">Reset zoom</button>
+<!-- Zoom  controls -->
+<div class="chart-zoom-controls">
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn">
+    Zoom in
+  </button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">
+    Zoom out
+  </button>
+  <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn">
+    Reset zoom
+  </button>
 </div>
 
 <!-- moj date picker -->
@@ -256,256 +265,184 @@
 <script>
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
- 
-     // use zoom plugin //
- 
+// Register plugins
 Chart.register(window['chartjs-plugin-annotation']);
- 
- 
-   // Change chart data to  GovUk format //
-   
+
+// GOV.UK date/time formatting helpers
 function formatGovUKDateTime(isoString) {
   const date = new Date(isoString);
-  const datePart = new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).format(date);
-
-  const timePart = new Intl.DateTimeFormat('en-GB', {
-    hour: 'numeric',
-    hour12: true
-  }).format(date);
-
-  return `${datePart} at ${timePart}`;
+  return `${new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }).format(date)} at ${new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: true }).format(date)}`;
 }
- 
-   // Change to shortened GovUk time and date format //
 function formatGovUKShortYearDate(isoString) {
   const date = new Date(isoString);
-
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  }).format(date);
+  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }).format(date);
+}
+function formatGovUKTime(isoString) {
+  return new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: true }).format(new Date(isoString)).replace(' ', '').toLowerCase();
 }
 
-function formatGovUKDate(iso) {
-  return new Intl.DateTimeFormat('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  }).format(new Date(iso));
-}
-
-function formatGovUKTime(iso) {
-  return new Intl.DateTimeFormat('en-GB', {
-    hour: 'numeric',
-    hour12: true
-  }).format(new Date(iso)).replace(' ', '').toLowerCase();
-}
-
- 
-// date picker helper
+// Convert DD/MM/YYYY to ISO
 function ukDateToISO(ukDate) {
-  // Expects DD/MM/YYYY
   const [day, month, year] = ukDate.split('/');
   return new Date(`${year}-${month}-${day}`).toISOString();
 }
 
-const fromInput = document.getElementById('from-date');
-const toInput = document.getElementById('to-date');
+// CSV parsing
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+  return lines.map(line => line.split(','));
+}
 
-function applyDateRange() {
-  if (!myChart) return;
+// Build Chart.js data
+function csvRowsToChartData(rows) {
+  const headers = rows[0];
 
-  const xScale = myChart.options.scales.x;
 
-  // FROM
-  if (fromInput.value) {
-    xScale.min = ukDateToISO(fromInput.value);
-  } else {
-    xScale.min = undefined;
+  const datasets = headers.slice(1).map((name, i) => {
+    return {
+      label: name,
+      data: rows.slice(1).map(r => ({ x: r[0], y: Number(r[i + 1]) })),
+      fill: true,
+      borderColor: 'rgb(29, 112, 184)',
+      backgroundColor: 'rgba(29, 112, 184, .1)',
+      tension: 0.3
+    };
+  });
+  return { labels: rows.slice(1).map(r => r[0]), datasets };
+}
+
+// Generate exactly 5 evenly spaced x-axis ticks
+function getRightAnchoredXTicks(data, count = 5) {
+  const points = data.datasets[0].data;
+  const total = points.length;
+
+  if (total <= count) return points.map(p => p.x);
+
+  const step = Math.floor((total - 1) / (count - 1));
+  const ticks = [];
+
+  // always include latest first
+  for (let i = total - 1; i >= 0 && ticks.length < count; i -= step) {
+    ticks.unshift(points[i].x); // unshift keeps left→right order
   }
 
-  // TO (end of day – DEFRA behaviour)
-  if (toInput.value) {
-    const end = new Date(ukDateToISO(toInput.value));
-    end.setHours(23, 59, 59, 999);
-    xScale.max = end.toISOString();
-  } else {
-    xScale.max = undefined;
+  // ensure last point is included
+  const last = points[total - 1].x;
+  if (ticks[ticks.length - 1] !== last) {
+    ticks[ticks.length - 1] = last;
   }
 
-  myChart.update('none'); // no animation – GOV style
+  return ticks;
 }
 
 
 
-  // Small CSV parser that handles simple CSVs (no quoted commas) — sufficient for many dataset exports.
-  function parseCSV(text) {
-    const lines = text.trim().split(/\r?\n/).map(l => l.trim());
-    const rows = lines.map(line => line.split(','));
-    return rows;
-  }
-  
-
-  // Build Chart.js data from CSV rows
-  function csvRowsToChartData(rows) {
-    if (!rows || rows.length < 2) throw new Error('CSV must have at least 2 rows (header + one data row)');
-
-    const headers = rows[0]; // e.g. ["label","Apples","Oranges"]
-    const labelCol = headers[0];
-    const datasetNames = headers.slice(1);
-    const labels = rows.slice(1).map(r => r[0]);
-    const datasets = datasetNames.map((name, i) => {
-  const data = rows.slice(1).map(r => ({
-    x: r[0],          // ISO date string
-    y: Number(r[i+1])
-  }));
-      return {
-        label: name, data,
-        fill: true,
-         borderColor: 'rgb(29, 112, 184)',
-         backgroundColor: 'rgba(29, 112, 184, .1)',
-        tension: 0.3
-      };
-    });
-
-    return { labels, datasets };
-  } 
-
- 
-  let myChart = null;
+let myChart = null;
 const ctx = document.getElementById('chart').getContext('2d');
 
 function renderChart(data) {
+const xLabels = getRightAnchoredXTicks(data, 5);
+const minX = xLabels[0];
+const maxX = data.datasets[0].data.at(-1).x;
+
   if (myChart) {
-    myChart.data.labels = data.labels;
+    myChart.data.labels = xLabels;
     myChart.data.datasets = data.datasets;
     myChart.update();
     return;
   }
 
+  data.labels = xLabels;
+  const lastX = data.datasets[0].data.at(-1).x; // added to get last x value
+
   myChart = new Chart(ctx, {
     type: 'line',
     data: data,
     options: {
-  responsive: true,
-
-  interaction: {
-    intersect: false,
-    mode: 'index'
-  },
-
-  elements: {
-    point: {
-      radius: 0,
-      hitRadius: 10,
-      hoverRadius: 6,
-      backgroundColor: 'transparent',
-      hoverBackgroundColor: '#ffffff',
-      hoverBorderColor: 'rgb(29, 112, 184)',
-      hoverBorderWidth: 2
-    }
-  },
-
-  plugins: {
-    legend: {
-      display: false   // ❌ removed invalid "average"
-    },
-
-    crosshair: !isTouch ? {
-      line: {
-        color: 'rgb(177, 180, 182)',
-        width: 1
-      }
-    } : false,
-
-    zoom: {
-      zoom: {
-        wheel: { enabled: !isTouch },
-        pinch: { enabled: false },
-        drag: { enabled: true},
-        mode: 'x'
+      responsive: true,
+      interaction: { intersect: false, mode: 'index' },
+      elements: {
+        point: { radius: 0, hitRadius: 10, hoverRadius: 6, backgroundColor: 'transparent', hoverBackgroundColor: '#fff', hoverBorderColor: 'rgb(29, 112, 184)', hoverBorderWidth: 2 }
       },
-      pan: {
-        enabled: !isTouch,
-        mode: 'x'
-      }
-    },
+      plugins: {
+        legend: { display: false },
+        crosshair: !isTouch ? { line: { color: 'rgb(177,180,182)', width: 1 } } : false,
+        zoom: {
+          zoom: { wheel: { enabled: !isTouch }, pinch: { enabled: false }, drag: { enabled: true }, mode: 'x' },
+          pan: { enabled: !isTouch, mode: 'x' }
+        },
+        annotation: {
+          annotations: {
 
-    annotation: {
-      annotations: {
-        normal: {
-          type: 'line',
-          yMin: 0.36,
-          yMax: 0.36,
-          borderColor: '#000',
-          borderWidth: 3,
-          label: {
-            display: true,
-            content: '0.36m - Top of normal range'
+            verticalLineLast: {
+  type: 'line',        // Line annotation
+  xMin: lastX,         // Position on x-axis
+  xMax: lastX,
+  borderColor: 'black',  // Color of the line
+  borderWidth: 2,
+  label: {
+    display: false,
+    content: '9am - 16 Dec 25',
+    position: 'end', // 'start', 'center', or 'end'
+    backgroundColor: 'black',
+    color: 'white',
+    font: {
+      weight: 'bold'
+    }
+  }
+},
+
+            normal: { type: 'line', yMin: 0.36, yMax: 0.36, borderColor: '#000', borderWidth: 3, label: { display: true, content: '0.36m - Top of normal range' } }
+          }
+        },
+        tooltip: {
+          enabled: true,
+          mode: 'index',
+          intersect: false,
+          backgroundColor: '#fff',
+          titleColor: '#0b0c0c',
+          bodyColor: '#0b0c0c',
+          borderColor: '#b1b4b6',
+          borderWidth: 1,
+          caretSize: 0,
+          cornerRadius: 0,
+          displayColors: false,
+          padding: 10,
+          titleFont: { family: 'GDS Transport, Arial, sans-serif', size: 17, weight: 'bold' },
+          bodyFont: { family: 'GDS Transport, Arial, sans-serif', size: 14 },
+          callbacks: {
+            title: (items) => items.map(item => `${item.parsed.y} m`),
+            label: (item) => formatGovUKDateTime(item.label)
           }
         }
-      }
-    },
-
-    tooltip: {
-      enabled: true,
-      mode: 'index',
-      intersect: false,
-      backgroundColor: '#ffffff',
-      titleColor: '#0b0c0c',
-      bodyColor: '#0b0c0c',
-      borderColor: '#b1b4b6',
-      borderWidth: 1,
-      caretSize: 0,
-      cornerRadius: 0,
-      displayColors: false,
-      padding: 10,
-
-      titleFont: {
-        family: 'GDS Transport, Arial, sans-serif',
-        size: 17,
-        weight: 'bold'
       },
-      bodyFont: {
-        family: 'GDS Transport, Arial, sans-serif',
-        size: 14
-      },
-
-      callbacks: {
-        title: (items) => items.map(item => `${item.parsed.y} m`),
-        label: (item) => formatGovUKDateTime(item.label)
-      }
-    }
-  },
-
-  scales: {
-    x: {
-      type: 'time',   // 🔥 REQUIRED for Samsung
-      adapters: {
-        date: {
-          zone: 'utc'
-        }
-      },
-      ticks: {
-        maxTicksLimit: 5,
-        callback(value) {
-          const iso = this.getLabelForValue(value);
-          return [
-            formatGovUKTime(iso),
-            formatGovUKShortYearDate(iso)
-          ];
-        }
-      }
-    },
-
-    y: {
-      display: false
-    },
+      scales: {
+        x: {
+          type: 'time',
+          time: {
+            unit: 'day',              // ✅ ONE tick per day
+            displayFormats: {
+              day: 'd MMM yy'
+            }
+          },
+          bounds: 'data',
+          min: minX,
+          max: maxX,
+          
+          ticks: {
+              autoSkip: false,
+              maxRotation: 0,
+              minRotation: 0,
+              callback(value) {
+                const iso = this.getLabelForValue(value);
+                return [
+                  formatGovUKTime(iso),          // optional: "10am"
+                  formatGovUKShortYearDate(iso)  // "16 Dec 25"
+                ];
+              }
+            }
+},
+        y: { display: false },
         y1: {
           position: 'right',
           afterBuildTicks: (axis) => {
@@ -517,24 +454,19 @@ function renderChart(data) {
       }
     }
   });
-
   
 
-  // Add buttons after chart is created
+  // Zoom controls
   const ZOOM_FACTOR = 1.2;
-  const PAN_PIXELS = 50;
-
-   document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
+  document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
   document.getElementById('zoomOutBtn').addEventListener('click', () => myChart.zoom(1 / ZOOM_FACTOR));
-  //document.getElementById('panLeftBtn').addEventListener('click', () => myChart.pan({ x: PAN_PIXELS, y: 0 }));
-  //document.getElementById('panRightBtn').addEventListener('click', () => myChart.pan({ x: -PAN_PIXELS, y: 0 }));
   document.getElementById('resetZoomBtn').addEventListener('click', () => myChart.resetZoom());
 }
 
 // Fetch CSV and render chart
 async function tryFetchCSV() {
   try {
-    const resp = await fetch('/public/data/cheddar-5days30.csv', { cache: 'no-cache' });
+    const resp = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('No data.csv found');
     const text = await resp.text();
     const rows = parseCSV(text);
@@ -542,77 +474,14 @@ async function tryFetchCSV() {
     renderChart(chartData);
   } catch (err) {
     console.warn('Could not fetch data.csv:', err.message);
-    const sample = {
-      labels: ['Jan','Feb','Mar'],
-      datasets: [{ label: 'No data.csv found', data: [0,0,0], fill:false, tension:0.3 }]
-    };
+    const sample = { labels: ['Jan','Feb','Mar'], datasets: [{ label: 'No data.csv found', data: [0,0,0], fill:false, tension:0.3 }] };
     renderChart(sample);
   }
 }
 
 tryFetchCSV();
+</script>
 
-
-
-const DATA_COUNT = 7;
-const NUMBER_CFG = {count: DATA_COUNT, min: -100, max: 100};
-const data = {
-  labels: Utils.months({count: DATA_COUNT}),
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: Utils.numbers(NUMBER_CFG),
-      fill: false,
-      borderColor: Utils.CHART_COLORS.red,
-      backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-    },
-  ]
-};
-
-const highlightPlugin = {
-  id: 'highlightCurrentPosition',
-  afterDraw(chart) {
-    const { ctx, scales: { x, y } } = chart;
-    
-    // Example: Target the last data point in the first dataset
-    const dataset = chart.data.datasets[0];
-    const lastIndex = dataset.data.length - 1;
-    const meta = chart.getDatasetMeta(0);
-    const point = meta.data[lastIndex];
-
-    if (point) {
-      const { x: xPos, y: yPos } = point.getProps(['x', 'y'], true);
-      
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(xPos, yPos, 10, 0, 2 * Math.PI); // 10 is the radius
-      ctx.strokeStyle = 'rgba(255, 99, 132, 1)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-};
-
-// create custom line annotations -  top of normal range
-const options = {
-  plugins: {
-    annotation: {
-      annotations: {
-        line1: {
-          type: 'line',
-          yMin: 0.36,
-          yMax: 0.36,
-          borderColor: 'rgb(255, 99, 132)',
-          borderWidth: 2,
-        }
-      }
-    }
-  }
-};
-  
- 
-  </script>
  
  
  

@@ -102,12 +102,12 @@
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 6 months</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0"  id="time">Height in metres over the last 18 months</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
  
-  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels" >
+  <nav class="defra-navbar defra-navbar--secondary" aria-label="Related levels">
       <div class="defra-navbar__inner" style="float: left;">
            <ul class="defra-navbar__list">   
             
@@ -116,17 +116,17 @@
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-6month#time" style="text-decoration: none;" >6 months</a>
+                <a href="cheddar-6month#time">6 months</a>
               </li>
             
               <li class="defra-navbar__item">
                <a href="cheddar-1year#time">1 year</a>
-               </li>
-
-               <li class="defra-navbar__item">
-                <a href="cheddar-18month#time">18 months</a>
               </li>
 
+              <li class="defra-navbar__item">
+                <a href="cheddar-18month#time" style="text-decoration: none;">18 months</a>
+              </li>
+            
               <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
             </li>
@@ -466,7 +466,7 @@ const maxX = data.datasets[0].data.at(-1).x;
 // Fetch CSV and render chart
 async function tryFetchCSV() {
   try {
-    const resp = await fetch('/public/data/cheddar-6month.csv', { cache: 'no-cache' });
+    const resp = await fetch('/public/data/cheddar-18month.csv', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('No data.csv found');
     const text = await resp.text();
     const rows = parseCSV(text);
