@@ -569,3 +569,49 @@ defra-flood-impact-list {
 }
 
  
+ 
+/* --- Chart zoom buttons --- */
+.chart-zoom-controls {
+  display: grid;
+  gap: 10px;
+  max-width: 520px;
+}
+
+/* 📱 Mobile: 2 up */
+@media (max-width: 40.06125em) {
+  .chart-zoom-controls {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Reset zoom full width on mobile */
+  .chart-zoom-controls button:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* 📲 Tablet: 3 up */
+@media (min-width: 40.0625em) and (max-width: 63.99em) {
+  .chart-zoom-controls {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .chart-zoom-controls button:last-child {
+    grid-column: auto;
+  }
+}
+
+/* 🖥 Desktop: inline (default GOV.UK look) */
+@media (min-width: 64em) {
+  .chart-zoom-controls {
+    display: block;
+  }
+
+  .chart-zoom-controls .govuk-button {
+    width: auto;
+    margin-right: 10px;
+  }
+}
+
+.chart-zoom-controls {
+  margin-top: 10px;
+}
