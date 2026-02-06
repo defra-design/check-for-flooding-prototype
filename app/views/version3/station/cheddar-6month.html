@@ -16,7 +16,16 @@
     body { padding: 2rem; }
     .chart-wrap { max-width: 900px; margin: 0 auto; }
     pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
-  </style>
+  
+    canvas {
+      user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
+    }
+
+ </style>
 
 
 
@@ -261,7 +270,6 @@
     </ul>
   </nav>
 </div>
-
 <script>
 const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
@@ -301,58 +309,64 @@ function csvRowsToChartData(rows) {
   const datasets = headers.slice(1).map((name, i) => {
     return {
       label: name,
-      data: rows.slice(1).map(r => ({ x: r[0], y: Number(r[i + 1]) })),
+      data: rows.slice(1).map(r => ({ x: new Date(r[0]).getTime(), y: Number(r[i + 1]) })),
       fill: true,
       borderColor: 'rgb(29, 112, 184)',
       backgroundColor: 'rgba(29, 112, 184, .1)',
       tension: 0.3
     };
   });
-  return { labels: rows.slice(1).map(r => r[0]), datasets };
+  return { datasets };
 }
 
 // Generate exactly 5 evenly spaced x-axis ticks
-function getRightAnchoredXTicks(data, count = 5) {
-  const points = data.datasets[0].data;
-  const total = points.length;
+function buildFiveEqualTicks(scale, anchorHour = 6) {
+  if (!scale.min || !scale.max || scale.min >= scale.max) return [];
 
-  if (total <= count) return points.map(p => p.x);
+  const min = new Date(scale.min);
+  const max = new Date(scale.max);
 
-  const step = Math.floor((total - 1) / (count - 1));
+  const span = (max - min) / 4;
   const ticks = [];
 
-  // always include latest first
-  for (let i = total - 1; i >= 0 && ticks.length < count; i -= step) {
-    ticks.unshift(points[i].x); // unshift keeps left→right order
+  for (let i = 0; i < 5; i++) {
+    const d = new Date(min.getTime() + span * i);
+
+    // only snap to anchor if span is at least 1 day
+    if (span >= 24 * 60 * 60 * 1000) {
+      d.setHours(anchorHour, 0, 0, 0);
+    }
+
+    ticks.push({ value: d.getTime() });
   }
 
-  // ensure last point is included
-  const last = points[total - 1].x;
-  if (ticks[ticks.length - 1] !== last) {
-    ticks[ticks.length - 1] = last;
-  }
-
-  return ticks;
+  // ensure strictly increasing values (critical)
+  return ticks.filter((t, i, arr) =>
+    i === 0 || t.value > arr[i - 1].value
+  );
 }
 
+const canvas = document.getElementById('chart');
+
+canvas.addEventListener('mousedown', e => {
+  e.preventDefault();
+});
 
 
 let myChart = null;
 const ctx = document.getElementById('chart').getContext('2d');
 
 function renderChart(data) {
-const xLabels = getRightAnchoredXTicks(data, 5);
-const minX = xLabels[0];
+
 const maxX = data.datasets[0].data.at(-1).x;
 
   if (myChart) {
-    myChart.data.labels = xLabels;
     myChart.data.datasets = data.datasets;
     myChart.update();
     return;
   }
 
-  data.labels = xLabels;
+  
   const lastX = data.datasets[0].data.at(-1).x; // added to get last x value
 
   myChart = new Chart(ctx, {
@@ -366,18 +380,50 @@ const maxX = data.datasets[0].data.at(-1).x;
       },
       plugins: {
         legend: { display: false },
-        crosshair: !isTouch ? { line: { color: 'rgb(177,180,182)', width: 1 } } : false,
+        crosshair: !isTouch ? {
+  line: {
+    color: 'rgb(177,180,182)',
+    width: 1
+  },
+  sync: {
+    enabled: false
+  },
+  zoom: {
+    enabled: false   // ❌ disable crosshair drag/zoom
+  }
+} : false,
         zoom: {
-          zoom: { wheel: { enabled: !isTouch }, pinch: { enabled: false }, drag: { enabled: true }, mode: 'x' },
-          pan: { enabled: !isTouch, mode: 'x' }
-        },
+  limits: {
+    x: {
+      min: 'original',
+      max: 'original',
+      minRange: 60 * 60 * 1000 // 1 hour
+    }
+  },
+   zoom: {
+    wheel: {
+      enabled: !isTouch
+    },
+    drag: {
+      enabled: false   // ❌ disable drag zoom on mobile
+    },
+    pinch: {
+      enabled: false   // ❌ pinch zoom is unstable on Samsung
+    },
+    mode: 'x'
+  },
+
+  pan: {
+    enabled: false     // ❌ pan breaks Android scales
+  }
+},
         annotation: {
           annotations: {
 
             verticalLineLast: {
   type: 'line',        // Line annotation
-  xMin: lastX,         // Position on x-axis
-  xMax: lastX,
+  xMin: ctx => ctx.chart.scales.x.max,        // Position on x-axis
+  xMax: ctx => ctx.chart.scales.x.max,
   borderColor: 'black',  // Color of the line
   borderWidth: 2,
   label: {
@@ -417,30 +463,26 @@ const maxX = data.datasets[0].data.at(-1).x;
         }
       },
       scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day',              // ✅ ONE tick per day
-            displayFormats: {
-              day: 'd MMM yy'
-            }
-          },
-          bounds: 'data',
-          min: minX,
-          max: maxX,
-          
-          ticks: {
-              autoSkip: false,
-              maxRotation: 0,
-              minRotation: 0,
-              callback(value) {
-                const iso = this.getLabelForValue(value);
-                return [
-                  formatGovUKTime(iso),          // optional: "10am"
-                  formatGovUKShortYearDate(iso)  // "16 Dec 25"
-                ];
-              }
-            }
+       x: {
+  type: 'time',
+  bounds: 'data',
+
+  afterBuildTicks(scale) {
+    scale.ticks = buildFiveEqualTicks(scale, 6);
+  },
+
+  ticks: {
+    autoSkip: false,
+    maxRotation: 0,
+    minRotation: 0,
+    callback(value) {
+      const iso = new Date(value).toISOString();
+      return [
+        formatGovUKTime(iso),
+        formatGovUKShortYearDate(iso)
+      ];
+    }
+  }
 },
         y: { display: false },
         y1: {
