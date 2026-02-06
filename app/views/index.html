@@ -42,116 +42,96 @@
       }
     ],
     rows: [
-         
-      [
-        {
-         html: "<p class='govuk-body'><b><a href='version1/'>Version 1</a></b></p>"
-        },
-        {
-         html: "<li><a href='#' target='new' class='govuk-body'>Jira ticket number</a> </li>
-                <li><a href='#' target='new' class='govuk-body'>Mural</a></li>"
-        },
-        {
-         html: "<p class='govuk-body'>Initial build to test prototype kit. </p>
-          "
-        }
-      ] ,
-      [
-        {
-         html: "<p class='govuk-body'><b><a href='date-test/pickdate' >Date filter test</a></b></p>"
-        },
-        {
-         html: "<li><a href='https://govuk-prototype-filters.x-govuk.org/date/' target='new' class='govuk-body'>X Gov date filter</a> </li>
-                 "
-        },
-        {
-         html: "<p class='govuk-body'>Page to show the X gov date filter working. </p>
-          "
-        }
-      ]
-      ,
-      [
-        {
-         html: "<p class='govuk-body' width='25%'><b> Chart tests </b></p>"
-        },
-        {
-         html: "<li><a href='version1/station/8209' target='new' class='govuk-body'>Simple-line chart</a> </li>
-                <li><a href='version1/station/line-chart' target='new' class='govuk-body'>Multi-line</a><a href='version1/station/bar-chart' target='new' class='govuk-body'>Multi-bar chart</a> </li> 
-               
-                  <li><a href='version1/station/5day-chart' target='new' class='govuk-body'>5 day chart to test with cross hair</a> </li>
-                    <li><a href='version1/station/cheddar-5days' target='new' class='govuk-body'>Cheddar Gorge page </a> </li> "
-        },
-        {
-         html: "<p class='govuk-body'>Chart.js work - Pages displaying chart data, bar/line/area. Using a hosted CSV or option to upload own CSV.</p>
-          "
-        }
-      ]
-      ,
-      [
-        {
-         html: "<p class='govuk-body'><b> Version 2 </b></p>"
-        },
-        {
-         html: "<li><a href='version2/station/cheddar-5days' target='new' class='govuk-body'>Cheddar Gorge pages v2</a> </li> "
-        },
-        {
-         html: "<p class='govuk-body'>Cheddar Gorge data to show historic data and chart zoom</p>
-          "
-        }
-      ]
-       ,
-      [
-        {
-         html: "<p class='govuk-body'><b> Version 3 </b></p>"
-        },
-        {
-         html: "<li><a href='version3/station/cheddar-5days' target='new' class='govuk-body'>Cheddar Gorge pages V3</a> </li> "
-        },
-        {
-         html: "<p class='govuk-body'>Cheddar Gorge data to show historic data and chart zoom for User Research Round 2.Changes include fixes for mobile and time and date order</p>
-          "
-        }
-      ]
-    ]
+  [
+    {
+      html: "<p class='govuk-body'><b> Version 3 </b></p>"
+    },
+    {
+      html: "<li><a href='version3/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages V3</a> </li> "
+    },
+    {
+      html: "<p class='govuk-body'>UR Test round 2 - Changes include fixes for mobile and time and date order</p>"
+    }
+  ] 
+]
+
+    
   }) }}
 </section> 
-  <!--
+   
   <h2 class="govuk-heading-m" id="progress">
   Previous versions:
 </h2> 
    
-{{ govukTable({
-  firstCellIsHeader: true,
-  head: [
+ {{ govukTable({
+    firstCellIsHeader: true,
+    head: [
+      {
+        text: "Journey",
+        classes: "govuk-!-width-one-fourth"
+      },
+      {
+        text: "Links"
+         
+      },
+      {
+        text: "Notes",
+        classes: "govuk-!-width-one-half"
+      }
+    ],
+    rows: [
+  
+  [
     {
-      text: "Journey",
-      classes: "govuk-!-width-one-fourth"
+      html: "<p class='govuk-body'><b> Version 2 </b></p>"
     },
     {
-      text: "Links"
+      html: "<li><a href='version2/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v2</a> </li> "
     },
     {
-      text: "Notes",
-      classes: "govuk-!-width-one-half"
+      html: "<p class='govuk-body'>Cheddar Gorge data to show historic data and chart zoom</p>"
     }
   ],
-  rows: [
-    [
-      {
-       html: "<a href='date-test/'>Date filter test</a>"
-      },
-      {
-       html: "<li><a href='https://jira.tools.tax.service.gov.uk/browse/STOSB-321' target='new'>Jira STOSB-321</a> </li>
-              <li><a href='https://app.mural.co/t/digitalhmrc9032/m/digitalhmrc9032/1733478300947/7733b93cc94d0ef9d82e16d7f353f86dff1051f7?wid=0-1737543850298' target='new'>Mural</a></li>"
-      },
-      {
-       html: "Passing submited date and using date filters to add or subtract days for deadlines.</a>"
-      }
-    ]     
-    ]
+  [
+    {
+      html: "<p class='govuk-body'><b> Version 1</b></p>"
+    },
+    {
+      html: " 
+        <li class='govuk-body'><a href='version1/'  class='govuk-body'>Service Start page</a> and main pages </li>
+       "
+    },
+    {
+      html: "<p class='govuk-body'>Initial build to test prototype kit. </p>"
+    }
+  ],
+  [
+    {
+      html: "<p class='govuk-body' width='25%'><b> Chart tests </b></p>"
+    },
+    {
+      html: "<li><a href='version1/station/8209'  class='govuk-body'>Line chart</a>, <a href='version1/station/line-chart'  class='govuk-body'>Multi-line</a>, <a href='version1/station/bar-chart'  class='govuk-body'>Multi-bar chart</a>, <a href='version1/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge page </a> </li> "
+    },
+    {
+      html: "<p class='govuk-body'>Chart.js work - Pages displaying chart data, bar/line/area. Using a hosted CSV or option to upload own CSV.</p>"
+    }
+  ],
+  [
+    {
+      html: "<p class='govuk-body'><b>Date filter test</b></p>"
+    },
+    {
+      html: "<li><a href='date-test/pickdate' class='govuk-body' >Date filter test</a> </li> "
+    },
+    {
+      html: "<p class='govuk-body'>Page to show the X gov date filter working. </p>"
+    }
+  ]
+]
+
     
-      }) }}
- -->
+  }) }}
+ 
   </div>
 </div>
 
