@@ -151,7 +151,7 @@ form.form::after {
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres between 21 September 2024 to 18 September 2024</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
@@ -161,11 +161,11 @@ form.form::after {
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time">5 days</a>
+                  <a href="cheddar-5days#time" >5 days</a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-6month#time" >6 months</a>
+                <a href="cheddar-6month#time">6 months</a>
               </li>
             
               <li class="defra-navbar__item">
@@ -173,7 +173,7 @@ form.form::after {
                </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-18month#time"  style="text-decoration: none;" >18 months</a>
+                <a href="cheddar-18month#time">18 months</a>
               </li>
 
               <li class="defra-navbar__item">
@@ -604,7 +604,7 @@ function formatGovUKShortYearDate(iso) {
 // Fetch CSV and render chart
 async function tryFetchCSV() {
   try {
-    const resp = await fetch('/public/data/cheddar-18month.csv', { cache: 'no-cache' });
+    const resp = await fetch('/public/data/cheddar-datepicker.csv', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('No CSV');
     const text = await resp.text();
     renderChart(csvRowsToChartData(parseCSV(text)));
