@@ -11,21 +11,33 @@
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
 body { padding: 2rem; }
-.chart-section, 
-.chart-wrap {
+
+/* Desktop / default */
+.chart-section {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  height: 400px;         /* height of chart */
-  min-height: 400px;
   position: relative;
+  height: 450px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .chart-section {
+    height: 400px;
+  }
+}
+
+.chart-wrap {
+  height: 100%;
 }
 
 .chart-wrap canvas {
   width: 100% !important;
-  height: 100% !important; /* fill container */
+  height: 100% !important;
   display: block;
 }
+
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
@@ -34,7 +46,7 @@ canvas {
   user-select: none;
 }
 
- 
+
 .chart-zoom-controls {
   display: flex;
   flex-wrap: wrap;   /* allow wrapping if needed */
@@ -63,18 +75,14 @@ canvas {
   flex-wrap: wrap;
 }
 
-.chart-section {
-  position: relative;
- 
-  clear: both;
-}
 
 form.form::after {
   content: "";
   display: block;
   clear: both;
 }
-  </style>
+
+</style>
 
 
 {% block beforeContent %}
@@ -194,7 +202,7 @@ form.form::after {
 
  <!-- chart --> 
  
-<section class="chart-section" style="height: 400px;">
+<section class="chart-section" style="height: 450px;">
   <div class="chart-wrap" style="height: 100%;">
     <canvas id="chart"></canvas>
   </div>
@@ -337,6 +345,7 @@ const tooltipVerticalLine = {
     const ctx = chart.ctx;
     const x = tooltip.getActiveElements()[0].element.x;
     const yScale = chart.scales.y;
+    if (!yScale) return;
 
     ctx.save();
     ctx.beginPath();
@@ -412,25 +421,27 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
   return ticks.filter((t, i, arr) => i === 0 || t.value > arr[i - 1].value);
 }
 
-const canvas = document.getElementById('chart');
-
 
 let myChart = null;
 const ctx = document.getElementById('chart').getContext('2d');
 const PAN_PIXELS = 100; // <--- define this
+const ZOOM_FACTOR = 1.2;
 
 function renderChart(data) {
+  if (!data.datasets?.length || !data.datasets[0].data?.length) {
+    console.warn('No dataset data available');
+    return;
+  }
 
-if (!data.datasets?.length || !data.datasets[0].data?.length) {
-  console.warn('No dataset data available');
-  return;
-}
- 
+  if (myChart) {
+    myChart.destroy();
+  }
 
-const myChart = new Chart(ctx, {
+  myChart = new Chart(ctx, {
     type: 'line',
-    data: data,
+    data,
     options: {
+      parsing: false,
       responsive: true,
       maintainAspectRatio: false,
       interaction: { intersect: false, mode: 'index' },
@@ -551,20 +562,10 @@ const myChart = new Chart(ctx, {
     }
   });
   
-// Force height
-const canvasEl = document.getElementById('chart');
-
-
-
-
-setTimeout(() => {
-  myChart.resize();
-  myChart.update('none');
-}, 50);
-
+ 
   // Zoom controls
   // Add buttons after chart is created
-  const ZOOM_FACTOR = 1.2;
+
   document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
   document.getElementById('zoomOutBtn').addEventListener('click', () => myChart.zoom(1 / ZOOM_FACTOR));
   document.getElementById('panLeftBtn').addEventListener('click', () => myChart.pan({ x: PAN_PIXELS, y: 0 }));
@@ -625,13 +626,9 @@ async function tryFetchCSV() {
 
 tryFetchCSV();
 
- 
 
 </script>
 
- 
- 
- 
 <!-- chart end-->
 
 
