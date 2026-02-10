@@ -16,8 +16,6 @@ body { padding: 2rem; }
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  height: 400px;         /* height of chart */
-  min-height: 400px;
   position: relative;
 }
 
@@ -194,13 +192,12 @@ form.form::after {
 
  <!-- chart --> 
  
-<section class="chart-section" style="height: 400px;">
+<section class="chart-section" style="height: 450px;">
   <div class="chart-wrap" style="height: 100%;">
     <canvas id="chart"></canvas>
   </div>
 </section>
 
- 
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
    <div class="govuk-form-group"
@@ -223,7 +220,7 @@ form.form::after {
    </div>
 <div style="clear: both;"></div>
  
- <form class="form" action="cheddar-datepicker" method="post">  
+ <form class="form" action="cheddar-datepicker#time" method="post">  
 <!-- moj date picker -->
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
