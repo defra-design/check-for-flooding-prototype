@@ -602,7 +602,7 @@ function formatGovUKShortYearDate(iso) {
 // Fetch CSV and render chart
 async function tryFetchCSV() {
   try {
-    const resp = await fetch('/public/data/cheddar-18month.csv', { cache: 'no-cache' });
+    const resp = await fetch('/public/data/cheddar-18month30.csv', { cache: 'no-cache' });
     if (!resp.ok) throw new Error('No CSV');
     const text = await resp.text();
     renderChart(csvRowsToChartData(parseCSV(text)));
