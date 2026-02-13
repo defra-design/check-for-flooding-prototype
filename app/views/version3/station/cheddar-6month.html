@@ -8,22 +8,36 @@
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 
-  <style>
+<style>
     /* Small page tweaks to make the example a little lighter/cleaner */
 body { padding: 2rem; }
-.chart-section, 
-.chart-wrap {
+
+/* Desktop / default */
+.chart-section {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
   position: relative;
+  height: 400px;
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .chart-section {
+    height: 400px;
+  }
+}
+
+.chart-wrap {
+  height: 100%;
 }
 
 .chart-wrap canvas {
   width: 100% !important;
-  height: 100% !important; /* fill container */
+  height: 100% !important;
   display: block;
 }
+
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
@@ -32,7 +46,7 @@ canvas {
   user-select: none;
 }
 
- 
+
 .chart-zoom-controls {
   display: flex;
   flex-wrap: wrap;   /* allow wrapping if needed */
@@ -61,18 +75,14 @@ canvas {
   flex-wrap: wrap;
 }
 
-.chart-section {
-  position: relative;
- 
-  clear: both;
-}
 
 form.form::after {
   content: "";
   display: block;
   clear: both;
 }
-  </style>
+
+</style>
 
 
 {% block beforeContent %}
@@ -149,7 +159,7 @@ form.form::after {
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 6 months</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
@@ -192,7 +202,7 @@ form.form::after {
 
  <!-- chart --> 
  
-<section class="chart-section" style="height: 450px;">
+<section class="chart-section" style="height: 400px;">
   <div class="chart-wrap" style="height: 100%;">
     <canvas id="chart"></canvas>
   </div>
@@ -319,6 +329,7 @@ form.form::after {
   </nav>
 </div>
  
+ 
 <script>
 
 Chart.register(window['chartjs-plugin-annotation']);
@@ -334,6 +345,7 @@ const tooltipVerticalLine = {
     const ctx = chart.ctx;
     const x = tooltip.getActiveElements()[0].element.x;
     const yScale = chart.scales.y;
+    if (!yScale) return;
 
     ctx.save();
     ctx.beginPath();
@@ -409,25 +421,27 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
   return ticks.filter((t, i, arr) => i === 0 || t.value > arr[i - 1].value);
 }
 
-const canvas = document.getElementById('chart');
-
 
 let myChart = null;
 const ctx = document.getElementById('chart').getContext('2d');
 const PAN_PIXELS = 100; // <--- define this
+const ZOOM_FACTOR = 1.2;
 
 function renderChart(data) {
+  if (!data.datasets?.length || !data.datasets[0].data?.length) {
+    console.warn('No dataset data available');
+    return;
+  }
 
-if (!data.datasets?.length || !data.datasets[0].data?.length) {
-  console.warn('No dataset data available');
-  return;
-}
- 
+  if (myChart) {
+    myChart.destroy();
+  }
 
-const myChart = new Chart(ctx, {
+  myChart = new Chart(ctx, {
     type: 'line',
-    data: data,
+    data,
     options: {
+      parsing: false,
       responsive: true,
       maintainAspectRatio: false,
       interaction: { intersect: false, mode: 'index' },
@@ -532,36 +546,35 @@ const myChart = new Chart(ctx, {
     display: false,          // show y-axis
     
   },
-        y1: {
-          position: 'right',
-          afterBuildTicks: (axis) => {
-            axis.ticks = [...axis.chart.scales.y.ticks];
-            axis.min = axis.chart.scales.y.min;
-            axis.max = axis.chart.scales.y.max;
-          },
-           ticks: {
-      callback: function(value) {
-        return value.toFixed(1); // match y-axis formatting
-      }},
-        }
+y1: {
+  position: 'right',
+  grid: { drawOnChartArea: false },
+
+  afterBuildTicks(scale) {
+    const min = scale.min;
+    const max = scale.max;
+    const step = (max - min) / 3;
+
+    scale.ticks = [
+      { value: min },
+      { value: min + step },
+      { value: min + step * 2 },
+      { value: max }
+    ];
+  },
+
+  ticks: {
+    callback: (value) => value.toFixed(2)
+  }
+}
       }
     }
   });
   
-// Force height
-const canvasEl = document.getElementById('chart');
-
-
-
-
-setTimeout(() => {
-  myChart.resize();
-  myChart.update('none');
-}, 50);
-
+ 
   // Zoom controls
   // Add buttons after chart is created
-  const ZOOM_FACTOR = 1.2;
+
   document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
   document.getElementById('zoomOutBtn').addEventListener('click', () => myChart.zoom(1 / ZOOM_FACTOR));
   document.getElementById('panLeftBtn').addEventListener('click', () => myChart.pan({ x: PAN_PIXELS, y: 0 }));
@@ -622,10 +635,8 @@ async function tryFetchCSV() {
 
 tryFetchCSV();
 
- 
 
 </script>
-
  
  
  
