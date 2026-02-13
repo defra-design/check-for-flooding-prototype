@@ -18,7 +18,7 @@ body { padding: 2rem; }
   max-width: 900px;
   margin: 0 auto;
   position: relative;
-  height: 450px;
+  height: 400px;
 }
 
 /* Mobile */
@@ -159,7 +159,7 @@ form.form::after {
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres between 21 September 2024 to 18 September 2024</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres between 20 to 24 September 2024</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
@@ -202,7 +202,7 @@ form.form::after {
 
  <!-- chart --> 
  
-<section class="chart-section" style="height: 450px;">
+<section class="chart-section" style="height: 400px;">
   <div class="chart-wrap" style="height: 100%;">
     <canvas id="chart"></canvas>
   </div>
@@ -546,18 +546,28 @@ function renderChart(data) {
     display: false,          // show y-axis
     
   },
-        y1: {
-          position: 'right',
-          afterBuildTicks: (axis) => {
-            axis.ticks = [...axis.chart.scales.y.ticks];
-            axis.min = axis.chart.scales.y.min;
-            axis.max = axis.chart.scales.y.max;
-          },
-           ticks: {
-      callback: function(value) {
-        return value.toFixed(1); // match y-axis formatting
-      }},
-        }
+      y1: {
+  position: 'right',
+  grid: { drawOnChartArea: false },
+
+  afterBuildTicks(scale) {
+    const min = scale.min;
+    const max = scale.max;
+    const step = (max - min) / 3;
+
+    scale.ticks = [
+      { value: min },
+      { value: min + step },
+      { value: min + step * 2 },
+      { value: max }
+    ];
+  },
+
+  ticks: {
+    callback: (value) => value.toFixed(2)
+  }
+}
+
       }
     }
   });
