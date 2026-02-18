@@ -8,81 +8,67 @@
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 
-  <style>
-    /* Small page tweaks to make the example a little lighter/cleaner */
-body { padding: 2rem; }
+<style>
+/* Page spacing */
+body {
+  padding: 1rem;
+}
 
-/* Desktop / default */
+/* Chart container */
 .chart-section {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
   position: relative;
-  height: 400px;
+  height: 420px;
 }
 
-/* Mobile */
 @media (max-width: 640px) {
   .chart-section {
-    height: 400px;
+    height: 360px;
   }
 }
 
-.chart-wrap {
-  height: 100%;
-}
-
+.chart-wrap,
 .chart-wrap canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
 }
 
-pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
-
+/* Touch behaviour */
 canvas {
   touch-action: pan-y pinch-zoom;
   -webkit-user-select: none;
   user-select: none;
 }
 
-
-.chart-zoom-controls {
+/* Button layout (replaces floats completely) */
+.chart-controls,
+.date-controls {
   display: flex;
-  flex-wrap: wrap;   /* allow wrapping if needed */
-  gap: 8px;
-  justify-content: flex-start;
-}
-
-/* Keep buttons a consistent size */
-.chart-zoom-controls .govuk-button {
-  width: 120px;      /* fixed width for all buttons */
-  flex: 0 0 auto;    /* prevent shrinking or growing */
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Optional: smaller width on very small screens if needed */
-@media (max-width: 480px) {
-  .chart-zoom-controls .govuk-button {
-    width: 100px;
-  }
-}
-
-.chart-controls {
-  display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
 }
 
+.chart-controls .govuk-button {
+  min-width: 110px;
+  flex: 0 0 auto;
+}
 
+/* Date inputs */
+.date-controls .govuk-form-group {
+  flex: 1 1 160px;
+  min-width: 140px;
+}
+
+/* Remove float clearing hacks */
 form.form::after {
-  content: "";
-  display: block;
-  clear: both;
+  content: none;
 }
-
 </style>
+
 
 
 {% block beforeContent %}
@@ -383,6 +369,7 @@ function csvRowsToChartData(rows) {
   const datasets = headers.slice(1).map((name, i) => {
     return {
       label: name,
+      yAxisID: 'y1',
       data: rows.slice(1).map(r => ({ x: new Date(r[0]).getTime(), y: Number(r[i + 1]) })),
       fill: true,
       borderColor: 'rgb(29, 112, 184)',
@@ -462,7 +449,7 @@ function renderChart(data) {
   wheel: { enabled: true },
   drag: {
     enabled: true,
-    threshold: 10,
+    threshold: 8,
     borderColor: 'rgba(0,0,0,0.5)',
     borderWidth: 1,
     backgroundColor: 'rgba(225,221,0,1)'
@@ -473,7 +460,7 @@ function renderChart(data) {
   pan: {
     enabled: true,
     mode: 'x',
-    threshold: 10
+    threshold: 8
   }
 },
         annotation: {
@@ -496,8 +483,18 @@ function renderChart(data) {
     }
   }
 },
-
-            normal: { type: 'line', yMin: 0.36, yMax: 0.36, borderColor: '#000', borderWidth: 3, label: { display: true, content: '0.36m - Top of normal range' } }
+          normal: {
+            type: 'line',
+            yMin: 0.367,
+            yMax: 0.367,
+            yScaleID: 'y1',
+            borderColor: '#000',
+            borderWidth: 2,
+            label: {
+              display: true,
+              content: '0.367m - Top of normal range'
+            }
+          }
           }
         },
         tooltip: {
@@ -546,7 +543,7 @@ function renderChart(data) {
     display: false,          // show y-axis
     
   },
-      y1: {
+y1: {
   position: 'right',
   grid: { drawOnChartArea: false },
 
@@ -611,6 +608,7 @@ function formatGovUKShortYearDate(iso) {
   });
 }
 
+ 
  
 // Fetch CSV and render chart
 async function tryFetchCSV() {
