@@ -117,22 +117,24 @@ form.form::after {
   </div>
 </div>
  
+
       <div class="defra-flood-statistics defra-flood-statistics--border">
                   <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
                     <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
-                      Latest at {{ "now" | govukTime }} on  {{ "today" | duration(-1) | govukDate }}
+                      Latest at 9:15am on 13 December 2025
+                    </h2>
                     </h2>
                   </div>
                   <dl class="defra-flood-statistics__list" aria-label="Latest readings">
 
                     <div class="defra-flood-statistics__item">
                         <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                        <span class="govuk-caption-m">Height</span>0.28m </h1>    
+                        <span class="govuk-caption-m">Height</span>0.33m </h1>    
                     </div>
                     
                     <div class="defra-flood-statistics__item">
                         <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                        <span class="govuk-caption-m">Trend</span>Falling </h1>                
+                        <span class="govuk-caption-m">Trend</span>Rising </h1>                
                     </div>
       
                   <div class="defra-flood-statistics__item">
@@ -145,7 +147,7 @@ form.form::after {
               Normal range 0.24m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 18 months</h2>
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days</h2>
         <div class="defra-flood-statistics defra-flood-statistics">
    
 <!-- chart --> 
@@ -513,10 +515,10 @@ function renderChart(data) {
           padding: 10,
           titleFont: { family: 'GDS Transport, Arial, sans-serif', size: 17, weight: 'bold' },
           bodyFont: { family: 'GDS Transport, Arial, sans-serif', size: 14 },
-          callbacks: {
-             title: items => `${items[0].parsed.y} m`,
-            label: item => formatGovUKDateTime(item.parsed.x)
-          }
+       callbacks: {
+  title: items => `${items[0].parsed.y.toFixed(2)} m`,
+  label: item => formatGovUKDateTime(item.parsed.x)
+}
         }
       },
       scales: {

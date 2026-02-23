@@ -512,10 +512,10 @@ function renderChart(data) {
           padding: 10,
           titleFont: { family: 'GDS Transport, Arial, sans-serif', size: 17, weight: 'bold' },
           bodyFont: { family: 'GDS Transport, Arial, sans-serif', size: 14 },
-          callbacks: {
-             title: items => `${items[0].parsed.y} m`,
-            label: item => formatGovUKDateTime(item.parsed.x)
-          }
+callbacks: {
+  title: items => `${items[0].parsed.y.toFixed(2)} m`,
+  label: item => formatGovUKDateTime(item.parsed.x)
+}
         }
       },
       scales: {
