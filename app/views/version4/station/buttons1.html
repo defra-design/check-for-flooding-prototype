@@ -16,21 +16,44 @@ body { padding: 2rem; }
   margin-top: 1rem;
 }
 
+
 /* Wrapper sets width only; height is auto */
 .chart-wrap {
-  position: relative;
-  width: 100%;         /* full width of parent */
-  max-width: 900px;    /* optional max width */
-  min-height: 280px;
-  margin: 0 auto;      /* center */
+  
+  flex: 1;
 }
 
+.chart-wrap canvas {
+  width: 100% !important;
+  height: 320px !important;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pan-btn {
+  flex: 1px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
  
+}
+ 
+.pan-btn:disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
 /* Canvas should not have forced height */
 .chart-wrap canvas {
   display: block;
   width: 100% !important;   /* responsive width */
-  height: auto !important;  /* let Chart.js calculate height */
+  height: 320px !important;
 }
 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
@@ -199,31 +222,64 @@ form.form::after {
  
 <div style="clear: both;"></div>
 
- <!-- chart --> 
- 
-<section class="chart-section">
-  <div class="chart-wrap">
-    <canvas id="chart"></canvas>
-  </div>
-</section>
+<style>
+.three-columns {
+  display: flex;
+  gap: 16px; /* space between columns */
+  align-items: stretch; /* default, other columns stretch */
+}
 
+.column-pan {
+  flex: 1; 
+  max-width: 20px;
+  display: flex;           /* make it a flex container */
+  justify-content: center; /* horizontal center */
+  align-items: center;     /* vertical center */
+ 
+}
+
+ 
+.column-pan .pan-btn {
+  height: 60%;
+}
+
+.column-chart {
+  flex: 1; /* equal width */
+  padding: 5px;
+  max-width: 95%;
+  text-align: center;
+}
+</style>
+ 
+ <!-- chart --> 
+ <section class="chart-section"> 
+<div class="three-columns">
+  <div class="column-pan">
+  <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary">←</button>
+</div>  <div class="column-chart"><canvas id="chart"></canvas></div>
+  <div class="column-pan">
+  <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary">→</button>
+</div>
+</div>
+ 
+ 
+</section>
  
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
    <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
   <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
   </div>
     <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button></div>
-    <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="panLeftBtn">&#8592;</button></div>
-    <div class="govuk-form-group" style="max-width: 20%; float: inline-start; margin-left: 6px;"> 
-          <button type="button" class="govuk-button govuk-button--secondary" id="panRightBtn" style="margin-bottom: 11px;">&#8594;</button></div>
-   <div class="govuk-form-group" style="max-width: 20%; float: inline-start; margin-left: 6px;"> 
-     <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn" style="margin-bottom: 11px;">Reset</button></div>
+    
+ <div class="govuk-form-group"
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+           <button type="button" class="govuk-button govuk-button--secondary"  id="resetZoomBtn"  style="display:none;">
+  Reset zoom
+</button></div>
 </div>
    </div>
 <div style="clear: both;"></div>
@@ -326,173 +382,180 @@ form.form::after {
     </ul>
   </nav>
 </div>
- 
+
+
+
 <script>
 
-Chart.register(window['chartjs-plugin-annotation']);
-Chart.register(window.ChartZoom);
+ 
 
-// ⬇️ DEFINE FIRST
-const tooltipVerticalLine = {
+
+Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
+
+// --------------------
+// Vertical hover line
+// --------------------
+Chart.register({
   id: 'tooltipVerticalLine',
   afterDraw(chart) {
     const tooltip = chart.tooltip;
-    if (!tooltip || !tooltip.getActiveElements().length) return;
+    if (!tooltip?.getActiveElements()?.length) return;
 
-    const ctx = chart.ctx;
+    const { ctx, scales: { y1 } } = chart;
     const x = tooltip.getActiveElements()[0].element.x;
-    const yScale = chart.scales.y;
+
+    if (!y1) return;
 
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(x, yScale.top);
-    ctx.lineTo(x, yScale.bottom);
+    ctx.moveTo(x, y1.top);
+    ctx.lineTo(x, y1.bottom);
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#b1b4b6';
     ctx.stroke();
     ctx.restore();
   }
-};
+});
 
-// ⬇️ REGISTER AFTER
-Chart.register(tooltipVerticalLine);
-
-
-// Convert DD/MM/YYYY to ISO
-function ukDateToISO(ukDate) {
-  const [day, month, year] = ukDate.split('/');
-  return new Date(`${year}-${month}-${day}`).toISOString();
-}
-
-// CSV parsing
+// --------------------
+// Helpers
+// --------------------
 function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/).map(l => l.trim());
-  return lines.map(line => line.split(','));
+  return text.trim().split(/\r?\n/).map(l => l.split(','));
 }
 
-
-// Build Chart.js data
 function csvRowsToChartData(rows) {
   const headers = rows[0];
 
-
-  const datasets = headers.slice(1).map((name, i) => {
-    return {
+  return {
+    datasets: headers.slice(1).map((name, i) => ({
       label: name,
-      data: rows.slice(1).map(r => ({ x: new Date(r[0]).getTime(), y: Number(r[i + 1]) })),
-      fill: true,
+      yAxisID: 'y1',
+      data: rows.slice(1).map(r => ({
+        x: new Date(r[0]).getTime(),
+        y: Number(r[i + 1])
+      })),
       borderColor: 'rgb(29, 112, 184)',
-      backgroundColor: 'rgba(29, 112, 184, .1)',
-      tension: 0.3
-    };
-  });
-  return { datasets };
+      backgroundColor: 'rgba(29,112,184,.1)',
+      fill: true,
+      tension: 0.3,
+      pointRadius: 0
+    }))
+  };
 }
 
-// Generate exactly 5 evenly spaced x-axis ticks
 function buildFiveEqualTicks(scale, anchorHour = 6) {
-  if (!scale.min || !scale.max || scale.min >= scale.max) return [];
+  if (!scale.min || !scale.max) return [];
 
-  const min = new Date(scale.min);
-  const max = new Date(scale.max);
-  const span = (max - min) / 4;
-  const ticks = [];
-
-  for (let i = 0; i < 5; i++) {
-    let d = new Date(min.getTime() + span * i);
-
-    // Snap to anchor hour only if span >= 1 day
-    if (span >= 24 * 60 * 60 * 1000) {
-      d.setHours(anchorHour, 0, 0, 0);
-    }
-
-    // Clamp tick to min/max
-    if (d < min) d = new Date(min);
-    if (d > max) d = new Date(max);
-
-    ticks.push({ value: d.getTime() });
-  }
-
-  // ensure strictly increasing
-  return ticks.filter((t, i, arr) => i === 0 || t.value > arr[i - 1].value);
+  const span = (scale.max - scale.min) / 4;
+  return Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(scale.min + span * i);
+    if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
+    return { value: d.getTime() };
+  });
 }
 
-const canvas = document.getElementById('chart');
+// --------------------
+// Zoom detection + button toggle
+// --------------------
+function isZoomed() {
+  if (!myChart || !originalXRange) return false;
+  const x = myChart.scales.x;
+  return x.min !== originalXRange.min || x.max !== originalXRange.max;
+}
 
 
+function updateControls() {
+  if (!myChart) return;
+
+  const zoomed = isZoomed();
+
+  const resetBtn = document.getElementById('resetZoomBtn');
+  const panLeftBtn = document.getElementById('panLeftBtn');
+  const panRightBtn = document.getElementById('panRightBtn');
+
+  // Reset button (keep visible, toggle disabled)
+  resetBtn.style.display = 'inline-block';
+  resetBtn.disabled = !zoomed;
+  resetBtn.classList.toggle('govuk-button--disabled', !zoomed);
+
+  // Pan buttons
+  panLeftBtn.disabled = !zoomed;
+  panRightBtn.disabled = !zoomed;
+
+  panLeftBtn.classList.toggle('govuk-button--disabled', !zoomed);
+  panRightBtn.classList.toggle('govuk-button--disabled', !zoomed);
+}
+
+// --------------------
+// Chart & Controls
+// --------------------
+let originalXRange = null;
 let myChart = null;
-const ctx = document.getElementById('chart').getContext('2d');
-const PAN_PIXELS = 100; // <--- define this
 
 function renderChart(data) {
+  if (!data?.datasets?.[0]?.data?.length) return;
+  if (myChart) myChart.destroy();
 
-if (!data.datasets?.length || !data.datasets[0].data?.length) {
-  console.warn('No dataset data available');
-  return;
-}
- 
+  const ctx = document.getElementById('chart').getContext('2d');
 
   myChart = new Chart(ctx, {
     type: 'line',
-    data: data,
+    data,
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      interaction: { intersect: false, mode: 'index' },
-      elements: {
-        point: { radius: 0, hitRadius: 10, hoverRadius: 6, backgroundColor: 'transparent', hoverBackgroundColor: '#fff', hoverBorderColor: 'rgb(29, 112, 184)', hoverBorderWidth: 2 }
-      },
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+      interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
-        zoom: {
-      limits: {
-        x: {
-          min: 'original',
-          max: 'original',
-          minRange: 60 * 60 * 1000
-        }
-      },
-  zoom: {
-  wheel: { enabled: true },
-  drag: {
-    enabled: true,
-    threshold: 10,
-    borderColor: 'rgba(0,0,0,0.5)',
-    borderWidth: 1,
-    backgroundColor: 'rgba(225,221,0,1)'
-  },
-  pinch: { enabled: false },
-  mode: 'x'
-},
-  pan: {
-    enabled: true,
-    mode: 'x',
-    threshold: 10
-  }
-},
         annotation: {
-          annotations: {
-
-            verticalLineLast: {
-  type: 'line',        // Line annotation
-  xMin: ctx => ctx.chart.scales.x?.max ?? null,
-  xMax: ctx => ctx.chart.scales.x?.max ?? null,
-  borderColor: 'black',  // Color of the line
-  borderWidth: 2,
-  label: {
-    display: false,
-    content: '9am - 16 Dec 25',
-    position: 'end', // 'start', 'center', or 'end'
-    backgroundColor: 'black',
-    color: 'white',
-    font: {
-      weight: 'bold'
+    annotations: {
+      normalLine: {
+        type: 'line',
+        yMin: 0.36,
+        yMax: 0.36,
+        borderColor: '#000',
+        borderWidth: 2,
+        label: { display: true, 
+                content: '0.36m - Top of normal range',
+                position: 'center',
+               backgroundColor: 'rgba(255,255,255,0.85)',
+        color: '#0b0c0c',
+        font: {
+          size: 12,
+          weight: 'bold' 
+         },
+        padding: 6}
+      }
+      /*// normal range,
+      normalRange: {
+        type: 'box',
+        yMin: 0.24,
+        yMax: 0.36,
+        backgroundColor: 'rgba(50, 216, 230, 0.30)', // light blue fill
+        borderWidth: 0
+      } */
     }
-  }
-},
-
-            normal: { type: 'line', yMin: 0.36, yMax: 0.36, borderColor: '#000', borderWidth: 3, label: { display: true, content: '0.36m - Top of normal range' } }
-          }
+  },
+        zoom: {
+          zoom: {
+            wheel: { enabled: true },
+            drag: { enabled: true,
+        borderColor: 'yellow',       // border of drag rectangle
+        borderWidth: 2,
+        backgroundColor: 'rgba(255, 255, 0, 0.25)', // semi-transparent yellow fill
+        mode: 'x'
+      },
+            mode: 'x',
+            onZoomComplete: updateControls,
+          },
+          pan: {
+            enabled: true,
+            mode: 'x',
+            onPanComplete: updateControls
+          },
+          limits: { x: { min: 'original', max: 'original', minRange: 3600000 } }
         },
         tooltip: {
           enabled: true,
@@ -507,86 +570,98 @@ if (!data.datasets?.length || !data.datasets[0].data?.length) {
           cornerRadius: 0,
           displayColors: false,
           padding: 10,
-          titleFont: { family: 'GDS Transport, Arial, sans-serif', size: 17, weight: 'bold' },
-          bodyFont: { family: 'GDS Transport, Arial, sans-serif', size: 14 },
+          titleFont: { size: 18, weight: 'bold' },
+          bodyFont: { size: 14 },
           callbacks: {
-             title: items => `${items[0].parsed.y} m`,
-            label: item => formatGovUKDateTime(item.parsed.x)
+            title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
+            label: (item) => formatGovUKDateTime(item.raw.x)
           }
         }
       },
       scales: {
-       x: {
-  type: 'time',
-  bounds: 'data',
-
-  afterBuildTicks(scale) {
-    scale.ticks = buildFiveEqualTicks(scale, 6);
-  },
-
-  ticks: {
-    autoSkip: false,
-    maxRotation: 0,
-    callback(value) {
-      const iso = new Date(value).toISOString();
-      return [
-        formatGovUKTime(iso),
-        formatGovUKShortYearDate(iso)
-      ];
-    }
-  }
-},
-        y: {
-    display: false,          // show y-axis
-    
-  },
+        x: {
+          type: 'time',
+          bounds: 'data',
+          afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
+          ticks: {
+            autoSkip: false,
+            callback: v => {
+              const iso = new Date(v).toISOString();
+              return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
+            }
+          }
+        },
+        y: { display: false, grid: { display: false } },
         y1: {
           position: 'right',
-          afterBuildTicks: (axis) => {
-            axis.ticks = [...axis.chart.scales.y.ticks];
-            axis.min = axis.chart.scales.y.min;
-            axis.max = axis.chart.scales.y.max;
-          },
-           ticks: {
-      callback: function(value) {
-        return value.toFixed(1); // match y-axis formatting
-      }},
+          min: 0.24,
+          max: 0.50,
+          ticks: { callback: v => v.toFixed(2) }
         }
       }
     }
   });
-  
-setTimeout(() => {
-  myChart.resize();
-  myChart.update('none');
-}, 50);
 
-  // Zoom controls
-  // Add buttons after chart is created
-  const ZOOM_FACTOR = 1.2;
-  document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
-  document.getElementById('zoomOutBtn').addEventListener('click', () => myChart.zoom(1 / ZOOM_FACTOR));
-  document.getElementById('panLeftBtn').addEventListener('click', () => myChart.pan({ x: PAN_PIXELS, y: 0 }));
-  document.getElementById('panRightBtn').addEventListener('click', () => myChart.pan({ x: -PAN_PIXELS, y: 0 }));
-  document.getElementById('resetZoomBtn').addEventListener('click', () => myChart.resetZoom());
+  // store original x-axis limits for comparison
+  const x = myChart.scales.x;
+  originalXRange = { min: x.min, max: x.max };
+
+  attachControls();
+  updateControls();
 }
 
+ 
+function attachControls() {
+  const ZOOM_FACTOR = 1.2;
+  const PAN_DISTANCE = 100;
+
+  document.getElementById('zoomInBtn').onclick = () => {
+    myChart.zoom(ZOOM_FACTOR);
+    updateControls();
+  };
+
+  document.getElementById('zoomOutBtn').onclick = () => {
+    myChart.zoom(1 / ZOOM_FACTOR);
+    updateControls();
+  };
+
+  document.getElementById('panLeftBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: PAN_DISTANCE });
+    updateControls();
+  };
+
+  document.getElementById('panRightBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: -PAN_DISTANCE });
+    updateControls();
+  };
+
+  document.getElementById('resetZoomBtn').onclick = () => {
+    myChart.resetZoom();
+    updateControls();
+  };
+}
+
+// --------------------
+// Formatting
+// --------------------
 function formatGovUKDateTime(ms) {
-  return new Date(ms).toLocaleString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  });
+  const d = new Date(ms);
+  const day = d.getDate();
+  const month = d.toLocaleString('en-GB', { month: 'short' });
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  const minutes = d.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12 || 12;
+  const mins = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+  return `${hours}${mins}${ampm} ${day} ${month} ${year}`;
 }
 
 function formatGovUKTime(iso) {
   return new Date(iso)
-    .toLocaleTimeString('en-GB', {
-      hour: 'numeric',
-      hour12: true
-    })
+    .toLocaleTimeString('en-GB', { hour: 'numeric', hour12: true })
     .toLowerCase()
     .replace(':00', '');
 }
@@ -599,19 +674,22 @@ function formatGovUKShortYearDate(iso) {
   });
 }
 
- 
-// Fetch CSV and render chart
-async function tryFetchCSV() {
+// --------------------
+// Data load
+// --------------------
+(async function init() {
   try {
-    const resp = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
-    if (!resp.ok) throw new Error('No CSV');
-    const text = await resp.text();
+    const res = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
+    if (!res.ok) throw new Error();
+
+    const text = await res.text();
     renderChart(csvRowsToChartData(parseCSV(text)));
+
   } catch {
     const now = Date.now();
     renderChart({
       datasets: [{
-        label: 'No data available',
+        label: 'No data',
         data: [
           { x: now - 172800000, y: 0 },
           { x: now - 86400000, y: 0 },
@@ -620,16 +698,8 @@ async function tryFetchCSV() {
       }]
     });
   }
-}
-
-tryFetchCSV();
-
- 
-
+})();
 </script>
-
- 
- 
  
 <!-- chart end-->
 
