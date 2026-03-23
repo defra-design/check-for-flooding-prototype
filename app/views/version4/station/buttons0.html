@@ -44,26 +44,17 @@ body { padding: 2rem; }
 
 .pan-left {
   left: 0;
- 
 }
 
 .pan-right {
   right: 0;
- 
 }
 
 .pan-btn:disabled {
   opacity: 0.3;
   pointer-events: none;
 }
-
-/* Canvas should not have forced height */
-.chart-wrap canvas {
-  display: block;
-  width: 100% !important;   /* responsive width */
-  height: auto !important;  /* let Chart.js calculate height */
-}
-
+ 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
@@ -72,7 +63,6 @@ canvas {
   user-select: none;
 }
 
- 
 .chart-zoom-controls {
   display: flex;
   flex-wrap: wrap;   /* allow wrapping if needed */
@@ -369,10 +359,6 @@ form.form::after {
 
 
 <script>
-
- 
-
-
 Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
 
 // --------------------
