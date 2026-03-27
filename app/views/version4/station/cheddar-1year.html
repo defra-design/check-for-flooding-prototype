@@ -355,10 +355,22 @@ function ukDateToISO(ukDate) {
   return new Date(`${year}-${month}-${day}`).toISOString();
 }
 
-// CSV parsing
+/// CSV parsing
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/).map(l => l.trim());
   return lines.map(line => line.split(','));
+}
+
+function smoothData(data, windowSize = 3) {
+  return data.map((point, i, arr) => {
+    const start = Math.max(0, i - windowSize);
+    const end = Math.min(arr.length - 1, i + windowSize);
+
+    const subset = arr.slice(start, end + 1);
+    const avg = subset.reduce((sum, p) => sum + p.y, 0) / subset.length;
+
+    return { x: point.x, y: avg };
+  });
 }
 
 
@@ -371,11 +383,18 @@ function csvRowsToChartData(rows) {
     return {
       label: name,
       yAxisID: 'y1',
-      data: rows.slice(1).map(r => ({ x: new Date(r[0]).getTime(), y: Number(r[i + 1]) })),
+      data: smoothData(
+  rows.slice(1).map(r => ({
+    x: new Date(r[0]).getTime(),
+    y: Number(r[i + 1])
+  }))
+),
       fill: true,
       borderColor: 'rgb(29, 112, 184)',
       backgroundColor: 'rgba(29, 112, 184, .1)',
-      tension: 0.3
+      tension: 0.5,
+      cubicInterpolationMode: 'monotone',
+      pointRadius: 0
     };
   });
   return { datasets };

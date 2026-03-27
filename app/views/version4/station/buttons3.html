@@ -239,34 +239,35 @@ form.form::after {
   display: block;
 }
 
-/* Overlay buttons */
-.pan-btn.overlay {
+/* Pan buttons overlay */
+.pan-btn {
   position: absolute;
-  top: 45%;
   transform: translateY(-50%);
-  z-index: 10;
-  background-color: rgba(243, 242, 241, 0.95); /* slightly more visible */
-  border: 1px solid #b1b4b6;
-  padding: 0 12px;
-  height: 60px;          /* taller button */
-  min-width: 40px;       /* wider clickable area */
-  font-size: 1.2rem;     /* larger arrow */
+  width: 48px;             /* GOV.UK recommended touch target */
+  height: 48px;            /* GOV.UK recommended touch target */
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  z-index: 10;
+  flex: 0 0 auto;
+  padding: 0;              /* remove default padding for perfect centering */
 }
 
-.pan-btn.overlay.left {
-  left: 12px;
+/* Left and right positions */
+#panLeftBtn {
+  left: 28px;
+    top: 50%;
 }
 
-.pan-btn.overlay.right {
-  right: 12px;
+#panRightBtn {
+  right: 38px;
+    top: 50%;
 }
 
+/* Disabled state */
 .pan-btn:disabled {
-  opacity: 0;
+  opacity: 0.01;
   pointer-events: none;
 }
 
@@ -279,15 +280,17 @@ form.form::after {
   }
 }
 </style>
+ 
 <section class="chart-section">
   <div class="chart-container">
     <canvas id="chart"></canvas>
 
-    <!-- Overlay pan buttons -->
-    <button id="panLeftBtn" class="pan-btn overlay left">←</button>
-    <button id="panRightBtn" class="pan-btn overlay right">→</button>
+    <!-- Pan buttons overlay -->
+    <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart left">←</button>
+    <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart right">→</button>
   </div>
 </section>
+ 
  
  
 <!-- Zoom  controls -->
@@ -298,10 +301,10 @@ form.form::after {
   </div>
     <div class="govuk-form-group"
      style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button></div>
+      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">  - &#128269;  </button></div>
     
  <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+     style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
            <button type="button" class="govuk-button govuk-button--secondary"  id="resetZoomBtn"  style="display:none;">
   Reset zoom
 </button></div>
@@ -445,29 +448,49 @@ Chart.register({
 // --------------------
 // Helpers
 // --------------------
+// CSV parsing
 function parseCSV(text) {
-  return text.trim().split(/\r?\n/).map(l => l.split(','));
+  const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+  return lines.map(line => line.split(','));
 }
 
+function smoothData(data, windowSize = 3) {
+  return data.map((point, i, arr) => {
+    const start = Math.max(0, i - windowSize);
+    const end = Math.min(arr.length - 1, i + windowSize);
+
+    const subset = arr.slice(start, end + 1);
+    const avg = subset.reduce((sum, p) => sum + p.y, 0) / subset.length;
+
+    return { x: point.x, y: avg };
+  });
+}
+
+
+// Build Chart.js data
 function csvRowsToChartData(rows) {
   const headers = rows[0];
 
-  return {
-    datasets: headers.slice(1).map((name, i) => ({
+
+  const datasets = headers.slice(1).map((name, i) => {
+    return {
       label: name,
       yAxisID: 'y1',
-      data: rows.slice(1).map(r => ({
-        x: new Date(r[0]).getTime(),
-        y: Number(r[i + 1])
-      })),
-      borderColor: 'rgb(29, 112, 184)',
-      backgroundColor: 'rgba(29,112,184,.1)',
+      data: smoothData(
+  rows.slice(1).map(r => ({
+    x: new Date(r[0]).getTime(),
+    y: Number(r[i + 1])
+  }))
+),
       fill: true,
-      tension: 0.6,
+      borderColor: 'rgb(29, 112, 184)',
+      backgroundColor: 'rgba(29, 112, 184, .1)',
+      tension: 0.5,
       cubicInterpolationMode: 'monotone',
       pointRadius: 0
-    }))
-  };
+    };
+  });
+  return { datasets };
 }
 
 function buildFiveEqualTicks(scale, anchorHour = 6) {
@@ -500,8 +523,10 @@ function updateControls() {
   const panLeftBtn = document.getElementById('panLeftBtn');
   const panRightBtn = document.getElementById('panRightBtn');
 
-  // ✅ Reset button - hide when not zoomed
-  resetBtn.style.display = zoomed ? 'inline-block' : 'none';
+  // Reset button (keep visible, toggle disabled)
+  resetBtn.style.display = 'inline-block';
+  resetBtn.disabled = !zoomed;
+  resetBtn.classList.toggle('govuk-button--disabled', !zoomed);
 
   // Pan buttons
   panLeftBtn.disabled = !zoomed;
@@ -565,7 +590,10 @@ function renderChart(data) {
         zoom: {
           zoom: {
             wheel: { enabled: true },
-            drag: { enabled: true,
+            drag: { enabled: false,
+            pinch: {
+      enabled: true   
+    },
         borderColor: 'yellow',       // border of drag rectangle
         borderWidth: 2,
         backgroundColor: 'rgba(255, 255, 0, 0.25)', // semi-transparent yellow fill
@@ -573,13 +601,16 @@ function renderChart(data) {
       },
             mode: 'x',
             onZoomComplete: updateControls,
+            
           },
           pan: {
             enabled: true,
             mode: 'x',
             onPanComplete: updateControls
           },
-          limits: { x: { min: 'original', max: 'original', minRange: 3600000 } }
+          limits: {
+    x: { min: 'original', max: 'original', minRange: 3600000 }
+  }
         },
         tooltip: {
           enabled: true,

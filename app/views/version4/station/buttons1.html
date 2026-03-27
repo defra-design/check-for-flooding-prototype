@@ -16,46 +16,45 @@ body { padding: 2rem; }
   margin-top: 1rem;
 }
 
-
 /* Wrapper sets width only; height is auto */
 .chart-wrap {
-  
-  flex: 1;
-}
-
-.chart-wrap canvas {
-  width: 100% !important;
-  height: 320px !important;
-}
-
-.chart-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  min-height: 280px;
+  margin: 0 auto;
+  padding: 0 48px; /* reserve space for buttons */
 }
 
 .pan-btn {
-  flex: 1px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+
+  width: 40px;
   height: 40px;
+  min-width: 40px;
+  padding: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
- 
 }
- 
+
+.pan-left {
+  left: 0;
+}
+
+.pan-right {
+  right: 0;
+}
+
 .pan-btn:disabled {
   opacity: 0.3;
   pointer-events: none;
 }
-
-/* Canvas should not have forced height */
-.chart-wrap canvas {
-  display: block;
-  width: 100% !important;   /* responsive width */
-  height: 320px !important;
-}
-
+ 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
@@ -64,7 +63,6 @@ canvas {
   user-select: none;
 }
 
- 
 .chart-zoom-controls {
   display: flex;
   flex-wrap: wrap;   /* allow wrapping if needed */
@@ -222,65 +220,42 @@ form.form::after {
  
 <div style="clear: both;"></div>
 
-<style>
-.three-columns {
-  display: flex;
-  gap: 16px; /* space between columns */
-  align-items: stretch; /* default, other columns stretch */
-}
-
-.column-pan {
-  flex: 1; 
-  max-width: 20px;
-  display: flex;           /* make it a flex container */
-  justify-content: center; /* horizontal center */
-  align-items: center;     /* vertical center */
- 
-}
-
- 
-.column-pan .pan-btn {
-  height: 60%;
-}
-
-.column-chart {
-  flex: 1; /* equal width */
-  padding: 5px;
-  max-width: 95%;
-  text-align: center;
-}
-</style>
- 
  <!-- chart --> 
- <section class="chart-section"> 
-<div class="three-columns">
-  <div class="column-pan">
-  <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary">←</button>
-</div>  <div class="column-chart"><canvas id="chart"></canvas></div>
-  <div class="column-pan">
-  <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary">→</button>
-</div>
-</div>
  
- 
+<section class="chart-section">
+  <div class="chart-wrap">
+   
+
+ <canvas id="chart"></canvas>
+   
+
+  </div>
 </section>
  
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
+  
    <div class="govuk-form-group"
      style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
+     <button id="panLeftBtn" class="pan-btn pan-left govuk-button govuk-button--secondary">←</button>
   </div>
-    <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button></div>
+  
+    <div class="govuk-form-group"  style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+       <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"> + &#128269; </button>
+    </div>
+   <div class="govuk-form-group"  style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;"> 
+      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button>
+    </div>
+
+ <div class="govuk-form-group" style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+  <button id="panRightBtn" class="pan-btn pan-right govuk-button govuk-button--secondary">→</button>
+</div>
     
- <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-           <button type="button" class="govuk-button govuk-button--secondary"  id="resetZoomBtn"  style="display:none;">
+ <div class="govuk-form-group"  style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+           <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn" style="display:none;">
   Reset zoom
 </button></div>
-</div>
+
    </div>
 <div style="clear: both;"></div>
  
@@ -386,10 +361,6 @@ form.form::after {
 
 
 <script>
-
- 
-
-
 Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
 
 // --------------------
@@ -420,28 +391,49 @@ Chart.register({
 // --------------------
 // Helpers
 // --------------------
+// CSV parsing
 function parseCSV(text) {
-  return text.trim().split(/\r?\n/).map(l => l.split(','));
+  const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+  return lines.map(line => line.split(','));
 }
 
+function smoothData(data, windowSize = 3) {
+  return data.map((point, i, arr) => {
+    const start = Math.max(0, i - windowSize);
+    const end = Math.min(arr.length - 1, i + windowSize);
+
+    const subset = arr.slice(start, end + 1);
+    const avg = subset.reduce((sum, p) => sum + p.y, 0) / subset.length;
+
+    return { x: point.x, y: avg };
+  });
+}
+
+
+// Build Chart.js data
 function csvRowsToChartData(rows) {
   const headers = rows[0];
 
-  return {
-    datasets: headers.slice(1).map((name, i) => ({
+
+  const datasets = headers.slice(1).map((name, i) => {
+    return {
       label: name,
       yAxisID: 'y1',
-      data: rows.slice(1).map(r => ({
-        x: new Date(r[0]).getTime(),
-        y: Number(r[i + 1])
-      })),
-      borderColor: 'rgb(29, 112, 184)',
-      backgroundColor: 'rgba(29,112,184,.1)',
+      data: smoothData(
+  rows.slice(1).map(r => ({
+    x: new Date(r[0]).getTime(),
+    y: Number(r[i + 1])
+  }))
+),
       fill: true,
-      tension: 0.3,
+      borderColor: 'rgb(29, 112, 184)',
+      backgroundColor: 'rgba(29, 112, 184, .1)',
+      tension: 0.5,
+      cubicInterpolationMode: 'monotone',
       pointRadius: 0
-    }))
-  };
+    };
+  });
+  return { datasets };
 }
 
 function buildFiveEqualTicks(scale, anchorHour = 6) {
