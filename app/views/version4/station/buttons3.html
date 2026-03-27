@@ -513,6 +513,24 @@ function isZoomed() {
   return x.min !== originalXRange.min || x.max !== originalXRange.max;
 }
 
+function updateResetButton(chartInstance) {
+  const chart = chartInstance || myChart;
+  const btn = document.getElementById('resetZoomBtn');
+
+  if (!chart || !chart.scales?.x) {
+    btn.style.display = 'none';
+    return;
+  }
+
+  const x = chart.scales.x;
+
+  const isZoomed =
+    x.min !== x.options.min ||
+    x.max !== x.options.max;
+
+  btn.style.display = isZoomed ? 'inline-block' : 'none';
+}
+
 
 function updateControls() {
   if (!myChart) return;
@@ -571,7 +589,7 @@ Chart.register({
         false
       );
 
-      // inside afterEvent, before update()
+ 
 
 if (e.type === 'click') {
   if (chart._activePoint) {
@@ -641,21 +659,20 @@ function renderChart(data) {
   },
         zoom: {
           zoom: {
-            wheel: { enabled: true },
-            drag: { enabled: false,
-            pinch: { enabled: true   },
-       
-        mode: 'x'
-      },
-            mode: 'x',
-            onZoomComplete: updateControls
-            
-          },
+           wheel: { enabled: true },
+    pinch: { enabled: true },
+    drag: { enabled: false },
+    mode: 'x',
+    onZoomComplete: ({ chart }) => updateResetButton(chart)
+  }, 
           pan: {
-            enabled: true,
-            mode: 'x',
-            onPanComplete: updateControls
-          },
+  enabled: ({ chart }) => {
+    const x = chart.scales.x;
+    return x.min !== x.options.min || x.max !== x.options.max;
+  },
+  mode: 'x',
+  onPanComplete: ({ chart }) => updateResetButton(chart)
+},
           limits: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
   }
@@ -804,6 +821,9 @@ function formatGovUKShortYearDate(iso) {
     });
   }
 })();
+
+updateResetButton(myChart);
+
 </script>
  
 <!-- chart end-->
