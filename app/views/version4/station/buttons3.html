@@ -58,7 +58,7 @@ body { padding: 2rem; }
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-  touch-action: pan-y pinch-zoom;
+   touch-action: pan-y pinch-zoom;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -510,25 +510,29 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
 function isZoomed() {
   if (!myChart || !originalXRange) return false;
   const x = myChart.scales.x;
-  return x.min !== originalXRange.min || x.max !== originalXRange.max;
+
+  return (
+    Math.abs(x.min - originalXRange.min) > 1 ||
+    Math.abs(x.max - originalXRange.max) > 1
+  );
 }
 
-function updateResetButton(chartInstance) {
-  const chart = chartInstance || myChart;
+
+function updateResetButton() {
   const btn = document.getElementById('resetZoomBtn');
 
-  if (!chart || !chart.scales?.x) {
+  if (!myChart || !originalXRange) {
     btn.style.display = 'none';
     return;
   }
 
-  const x = chart.scales.x;
+  const x = myChart.scales.x;
 
-  const isZoomed =
-    x.min !== x.options.min ||
-    x.max !== x.options.max;
+  const zoomed =
+    Math.abs(x.min - originalXRange.min) > 1 ||
+    Math.abs(x.max - originalXRange.max) > 1;
 
-  btn.style.display = isZoomed ? 'inline-block' : 'none';
+  btn.style.display = zoomed ? 'inline-block' : 'none';
 }
 
 
@@ -559,24 +563,20 @@ function updateControls() {
 // --------------------
 let originalXRange = null;
 let myChart = null;
-
-
 Chart.register({
   id: 'touchTooltip',
-
-  afterInit(chart) {
-    chart._activePoint = null;
-  },
 
   afterEvent(chart, args) {
     const e = args.event;
 
-    // Only handle touch
     if (!e.native || !e.native.touches) return;
 
     const touches = e.native.touches;
 
-    // ✅ 1 finger = tooltip tracking
+    // 🚫 Let pinch zoom work — DO NOTHING
+    if (touches.length === 2) return;
+
+    // ✅ Single touch = tooltip
     if (touches.length === 1) {
       const rect = chart.canvas.getBoundingClientRect();
       const x = touches[0].clientX - rect.left;
@@ -589,32 +589,11 @@ Chart.register({
         false
       );
 
- 
-
-if (e.type === 'click') {
-  if (chart._activePoint) {
-    chart.setActiveElements([]);
-    chart.tooltip.setActiveElements([], {});
-    chart._activePoint = null;
-    chart.update();
-  }
-};
-
       if (points.length) {
         chart.setActiveElements(points);
         chart.tooltip.setActiveElements(points, { x, y });
-        chart._activePoint = points;
+        chart.draw(); // ⚡ smooth (no full update)
       }
-
-      chart.update('none');
-    }
-
-    // ✅ 2 fingers = allow pinch zoom (clear tooltip)
-    if (touches.length === 2) {
-      chart.setActiveElements([]);
-      chart.tooltip.setActiveElements([], {});
-      chart._activePoint = null;
-      chart.update('none');
     }
   }
 });
@@ -658,29 +637,26 @@ function renderChart(data) {
     }
   },
         zoom: {
-          zoom: {
-           wheel: { enabled: true },
+  limits: {
+    x: { min: 'original', max: 'original', minRange: 3600000 }
+  },
+  pan: {
+    enabled: true,
+    mode: 'x',
+    onPanComplete: ({ chart }) => updateControls()
+  },
+  zoom: {
+    wheel: { enabled: true },
     pinch: { enabled: true },
     drag: { enabled: false },
     mode: 'x',
-    onZoomComplete: ({ chart }) => updateResetButton(chart)
-  }, 
-          pan: {
-  enabled: ({ chart }) => {
-    const x = chart.scales.x;
-    return x.min !== x.options.min || x.max !== x.options.max;
-  },
-  mode: 'x',
-  onPanComplete: ({ chart }) => updateResetButton(chart)
-},
-          limits: {
-    x: { min: 'original', max: 'original', minRange: 3600000 }
+    onZoomComplete: ({ chart }) => updateControls()
   }
-        },
+},
         tooltip: {
           enabled: true,
-          events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
-           animation: false,
+          events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
+          animation: false,
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
