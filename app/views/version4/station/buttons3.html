@@ -542,6 +542,65 @@ function updateControls() {
 let originalXRange = null;
 let myChart = null;
 
+
+Chart.register({
+  id: 'touchTooltip',
+
+  afterInit(chart) {
+    chart._activePoint = null;
+  },
+
+  afterEvent(chart, args) {
+    const e = args.event;
+
+    // Only handle touch
+    if (!e.native || !e.native.touches) return;
+
+    const touches = e.native.touches;
+
+    // ✅ 1 finger = tooltip tracking
+    if (touches.length === 1) {
+      const rect = chart.canvas.getBoundingClientRect();
+      const x = touches[0].clientX - rect.left;
+      const y = touches[0].clientY - rect.top;
+
+      const points = chart.getElementsAtEventForMode(
+        { x, y },
+        'nearest',
+        { intersect: false },
+        false
+      );
+
+      // inside afterEvent, before update()
+
+if (e.type === 'click') {
+  if (chart._activePoint) {
+    chart.setActiveElements([]);
+    chart.tooltip.setActiveElements([], {});
+    chart._activePoint = null;
+    chart.update();
+  }
+};
+
+      if (points.length) {
+        chart.setActiveElements(points);
+        chart.tooltip.setActiveElements(points, { x, y });
+        chart._activePoint = points;
+      }
+
+      chart.update('none');
+    }
+
+    // ✅ 2 fingers = allow pinch zoom (clear tooltip)
+    if (touches.length === 2) {
+      chart.setActiveElements([]);
+      chart.tooltip.setActiveElements([], {});
+      chart._activePoint = null;
+      chart.update('none');
+    }
+  }
+});
+
 function renderChart(data) {
   if (!data?.datasets?.[0]?.data?.length) return;
   if (myChart) myChart.destroy();
@@ -555,7 +614,7 @@ function renderChart(data) {
       responsive: true,
       maintainAspectRatio: false,
       parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
         annotation: {
@@ -577,30 +636,19 @@ function renderChart(data) {
          },
         padding: 6}
       }
-      /*// normal range,
-      normalRange: {
-        type: 'box',
-        yMin: 0.24,
-        yMax: 0.36,
-        backgroundColor: 'rgba(50, 216, 230, 0.30)', // light blue fill
-        borderWidth: 0
-      } */
+       
     }
   },
         zoom: {
           zoom: {
             wheel: { enabled: true },
             drag: { enabled: false,
-            pinch: {
-      enabled: true   
-    },
-        borderColor: 'yellow',       // border of drag rectangle
-        borderWidth: 2,
-        backgroundColor: 'rgba(255, 255, 0, 0.25)', // semi-transparent yellow fill
+            pinch: { enabled: true   },
+       
         mode: 'x'
       },
             mode: 'x',
-            onZoomComplete: updateControls,
+            onZoomComplete: updateControls
             
           },
           pan: {
@@ -614,6 +662,8 @@ function renderChart(data) {
         },
         tooltip: {
           enabled: true,
+          events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
+           animation: false,
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
