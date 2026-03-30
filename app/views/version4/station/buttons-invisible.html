@@ -59,10 +59,15 @@ pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:a
 
 canvas {
   touch-action: pan-y pinch-zoom;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
+canvas {
+  cursor: grab;
+}
+
+canvas:active {
+  cursor: grabbing;
+}
  
 .chart-zoom-controls {
   display: flex;
@@ -301,13 +306,18 @@ form.form::after {
   </div>
     <div class="govuk-form-group"
      style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">  - &#128269;  </button></div>
+       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" style="display:none;"> - 🔍 </button></div>
     
  <div class="govuk-form-group"
      style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-           <button type="button" class="govuk-button govuk-button--secondary"  id="resetZoomBtn"  style="display:none;">
+  <button
+  type="button"
+  class="govuk-button govuk-button--secondary"
+  id="latestBtn"
+  style="display:none;">
   Reset zoom
-</button></div>
+</button>
+</div>
 </div>
    </div>
 <div style="clear: both;"></div>
@@ -341,7 +351,7 @@ form.form::after {
           <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
           </svg>
         </span>
-        <span class="defra-button-secondary__text">Download data CSV (12KB)</span>
+        <span class="defra-button-secondary__text">Download data CSV </span>
       </a>
   </div>
 
@@ -424,26 +434,201 @@ Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
 // Vertical hover line
 // --------------------
 Chart.register({
-  id: 'tooltipVerticalLine',
+  id: 'advancedTouchInteraction',
+
+  afterInit(chart) {
+    chart._drag = {
+      active: false,
+      lastX: 0,
+      velocityX: 0,
+      lastTime: 0,
+      lockedPoint: null
+    };
+  },
+
   afterDraw(chart) {
-    const tooltip = chart.tooltip;
-    if (!tooltip?.getActiveElements()?.length) return;
+    const active = chart.getActiveElements();
+    if (!active.length) return;
 
-    const { ctx, scales: { y1 } } = chart;
-    const x = tooltip.getActiveElements()[0].element.x;
-
-    if (!y1) return;
+    const { ctx, chartArea } = chart;
+    const x = active[0].element.x;
 
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(x, y1.top);
-    ctx.lineTo(x, y1.bottom);
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#b1b4b6';
+    ctx.globalAlpha = 0.8;
+    ctx.strokeStyle = '#b1b4b6';  
     ctx.stroke();
     ctx.restore();
+  },
+
+  afterEvent(chart, args) {
+    const e = args.event;
+    if (!e.native) return;
+
+    const rect = chart.canvas.getBoundingClientRect();
+    const drag = chart._drag;
+
+    // -----------------------
+    // TOUCH START
+    // -----------------------
+    if (e.type === 'touchstart') {
+      const touches = e.native.touches;
+
+      if (touches.length === 2) {
+        drag.active = false;
+        return;
+      }
+
+      const x = touches[0].clientX - rect.left;
+
+      drag.active = true;
+      drag.lastX = x;
+      drag.velocityX = 0;
+      drag.lastTime = performance.now();
+    }
+
+    // -----------------------
+// MOUSE DRAG (desktop pan)
+// -----------------------
+if (e.type === 'mousedown') {
+  if (!isZoomed()) return;
+
+  drag.active = true;
+  drag.lastX = e.x;
+  chart.canvas.style.cursor = 'grabbing';
+}
+
+if (e.type === 'mousemove' && drag.active && e.native.buttons === 1) {
+  const x = e.x;
+  const dx = x - drag.lastX;
+
+  chart.pan({ x: -dx }, undefined, 'default');
+
+  drag.lastX = x;
+
+  chart.draw();
+}
+
+if (e.type === 'mouseup' || e.type === 'mouseout') {
+  drag.active = false;
+  chart.canvas.style.cursor = 'default';
+}
+
+
+    // -----------------------
+    // TOUCH MOVE → PAN + SNAP
+    // -----------------------
+    if (e.type === 'touchmove' && drag.active) {
+      const touches = e.native.touches;
+      if (touches.length !== 1) return;
+
+      const now = performance.now();
+      const x = touches[0].clientX - rect.left;
+
+      const dx = x - drag.lastX;
+      const dt = now - drag.lastTime;
+
+      drag.velocityX = dx / dt;
+
+      // --- clamp velocity ---
+      drag.velocityX = Math.max(-1.5, Math.min(1.5, drag.velocityX));
+
+      // --- edge resistance ---
+      const scale = chart.scales.x;
+      const bounds = chart.$context.originalXRange;
+
+      const atMin = scale.min <= bounds.min;
+      const atMax = scale.max >= bounds.max;
+
+      let adjustedDx = dx;
+
+      if ((atMin && dx > 0) || (atMax && dx < 0)) {
+        adjustedDx *= 0.3;
+      }
+
+      chart.pan({ x: -adjustedDx }, undefined, 'default');
+
+      // --- SNAP tooltip to nearest point ---
+      const points = chart.getElementsAtEventForMode(
+        { x, y: chart.chartArea.top },
+        'nearest',
+        { intersect: false },
+        false
+      );
+
+      if (points.length) {
+        chart.setActiveElements(points);
+        chart.tooltip.setActiveElements(points, {
+          x: points[0].element.x,
+          y: points[0].element.y
+        });
+      }
+
+      drag.lastX = x;
+      drag.lastTime = now;
+
+      chart.draw();
+    }
+
+    // -----------------------
+    // TOUCH END → MOMENTUM / TAP
+    // -----------------------
+    if (e.type === 'touchend') {
+      if (!drag.active) return;
+
+      drag.active = false;
+
+      // TAP → lock tooltip
+if (Math.abs(drag.velocityX) < 0.05) {
+  // keep last active element (do nothing = sticky)
+  return;
+}
+
+      // --- momentum ---
+      let velocity = drag.velocityX * 40;
+
+      function step() {
+        if (Math.abs(velocity) < 0.1) return;
+
+        chart.pan({ x: -velocity }, undefined, 'default');
+
+        velocity *= 0.95;
+
+        chart.draw();
+        requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    // -----------------------
+    // MOUSE (desktop parity)
+    // -----------------------
+    if (e.type === 'mousemove') {
+      const x = e.x;
+
+      const points = chart.getElementsAtEventForMode(
+        { x, y: chart.chartArea.top },
+        'nearest',
+        { intersect: false },
+        false
+      );
+
+      if (points.length) {
+        chart.setActiveElements(points);
+        chart.tooltip.setActiveElements(points, {
+          x: points[0].element.x,
+          y: points[0].element.y
+        });
+        chart.draw();
+      }
+    }
   }
 });
+
 
 // --------------------
 // Helpers
@@ -504,36 +689,62 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
   });
 }
 
+
+
+
 // --------------------
 // Zoom detection + button toggle
 // --------------------
 function isZoomed() {
   if (!myChart || !originalXRange) return false;
   const x = myChart.scales.x;
-  return x.min !== originalXRange.min || x.max !== originalXRange.max;
+
+  return (
+    Math.abs(x.min - originalXRange.min) > 1 ||
+    Math.abs(x.max - originalXRange.max) > 1
+  );
 }
+
+
+document.getElementById('latestBtn').onclick = () => {
+  if (!myChart) return;
+
+  myChart.resetZoom(); // ✅ proper reset (plugin-aware)
+
+  updateControls();
+};
+
 
 
 function updateControls() {
   if (!myChart) return;
 
   const zoomed = isZoomed();
+  const atLatest = isAtLatest();
 
-  const resetBtn = document.getElementById('resetZoomBtn');
+  const latestBtn = document.getElementById('latestBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
   const panLeftBtn = document.getElementById('panLeftBtn');
   const panRightBtn = document.getElementById('panRightBtn');
 
-  // Reset button (keep visible, toggle disabled)
-  resetBtn.style.display = 'inline-block';
-  resetBtn.disabled = !zoomed;
-  resetBtn.classList.toggle('govuk-button--disabled', !zoomed);
+  // Show reset zoom button only when zoomed in
+  latestBtn.style.display = !atLatest ? 'inline-block' : 'none';
 
-  // Pan buttons
+  // Show zoom-out button only when zoomed in
+  zoomOutBtn.style.display = zoomed ? 'inline-block' : 'none';
+
   panLeftBtn.disabled = !zoomed;
   panRightBtn.disabled = !zoomed;
+}
 
-  panLeftBtn.classList.toggle('govuk-button--disabled', !zoomed);
-  panRightBtn.classList.toggle('govuk-button--disabled', !zoomed);
+
+function isAtLatest() {
+  if (!myChart || !originalXRange) return true;
+
+  const x = myChart.scales.x;
+
+  // if max is close to original max → still at latest
+  return Math.abs(x.max - originalXRange.max) < 5;
 }
 
 // --------------------
@@ -541,6 +752,145 @@ function updateControls() {
 // --------------------
 let originalXRange = null;
 let myChart = null;
+
+Chart.register({
+  id: 'advancedTouchInteraction',
+
+  afterInit(chart) {
+    chart._drag = {
+      active: false,
+      lastX: 0,
+      velocityX: 0,
+      lastTime: 0,
+      lockedPoint: null
+    };
+  },
+
+  afterEvent(chart, args) {
+    const e = args.event;
+    if (!e.native) return;
+
+    const rect = chart.canvas.getBoundingClientRect();
+    const drag = chart._drag;
+
+    // -----------------------
+    // TOUCH START
+    // -----------------------
+    if (e.type === 'touchstart') {
+      const touches = e.native.touches;
+
+      // 2 fingers = zoom → reset drag
+      if (touches.length === 2) {
+        drag.active = false;
+        drag.lockedPoint = null;
+        return;
+      }
+
+      const x = touches[0].clientX - rect.left;
+
+      drag.active = true;
+      drag.lastX = x;
+      drag.velocityX = 0;
+      drag.lastTime = performance.now();
+    }
+
+    // -----------------------
+    // TOUCH MOVE → PAN
+    // -----------------------
+    if (e.type === 'touchmove' && drag.active) {
+      const touches = e.native.touches;
+      if (touches.length !== 1) return;
+
+      const now = performance.now();
+      const x = touches[0].clientX - rect.left;
+
+      const dx = x - drag.lastX;
+      const dt = now - drag.lastTime;
+
+      drag.velocityX = dx / dt;
+
+      // --- EDGE RESISTANCE ---
+      const scale = chart.scales.x;
+      const atMin = scale.min <= chart.$context.originalXRange.min;
+      const atMax = scale.max >= chart.$context.originalXRange.max;
+
+      let adjustedDx = dx;
+
+      if ((atMin && dx > 0) || (atMax && dx < 0)) {
+        adjustedDx *= 0.3; // resistance
+      }
+
+      chart.pan({ x: -adjustedDx }, undefined, 'default');
+
+      drag.lastX = x;
+      drag.lastTime = now;
+
+      chart.draw();
+    }
+
+
+    function updateNormalBand() {
+  if (!myChart) return;
+
+  const band = myChart.options.plugins.annotation.annotations.normalBand;
+
+  const zoomed = isZoomed();
+
+  band.backgroundColor = zoomed
+    ? 'rgba(29,112,184,0.15)'
+    : 'rgba(29,112,184,0.08)';
+
+  myChart.update('none');
+}
+
+    // -----------------------
+    // TOUCH END → MOMENTUM
+    // -----------------------
+    if (e.type === 'touchend') {
+      if (!drag.active) return;
+
+      drag.active = false;
+
+      // TAP = lock tooltip
+      if (Math.abs(drag.velocityX) < 0.05) {
+        const x = drag.lastX;
+        const y = chart.chartArea.top;
+
+        const points = chart.getElementsAtEventForMode(
+          { x, y },
+          'nearest',
+          { intersect: false },
+          false
+        );
+
+        if (points.length) {
+          drag.lockedPoint = points;
+          chart.setActiveElements(points);
+          chart.tooltip.setActiveElements(points, { x, y });
+          chart.draw();
+        }
+
+        return;
+      }
+
+      // --- MOMENTUM PAN ---
+      let velocity = drag.velocityX * 40;
+
+      function step() {
+        if (Math.abs(velocity) < 0.1) return;
+
+        chart.pan({ x: -velocity }, undefined, 'default');
+
+        velocity *= 0.95; // friction
+
+        chart.draw();
+        requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    }
+  }
+});
 
 function renderChart(data) {
   if (!data?.datasets?.[0]?.data?.length) return;
@@ -555,7 +905,7 @@ function renderChart(data) {
       responsive: true,
       maintainAspectRatio: false,
       parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
         annotation: {
@@ -576,38 +926,62 @@ function renderChart(data) {
           weight: 'bold' 
          },
         padding: 6}
-      }
-      /*// normal range,
-      normalRange: {
-        type: 'box',
-        yMin: 0.24,
-        yMax: 0.36,
-        backgroundColor: 'rgba(50, 216, 230, 0.30)', // light blue fill
-        borderWidth: 0
-      } */
+      },
+      normalBand: {
+  type: 'box',
+  yMin: 0.24,
+  yMax: 0.36,
+  backgroundColor: 'rgba(29,112,184,0.08)',
+  borderWidth: 0
+}
+
+       
     }
   },
-        zoom: {
-          zoom: {
-            wheel: { enabled: true },
-            drag: { enabled: true,
-        borderColor: 'yellow',       // border of drag rectangle
-        borderWidth: 2,
-        backgroundColor: 'rgba(255, 255, 0, 0.25)', // semi-transparent yellow fill
-        mode: 'x'
-      },
-            mode: 'x',
-            onZoomComplete: updateControls,
-          },
-          pan: {
-            enabled: true,
-            mode: 'x',
-            onPanComplete: updateControls
-          },
-          limits: { x: { min: 'original', max: 'original', minRange: 3600000 } }
+zoom: {
+  limits: {
+    x: { min: 'original', max: 'original', minRange: 3600000 }
+  },
+  pan: {
+    enabled: false // ❗ disable plugin pan (we handle it ourselves now)
+  },
+  zoom: {
+    wheel: { enabled: true },
+    pinch: { enabled: true },
+    drag: { enabled: false },
+    mode: 'x',
+     onZoomComplete: () => {
+      updateControls();
+      updateNormalBand();}
+  }
+},
+annotation: {
+  annotations: {
+    normalLine: {
+      type: 'line',
+      scaleID: 'y1',             // <- add this
+      value: 0.36,               // y position
+      borderColor: '#000',
+      borderWidth: 2,
+      label: {
+        display: true,
+        content: '0.36m - Top of normal range',
+        position: 'end',         // use 'end' or 'center' as needed
+        backgroundColor: 'rgba(255,255,255,0.85)',
+        color: '#0b0c0c',
+        font: {
+          size: 12,
+          weight: 'bold'
         },
+        padding: 6
+      }
+    }
+  }
+},
         tooltip: {
           enabled: true,
+          events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
+          animation: false,
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
@@ -649,15 +1023,19 @@ function renderChart(data) {
         }
       }
     }
+    
   });
 
+  
   // store original x-axis limits for comparison
   const x = myChart.scales.x;
   originalXRange = { min: x.min, max: x.max };
+  myChart.$context.originalXRange = originalXRange;
 
   attachControls();
   updateControls();
 }
+
 
  
 function attachControls() {
@@ -685,12 +1063,24 @@ function attachControls() {
     myChart.pan({ x: -PAN_DISTANCE });
     updateControls();
   };
-
-  document.getElementById('resetZoomBtn').onclick = () => {
-    myChart.resetZoom();
-    updateControls();
-  };
 }
+
+
+document.addEventListener('keydown', (e) => {
+  if (!myChart) return;
+
+  const STEP = 80;
+
+  if (e.key === 'ArrowLeft') {
+    myChart.pan({ x: STEP });
+    updateControls();
+  }
+
+  if (e.key === 'ArrowRight') {
+    myChart.pan({ x: -STEP });
+    updateControls();
+  }
+});
 
 // --------------------
 // Formatting
@@ -746,8 +1136,14 @@ function formatGovUKShortYearDate(iso) {
         ]
       }]
     });
+
+    updateControls();
+updateNormalBand();
   }
 })();
+
+
+
 </script>
  
 <!-- chart end-->

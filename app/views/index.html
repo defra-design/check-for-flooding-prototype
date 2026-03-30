@@ -1,4 +1,5 @@
 {% extends "layouts/main.html" %}
+ 
 
 {% set title = 'Check for flooding' %}
 {% set pageName="Home" %}
@@ -48,14 +49,13 @@ v13.19.1</span>
       html: "<p class='govuk-body'><b> Version 4 </b></p>"
     },
     {
-      html: "<li><a href='version4/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v4</a> </li> "
+      html: "<a href='version4/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v4</a> "
     },
     {
-      html: "<p class='govuk-body'>Updated Prototype Kit + Front end. <br>Zoom button options:  
-              <a href='version4/station/buttons0'>Option0</a>,
-                  <a href='version4/station/buttons1'>Option1</a>, 
-                  <a href='version4/station/buttons2'>Option2</a>, 
-                  <a href='version4/station/buttons3'>Option3</a></p>
+      html: "<p class='govuk-body'>Updated Prototype Kit + Front end. <br>Zoom options:  
+            
+                  <a href='version4/station/buttons-disabled'>Disabled buttons</a>, 
+                  <a href='version4/station/buttons-invisible'>Invisible buttons</a></p>
               "
     }
   ] 
@@ -92,7 +92,7 @@ v13.19.1</span>
       html: "<p class='govuk-body'><b> Version 3 </b></p>"
     },
     {
-      html: "<li><a href='version3/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v3</a> </li> "
+      html: "<a href='version3/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v3</a> "
     },
     {
       html: "<p class='govuk-body'>UR Testing round 2 - Changes include fixes for mobile and time and date order. </p>"
@@ -103,7 +103,7 @@ v13.19.1</span>
       html: "<p class='govuk-body'><b> Version 2 </b></p>"
     },
     {
-      html: "<li><a href='version2/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v2</a> </li> "
+      html: "<a href='version2/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge pages v2</a> "
     },
     {
       html: "<p class='govuk-body'>Cheddar Gorge data to show historic data and chart zoom</p>"
@@ -115,7 +115,7 @@ v13.19.1</span>
     },
     {
       html: " 
-        <li class='govuk-body'><a href='version1/'  class='govuk-body'>Service Start page</a> and main pages </li>
+        <a href='version1/'  class='govuk-body'>Service Start page</a> and main pages
        "
     },
     {
@@ -127,7 +127,7 @@ v13.19.1</span>
       html: "<p class='govuk-body' width='25%'><b> Chart tests </b></p>"
     },
     {
-      html: "<li><a href='version1/station/8209'  class='govuk-body'>Line chart</a>, <a href='version1/station/line-chart'  class='govuk-body'>Multi-line</a>, <a href='version1/station/bar-chart'  class='govuk-body'>Multi-bar chart</a>, <a href='version1/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge page </a> </li> "
+      html: "<a href='version1/station/8209'  class='govuk-body'>Line chart</a>, <a href='version1/station/line-chart'  class='govuk-body'>Multi-line</a>, <a href='version1/station/bar-chart'  class='govuk-body'>Multi-bar chart</a>, <a href='version1/station/cheddar-5days'  class='govuk-body'>Cheddar Gorge page </a> "
     },
     {
       html: "<p class='govuk-body'>Chart.js work - Pages displaying chart data, bar/line/area. Using a hosted CSV or option to upload own CSV.</p>"
@@ -138,7 +138,7 @@ v13.19.1</span>
       html: "<p class='govuk-body'><b>Date filter test</b></p>"
     },
     {
-      html: "<li><a href='date-test/pickdate' class='govuk-body' >Date filter test</a> </li> "
+      html: "<a href='date-test/pickdate' class='govuk-body' >Date filter test</a> "
     },
     {
       html: "<p class='govuk-body'>Page to show the X gov date filter working. </p>"
