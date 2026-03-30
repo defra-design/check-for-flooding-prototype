@@ -4,6 +4,7 @@
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
 {% endblock %}
 
+ 
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
@@ -18,15 +19,7 @@ body { padding: 2rem; }
 
 
 /* Wrapper sets width only; height is auto */
-.chart-wrap {
-  
-  flex: 1;
-}
 
-.chart-wrap canvas {
-  width: 100% !important;
-  height: 320px !important;
-}
 
 .chart-row {
   display: flex;
@@ -35,7 +28,7 @@ body { padding: 2rem; }
 }
 
 .pan-btn {
-  flex: 1px;
+  flex: 0 0 auto;
   height: 40px;
 
   display: flex;
@@ -58,7 +51,7 @@ body { padding: 2rem; }
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-  touch-action: pan-y pinch-zoom;
+    touch-action: none;
 }
 
 canvas {
@@ -424,33 +417,16 @@ form.form::after {
 
 
 <script>
-
  
-
-
-Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
-
-// --------------------
-// Vertical hover line
-// --------------------
-Chart.register({
-  id: 'advancedTouchInteraction',
-
-  afterInit(chart) {
-    chart._drag = {
-      active: false,
-      lastX: 0,
-      velocityX: 0,
-      lastTime: 0,
-      lockedPoint: null
-    };
-  },
-
+// Define plugin first
+const verticalLinePlugin = {
+  id: 'verticalLine',
   afterDraw(chart) {
-    const active = chart.getActiveElements();
-    if (!active.length) return;
+    const { ctx, chartArea, tooltip } = chart;
+    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
 
-    const { ctx, chartArea } = chart;
+    const active = chart.tooltip.getActiveElements();
+    if (!active.length) return;
     const x = active[0].element.x;
 
     ctx.save();
@@ -458,177 +434,17 @@ Chart.register({
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
     ctx.lineWidth = 1;
-    ctx.globalAlpha = 0.8;
-    ctx.strokeStyle = '#b1b4b6';  
+    ctx.strokeStyle = '#cccccc'; // GOV.UK black
+ 
     ctx.stroke();
     ctx.restore();
-  },
-
-  afterEvent(chart, args) {
-    const e = args.event;
-    if (!e.native) return;
-
-    const rect = chart.canvas.getBoundingClientRect();
-    const drag = chart._drag;
-
-    // -----------------------
-    // TOUCH START
-    // -----------------------
-    if (e.type === 'touchstart') {
-      const touches = e.native.touches;
-
-      if (touches.length === 2) {
-        drag.active = false;
-        return;
-      }
-
-      const x = touches[0].clientX - rect.left;
-
-      drag.active = true;
-      drag.lastX = x;
-      drag.velocityX = 0;
-      drag.lastTime = performance.now();
-    }
-
-    // -----------------------
-// MOUSE DRAG (desktop pan)
-// -----------------------
-if (e.type === 'mousedown') {
-  if (!isZoomed()) return;
-
-  drag.active = true;
-  drag.lastX = e.x;
-  chart.canvas.style.cursor = 'grabbing';
-}
-
-if (e.type === 'mousemove' && drag.active && e.native.buttons === 1) {
-  const x = e.x;
-  const dx = x - drag.lastX;
-
-  chart.pan({ x: -dx }, undefined, 'default');
-
-  drag.lastX = x;
-
-  chart.draw();
-}
-
-if (e.type === 'mouseup' || e.type === 'mouseout') {
-  drag.active = false;
-  chart.canvas.style.cursor = 'default';
-}
-
-
-    // -----------------------
-    // TOUCH MOVE → PAN + SNAP
-    // -----------------------
-    if (e.type === 'touchmove' && drag.active) {
-      const touches = e.native.touches;
-      if (touches.length !== 1) return;
-
-      const now = performance.now();
-      const x = touches[0].clientX - rect.left;
-
-      const dx = x - drag.lastX;
-      const dt = now - drag.lastTime;
-
-      drag.velocityX = dx / dt;
-
-      // --- clamp velocity ---
-      drag.velocityX = Math.max(-1.5, Math.min(1.5, drag.velocityX));
-
-      // --- edge resistance ---
-      const scale = chart.scales.x;
-      const bounds = chart.$context.originalXRange;
-
-      const atMin = scale.min <= bounds.min;
-      const atMax = scale.max >= bounds.max;
-
-      let adjustedDx = dx;
-
-      if ((atMin && dx > 0) || (atMax && dx < 0)) {
-        adjustedDx *= 0.3;
-      }
-
-      chart.pan({ x: -adjustedDx }, undefined, 'default');
-
-      // --- SNAP tooltip to nearest point ---
-      const points = chart.getElementsAtEventForMode(
-        { x, y: chart.chartArea.top },
-        'nearest',
-        { intersect: false },
-        false
-      );
-
-      if (points.length) {
-        chart.setActiveElements(points);
-        chart.tooltip.setActiveElements(points, {
-          x: points[0].element.x,
-          y: points[0].element.y
-        });
-      }
-
-      drag.lastX = x;
-      drag.lastTime = now;
-
-      chart.draw();
-    }
-
-    // -----------------------
-    // TOUCH END → MOMENTUM / TAP
-    // -----------------------
-    if (e.type === 'touchend') {
-      if (!drag.active) return;
-
-      drag.active = false;
-
-      // TAP → lock tooltip
-if (Math.abs(drag.velocityX) < 0.05) {
-  // keep last active element (do nothing = sticky)
-  return;
-}
-
-      // --- momentum ---
-      let velocity = drag.velocityX * 40;
-
-      function step() {
-        if (Math.abs(velocity) < 0.1) return;
-
-        chart.pan({ x: -velocity }, undefined, 'default');
-
-        velocity *= 0.95;
-
-        chart.draw();
-        requestAnimationFrame(step);
-      }
-
-      requestAnimationFrame(step);
-    }
-
-    // -----------------------
-    // MOUSE (desktop parity)
-    // -----------------------
-    if (e.type === 'mousemove') {
-      const x = e.x;
-
-      const points = chart.getElementsAtEventForMode(
-        { x, y: chart.chartArea.top },
-        'nearest',
-        { intersect: false },
-        false
-      );
-
-      if (points.length) {
-        chart.setActiveElements(points);
-        chart.tooltip.setActiveElements(points, {
-          x: points[0].element.x,
-          y: points[0].element.y
-        });
-        chart.draw();
-      }
-    }
   }
-});
+};
 
+// Register all plugins at once
+Chart.register(verticalLinePlugin, window['chartjs-plugin-annotation'], window.ChartZoom);
+
+  
 
 // --------------------
 // Helpers
@@ -753,150 +569,39 @@ function isAtLatest() {
 let originalXRange = null;
 let myChart = null;
 
-Chart.register({
-  id: 'advancedTouchInteraction',
 
-  afterInit(chart) {
-    chart._drag = {
-      active: false,
-      lastX: 0,
-      velocityX: 0,
-      lastTime: 0,
-      lockedPoint: null
-    };
-  },
-
-  afterEvent(chart, args) {
-    const e = args.event;
-    if (!e.native) return;
-
-    const rect = chart.canvas.getBoundingClientRect();
-    const drag = chart._drag;
-
-    // -----------------------
-    // TOUCH START
-    // -----------------------
-    if (e.type === 'touchstart') {
-      const touches = e.native.touches;
-
-      // 2 fingers = zoom → reset drag
-      if (touches.length === 2) {
-        drag.active = false;
-        drag.lockedPoint = null;
-        return;
-      }
-
-      const x = touches[0].clientX - rect.left;
-
-      drag.active = true;
-      drag.lastX = x;
-      drag.velocityX = 0;
-      drag.lastTime = performance.now();
-    }
-
-    // -----------------------
-    // TOUCH MOVE → PAN
-    // -----------------------
-    if (e.type === 'touchmove' && drag.active) {
-      const touches = e.native.touches;
-      if (touches.length !== 1) return;
-
-      const now = performance.now();
-      const x = touches[0].clientX - rect.left;
-
-      const dx = x - drag.lastX;
-      const dt = now - drag.lastTime;
-
-      drag.velocityX = dx / dt;
-
-      // --- EDGE RESISTANCE ---
-      const scale = chart.scales.x;
-      const atMin = scale.min <= chart.$context.originalXRange.min;
-      const atMax = scale.max >= chart.$context.originalXRange.max;
-
-      let adjustedDx = dx;
-
-      if ((atMin && dx > 0) || (atMax && dx < 0)) {
-        adjustedDx *= 0.3; // resistance
-      }
-
-      chart.pan({ x: -adjustedDx }, undefined, 'default');
-
-      drag.lastX = x;
-      drag.lastTime = now;
-
-      chart.draw();
-    }
-
-
-    function updateNormalBand() {
-  if (!myChart) return;
-
-  const band = myChart.options.plugins.annotation.annotations.normalBand;
-
-  const zoomed = isZoomed();
-
-  band.backgroundColor = zoomed
-    ? 'rgba(29,112,184,0.15)'
-    : 'rgba(29,112,184,0.08)';
-
-  myChart.update('none');
-}
-
-    // -----------------------
-    // TOUCH END → MOMENTUM
-    // -----------------------
-    if (e.type === 'touchend') {
-      if (!drag.active) return;
-
-      drag.active = false;
-
-      // TAP = lock tooltip
-      if (Math.abs(drag.velocityX) < 0.05) {
-        const x = drag.lastX;
-        const y = chart.chartArea.top;
-
-        const points = chart.getElementsAtEventForMode(
-          { x, y },
-          'nearest',
-          { intersect: false },
-          false
-        );
-
-        if (points.length) {
-          drag.lockedPoint = points;
-          chart.setActiveElements(points);
-          chart.tooltip.setActiveElements(points, { x, y });
-          chart.draw();
-        }
-
-        return;
-      }
-
-      // --- MOMENTUM PAN ---
-      let velocity = drag.velocityX * 40;
-
-      function step() {
-        if (Math.abs(velocity) < 0.1) return;
-
-        chart.pan({ x: -velocity }, undefined, 'default');
-
-        velocity *= 0.95; // friction
-
-        chart.draw();
-        requestAnimationFrame(step);
-      }
-
-      requestAnimationFrame(step);
-    }
-  }
-});
 
 function renderChart(data) {
   if (!data?.datasets?.[0]?.data?.length) return;
   if (myChart) myChart.destroy();
 
   const ctx = document.getElementById('chart').getContext('2d');
+
+
+  const verticalLinePlugin = {
+  id: 'verticalLine',
+  afterDraw(chart) {
+    const { ctx, chartArea, tooltip } = chart;
+
+    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
+
+    const activePoint = tooltip._active[0];
+    const x = activePoint.element.x;
+
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#0b0c0c'; // GOV.UK black
+    ctx.setLineDash([4, 4]);     // dashed (optional)
+
+    ctx.stroke();
+    ctx.restore();
+  }
+};
 
   myChart = new Chart(ctx, {
     type: 'line',
@@ -912,8 +617,8 @@ function renderChart(data) {
     annotations: {
       normalLine: {
         type: 'line',
-        yMin: 0.36,
-        yMax: 0.36,
+        scaleID: 'y1',
+        value: 0.36,
         borderColor: '#000',
         borderWidth: 2,
         label: { display: true, 
@@ -926,58 +631,20 @@ function renderChart(data) {
           weight: 'bold' 
          },
         padding: 6}
-      },
-      normalBand: {
-  type: 'box',
-  yMin: 0.24,
-  yMax: 0.36,
-  backgroundColor: 'rgba(29,112,184,0.08)',
-  borderWidth: 0
-}
-
-       
+      }
+ 
     }
   },
 zoom: {
   limits: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
   },
-  pan: {
-    enabled: false // ❗ disable plugin pan (we handle it ourselves now)
-  },
-  zoom: {
-    wheel: { enabled: true },
-    pinch: { enabled: true },
-    drag: { enabled: false },
-    mode: 'x',
-     onZoomComplete: () => {
-      updateControls();
-      updateNormalBand();}
-  }
+
+pan: { enabled: true, mode: 'x', modifierKey: null },
+
+ zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: false }, mode: 'x' }
 },
-annotation: {
-  annotations: {
-    normalLine: {
-      type: 'line',
-      scaleID: 'y1',             // <- add this
-      value: 0.36,               // y position
-      borderColor: '#000',
-      borderWidth: 2,
-      label: {
-        display: true,
-        content: '0.36m - Top of normal range',
-        position: 'end',         // use 'end' or 'center' as needed
-        backgroundColor: 'rgba(255,255,255,0.85)',
-        color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold'
-        },
-        padding: 6
-      }
-    }
-  }
-},
+
         tooltip: {
           enabled: true,
           events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
@@ -1065,6 +732,18 @@ function attachControls() {
   };
 }
 
+function updateNormalBand() {
+  if (!myChart) return;
+
+  const band = myChart.options.plugins.annotation.annotations.normalBand;
+  const zoomed = isZoomed();
+
+  band.backgroundColor = zoomed
+    ? 'rgba(29,112,184,0.15)'
+    : 'rgba(29,112,184,0.08)';
+
+  myChart.update('none');
+}
 
 document.addEventListener('keydown', (e) => {
   if (!myChart) return;
