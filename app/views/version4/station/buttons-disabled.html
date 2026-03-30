@@ -235,16 +235,18 @@ form.form::after {
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
   
+   <div class="govuk-form-group"
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+     <button id="panLeftBtn" class="pan-btn pan-left govuk-button govuk-button--secondary">←</button>
+  </div>
+
     <div class="govuk-form-group"  style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
        <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"> + &#128269; </button>
     </div>
    <div class="govuk-form-group"  style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;"> 
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button>
+      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" disabled> - &#128269; </button>
     </div>
- <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-     <button id="panLeftBtn" class="pan-btn pan-left govuk-button govuk-button--secondary">←</button>
-  </div>
+
  <div class="govuk-form-group" style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
   <button id="panRightBtn" class="pan-btn pan-right govuk-button govuk-button--secondary">→</button>
 </div>
@@ -454,7 +456,6 @@ function isZoomed() {
   return x.min !== originalXRange.min || x.max !== originalXRange.max;
 }
 
-
 function updateControls() {
   if (!myChart) return;
 
@@ -463,8 +464,9 @@ function updateControls() {
   const resetBtn = document.getElementById('resetZoomBtn');
   const panLeftBtn = document.getElementById('panLeftBtn');
   const panRightBtn = document.getElementById('panRightBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
 
-  // Reset button (keep visible, toggle disabled)
+  // Reset button
   resetBtn.style.display = 'inline-block';
   resetBtn.disabled = !zoomed;
   resetBtn.classList.toggle('govuk-button--disabled', !zoomed);
@@ -472,9 +474,12 @@ function updateControls() {
   // Pan buttons
   panLeftBtn.disabled = !zoomed;
   panRightBtn.disabled = !zoomed;
-
   panLeftBtn.classList.toggle('govuk-button--disabled', !zoomed);
   panRightBtn.classList.toggle('govuk-button--disabled', !zoomed);
+
+  // Zoom Out button enabled only if zoomed in
+  zoomOutBtn.disabled = !zoomed;
+  zoomOutBtn.classList.toggle('govuk-button--disabled', !zoomed);
 }
 
 // --------------------
@@ -528,6 +533,29 @@ function renderChart(data) {
       } */
     }
   },
+  annotation: {
+  annotations: {
+    normalLine: {
+      type: 'line',
+      scaleID: 'y1',             // <- add this
+      value: 0.36,               // y position
+      borderColor: '#000',
+      borderWidth: 2,
+      label: {
+        display: true,
+        content: '0.36m - Top of normal range',
+        position: 'end',         // use 'end' or 'center' as needed
+        backgroundColor: 'rgba(255,255,255,0.85)',
+        color: '#0b0c0c',
+        font: {
+          size: 12,
+          weight: 'bold'
+        },
+        padding: 6
+      }
+    }
+  }
+},
         zoom: {
           zoom: {
             wheel: { enabled: true },
