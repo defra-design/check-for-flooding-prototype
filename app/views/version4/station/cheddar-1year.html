@@ -1,4 +1,3 @@
-
 {% extends "../../layouts/main.html" %}
 {% block pageTitle %}
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
@@ -8,66 +7,91 @@
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 
- <style>
-/* Page spacing */
-body {
-  padding: 1rem;
-}
-
-/* Chart container */
+  <style>
+    /* Small page tweaks to make the example a little lighter/cleaner */
+body { padding: 2rem; }
 .chart-section {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  position: relative;
-  height: 420px;
+  clear: both;
+  margin-top: 1rem;
 }
 
-@media (max-width: 640px) {
-  .chart-section {
-    height: 360px;
+/* Wrapper sets width only; height is auto */
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pan-btn {
+  flex: 0 0 auto;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pan-btn:disabled {
+  opacity: 0.03;
+  pointer-events: none;
+}
+
+/* Canvas should not have forced height */
+.chart-wrap canvas {
+  display: block;
+  width: 100% !important;   /* responsive width */
+  height: 320px !important;
+}
+
+pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
+
+canvas {
+    touch-action: none;
+}
+
+ 
+ 
+.chart-zoom-controls {
+  display: flex;
+  flex-wrap: wrap;   /* allow wrapping if needed */
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+/* Keep buttons a consistent size */
+.chart-zoom-controls .govuk-button {
+  width: 120px;      /* fixed width for all buttons */
+  flex: 0 0 auto;    /* prevent shrinking or growing */
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Optional: smaller width on very small screens if needed */
+@media (max-width: 480px) {
+  .chart-zoom-controls .govuk-button {
+    width: 100px;
   }
 }
 
-.chart-wrap,
-.chart-wrap canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* Touch behaviour */
-canvas {
-  touch-action: pan-y pinch-zoom;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Button layout (replaces floats completely) */
-.chart-controls,
-.date-controls {
+.chart-controls {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 12px;
+  flex-wrap: wrap;
 }
 
-.chart-controls .govuk-button {
-  min-width: 110px;
-  flex: 0 0 auto;
+.chart-section {
+  position: relative;
+  height: auto;        /* let chart-wrap control height */
+  clear: both;
 }
 
-/* Date inputs */
-.date-controls .govuk-form-group {
-  flex: 1 1 160px;
-  min-width: 140px;
-}
-
-/* Remove float clearing hacks */
 form.form::after {
-  content: none;
+  content: "";
+  display: block;
+  clear: both;
 }
-</style>
+  </style>
 
 
 {% block beforeContent %}
@@ -116,24 +140,22 @@ form.form::after {
   </div>
 </div>
  
-
       <div class="defra-flood-statistics defra-flood-statistics--border">
                   <div class="govuk-!-margin-top-4" data-toggletip data-toggletip-label="More information about the latest reading" data-toggletip-content="We get readings more often as the risk of flooding increases.">
                     <h2 class="govuk-heading-s govuk-!-margin-bottom-4">
-                      Latest at 6 am on 13 December 2025
-                    </h2>
+                      Latest at {{ "now" | govukTime }} on  {{ "today" | duration(-1) | govukDate }}
                     </h2>
                   </div>
                   <dl class="defra-flood-statistics__list" aria-label="Latest readings">
 
                     <div class="defra-flood-statistics__item">
                         <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                        <span class="govuk-caption-m">Height</span>0.33m </h1>    
+                        <span class="govuk-caption-m">Height</span>0.28m </h1>    
                     </div>
                     
                     <div class="defra-flood-statistics__item">
                         <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                        <span class="govuk-caption-m">Trend</span>Rising </h1>                
+                        <span class="govuk-caption-m">Trend</span>Falling </h1>                
                     </div>
       
                   <div class="defra-flood-statistics__item">
@@ -156,7 +178,7 @@ form.form::after {
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time" >5 days</a>
+                  <a href="cheddar-5days#time">5 days</a>
               </li>
 
               <li class="defra-navbar__item">
@@ -164,16 +186,13 @@ form.form::after {
               </li>
             
               <li class="defra-navbar__item">
-               <a href="cheddar-1year#time" style="text-decoration: none;" >1 year</a>
+               <a href="cheddar-1year#time" style="text-decoration: none;">1 year</a>
                </li>
-
-              <li class="defra-navbar__item">
-                <a href="cheddar-18month#time">18 months</a>
-              </li>
 
               <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
             </li>
+
           </ul>
         </div>
     </nav>
@@ -187,38 +206,103 @@ form.form::after {
  
 <div style="clear: both;"></div>
 
- <!-- chart --> 
+<style>
+.chart-section {
+  margin-top: 0rem;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 400px; /* taller chart */
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Pan buttons overlay */
+.pan-btn {
+  position: absolute;
+  transform: translateY(-50%);
+  width: 48px;             /* GOV.UK recommended touch target */
+  height: 48px;            /* GOV.UK recommended touch target */
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  flex: 0 0 auto;
+  padding: 0;              /* remove default padding for perfect centering */
+}
+
+/* Left and right positions */
+#panLeftBtn {
+  left: 28px;
+    top: 50%;
+}
+
+#panRightBtn {
+  right: 38px;
+    top: 50%;
+}
+
+/* Disabled state */
+.pan-btn:disabled {
+  opacity: 0.01;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .pan-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+</style>
  
-<section class="chart-section" style="height: 400px;">
-  <div class="chart-wrap" style="height: 100%;">
+<section class="chart-section">
+  <div class="chart-container">
     <canvas id="chart"></canvas>
+
+    <!-- Pan buttons overlay -->
+    <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart left">←</button>
+    <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart right">→</button>
   </div>
 </section>
-
+ 
+ 
  
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
    <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
   <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
   </div>
     <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn">   - &#128269;  </button></div>
-    <div class="govuk-form-group"
-     style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-      <button type="button" class="govuk-button govuk-button--secondary" id="panLeftBtn">&#8592;</button></div>
-    <div class="govuk-form-group" 
-    style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;"> 
-          <button type="button" class="govuk-button govuk-button--secondary" id="panRightBtn">	&#8594;</button></div>
-   <div class="govuk-form-group" 
-   style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;"> 
-     <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn">Reset</button></div>
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" style="display:none;"> - 🔍 </button></div>
+    
+ <div class="govuk-form-group"
+     style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+  <button
+  type="button"
+  class="govuk-button govuk-button--secondary"
+  id="latestBtn"
+  style="display:none;">
+  Reset zoom
+</button>
+</div>
 </div>
    </div>
 <div style="clear: both;"></div>
  
- <form class="form" action="cheddar-datepicker#time" method="post">  
+ <form class="form" action="cheddar-datepicker" method="post">  
 <!-- moj date picker -->
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
@@ -316,46 +400,43 @@ form.form::after {
     </ul>
   </nav>
 </div>
- 
+
+
+
 <script>
-
-Chart.register(window['chartjs-plugin-annotation']);
-Chart.register(window.ChartZoom);
-
-// ⬇️ DEFINE FIRST
-const tooltipVerticalLine = {
-  id: 'tooltipVerticalLine',
+ 
+// Define plugin first
+const verticalLinePlugin = {
+  id: 'verticalLine',
   afterDraw(chart) {
-    const tooltip = chart.tooltip;
-    if (!tooltip || !tooltip.getActiveElements().length) return;
+    const { ctx, chartArea, tooltip } = chart;
+    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
 
-    const ctx = chart.ctx;
-    const x = tooltip.getActiveElements()[0].element.x;
-    const yScale = chart.scales.y;
-    if (!yScale) return;
+    const active = chart.tooltip.getActiveElements();
+    if (!active.length) return;
+    const x = active[0].element.x;
 
     ctx.save();
     ctx.beginPath();
-    ctx.moveTo(x, yScale.top);
-    ctx.lineTo(x, yScale.bottom);
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#b1b4b6';
+    ctx.strokeStyle = '#cccccc'; // GOV.UK black
+ 
     ctx.stroke();
     ctx.restore();
   }
 };
 
-// ⬇️ REGISTER AFTER
-Chart.register(tooltipVerticalLine);
+// Register all plugins at once
+Chart.register(verticalLinePlugin, window['chartjs-plugin-annotation'], window.ChartZoom);
 
+  
 
-// Convert DD/MM/YYYY to ISO
-function ukDateToISO(ukDate) {
-  const [day, month, year] = ukDate.split('/');
-  return new Date(`${year}-${month}-${day}`).toISOString();
-}
-
-/// CSV parsing
+// --------------------
+// Helpers
+// --------------------
+// CSV parsing
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/).map(l => l.trim());
   return lines.map(line => line.split(','));
@@ -400,125 +481,183 @@ function csvRowsToChartData(rows) {
   return { datasets };
 }
 
-// Generate exactly 5 evenly spaced x-axis ticks
 function buildFiveEqualTicks(scale, anchorHour = 6) {
-  if (!scale.min || !scale.max || scale.min >= scale.max) return [];
+  if (!scale.min || !scale.max) return [];
 
-  const min = new Date(scale.min);
-  const max = new Date(scale.max);
-  const span = (max - min) / 4;
-  const ticks = [];
-
-  for (let i = 0; i < 5; i++) {
-    let d = new Date(min.getTime() + span * i);
-
-    // Snap to anchor hour only if span >= 1 day
-    if (span >= 24 * 60 * 60 * 1000) {
-      d.setHours(anchorHour, 0, 0, 0);
-    }
-
-    // Clamp tick to min/max
-    if (d < min) d = new Date(min);
-    if (d > max) d = new Date(max);
-
-    ticks.push({ value: d.getTime() });
-  }
-
-  // ensure strictly increasing
-  return ticks.filter((t, i, arr) => i === 0 || t.value > arr[i - 1].value);
+  const span = (scale.max - scale.min) / 4;
+  return Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(scale.min + span * i);
+    if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
+    return { value: d.getTime() };
+  });
 }
 
 
+
+
+// --------------------
+// Zoom detection + button toggle
+// --------------------
+function isZoomed() {
+  if (!myChart || !originalXRange) return false;
+  const x = myChart.scales.x;
+
+  return (
+    Math.abs(x.min - originalXRange.min) > 1 ||
+    Math.abs(x.max - originalXRange.max) > 1
+  );
+}
+
+
+document.getElementById('latestBtn').onclick = () => {
+  if (!myChart) return;
+
+  myChart.resetZoom(); // ✅ proper reset (plugin-aware)
+
+  updateControls();
+};
+ 
+
+function updateControls() {
+  if (!myChart) return;
+
+  const zoomed = isZoomed();
+  const atLatest = isAtLatest();
+
+  const latestBtn = document.getElementById('latestBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const panLeftBtn = document.getElementById('panLeftBtn');
+  const panRightBtn = document.getElementById('panRightBtn');
+
+  // Show reset zoom button only when zoomed in
+latestBtn.style.display = zoomed ? 'inline-block' : 'none';
+
+  // Show zoom-out button only when zoomed in
+  zoomOutBtn.style.display = zoomed ? 'inline-block' : 'none';
+
+  panLeftBtn.disabled = !zoomed;
+  panRightBtn.disabled = !zoomed;
+}
+
+
+function isAtLatest() {
+  if (!myChart || !originalXRange) return true;
+
+  const x = myChart.scales.x;
+
+  // if max is close to original max → still at latest
+  return Math.abs(x.max - originalXRange.max) < 5;
+}
+
+// --------------------
+// Chart & Controls
+// --------------------
+let originalXRange = null;
 let myChart = null;
-const ctx = document.getElementById('chart').getContext('2d');
-const PAN_PIXELS = 100; // <--- define this
-const ZOOM_FACTOR = 1.2;
+
+
 
 function renderChart(data) {
-  if (!data.datasets?.length || !data.datasets[0].data?.length) {
-    console.warn('No dataset data available');
-    return;
-  }
+  if (!data?.datasets?.[0]?.data?.length) return;
+  if (myChart) myChart.destroy();
 
-  if (myChart) {
-    myChart.destroy();
+  const ctx = document.getElementById('chart').getContext('2d');
+
+
+  const verticalLinePlugin = {
+  id: 'verticalLine',
+  afterDraw(chart) {
+    const { ctx, chartArea, tooltip } = chart;
+
+    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
+
+    const activePoint = tooltip._active[0];
+    const x = activePoint.element.x;
+
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.moveTo(x, chartArea.top);
+    ctx.lineTo(x, chartArea.bottom);
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = '#0b0c0c'; // GOV.UK black
+    ctx.setLineDash([4, 4]);     // dashed (optional)
+
+    ctx.stroke();
+    ctx.restore();
   }
+};
 
   myChart = new Chart(ctx, {
     type: 'line',
     data,
     options: {
-      parsing: false,
       responsive: true,
       maintainAspectRatio: false,
-      interaction: { intersect: false, mode: 'index' },
-      elements: {
-        point: { radius: 0, hitRadius: 10, hoverRadius: 6, backgroundColor: 'transparent', hoverBackgroundColor: '#fff', hoverBorderColor: 'rgb(29, 112, 184)', hoverBorderWidth: 2 }
-      },
+      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+      interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
-        zoom: {
-      limits: {
-        x: {
-          min: 'original',
-          max: 'original',
-          minRange: 60 * 60 * 1000
-        }
-      },
-  zoom: {
-  wheel: { enabled: true },
-  drag: {
-    enabled: true,
-    threshold: 8,
-    borderColor: 'rgba(0,0,0,0.5)',
-    borderWidth: 1,
-    backgroundColor: 'rgba(225,221,0,1)'
-  },
-  pinch: { enabled: false },
-  mode: 'x'
-},
-  pan: {
-    enabled: true,
-    mode: 'x',
-    threshold: 8
-  }
-},
         annotation: {
-          annotations: {
-
-            verticalLineLast: {
-  type: 'line',        // Line annotation
-  xMin: ctx => ctx.chart.scales.x?.max ?? null,
-  xMax: ctx => ctx.chart.scales.x?.max ?? null,
-  borderColor: 'black',  // Color of the line
-  borderWidth: 2,
-  label: {
-    display: false,
-    content: '9am - 16 Dec 25',
-    position: 'end', // 'start', 'center', or 'end'
-    backgroundColor: 'black',
-    color: 'white',
-    font: {
-      weight: 'bold'
+    annotations: {
+      normalLine: {
+        type: 'line',
+        scaleID: 'y1',
+        value: 0.36,
+        borderColor: '#000',
+        borderWidth: 2,
+        label: { display: true, 
+                content: '0.36m - Top of normal range',
+                position: 'center',
+               backgroundColor: 'rgba(255,255,255,0.85)',
+        color: '#0b0c0c',
+        font: {
+          size: 12,
+          weight: 'bold' 
+         },
+        padding: 6}
+      }
+      
+ 
     }
+  },
+zoom: {
+  limits: {
+    x: { min: 'original', max: 'original', minRange: 3600000 }
+  },
+
+  pan: {
+  enabled: false // ❗ disable plugin pan completely
+},
+
+  zoom: {
+    wheel: { enabled: true },
+    pinch: { enabled: true },
+    drag: { enabled: false },
+    mode: 'x',
+
+    onZoom({ chart }) {
+      updateControls();
+    },
+    onZoomComplete({ chart }) {
+      updateControls();
+    }
+  },
+
+  onPan({ chart }) {
+    updateControls();
+  },
+  onPanComplete({ chart }) {
+    updateControls();
   }
 },
-          normal: {
-            type: 'line',
-            yMin: 0.367,
-            yMax: 0.367,
-            yScaleID: 'y1',
-            borderColor: '#000',
-            borderWidth: 2,
-            label: {
-              display: true,
-              content: '0.367m - Top of normal range'
-            }
-          }
-          }
-        },
+ 
+
         tooltip: {
           enabled: true,
+          events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
+          animation: false,
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
@@ -530,103 +669,175 @@ function renderChart(data) {
           cornerRadius: 0,
           displayColors: false,
           padding: 10,
-          titleFont: { family: 'GDS Transport, Arial, sans-serif', size: 17, weight: 'bold' },
-          bodyFont: { family: 'GDS Transport, Arial, sans-serif', size: 14 },
-callbacks: {
-  title: items => `${items[0].parsed.y.toFixed(2)} m`,
-  label: item => formatGovUKDateTime(item.parsed.x)
-}
+          titleFont: { size: 18, weight: 'bold' },
+          bodyFont: { size: 14 },
+          callbacks: {
+            title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
+            label: (item) => formatGovUKDateTime(item.raw.x)
+          }
         }
       },
       scales: {
-       x: {
-  type: 'time',
-  bounds: 'data',
-
-  afterBuildTicks(scale) {
-    scale.ticks = buildFiveEqualTicks(scale, 6);
-  },
-
-  ticks: {
-    autoSkip: false,
-    maxRotation: 0,
-    callback(value) {
-      const iso = new Date(value).toISOString();
-      return [
-        formatGovUKTime(iso),
-        formatGovUKShortYearDate(iso)
-      ];
-    }
-  }
-},
-        y: {
-    display: false,          // show y-axis
-    
-  },
-y1: {
+        x: {
+          type: 'time',
+          bounds: 'data',
+          afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
+          ticks: {
+            autoSkip: false,
+            callback: v => {
+              const iso = new Date(v).toISOString();
+              return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
+            }
+          }
+        },
+     y: { display: false, grid: { display: false } },
+       y1: {
   position: 'right',
-  grid: { drawOnChartArea: false },
-
-  afterBuildTicks(scale) {
-    const min = scale.min;
-    const max = scale.max;
-    const step = (max - min) / 3;
-
-    scale.ticks = [
-      { value: min },
-      { value: min + step },
-      { value: min + step * 2 },
-      { value: max }
-    ];
-  },
-
+  grace: '10%',
+  suggestedMin: 0.24,
+  suggestedMax: 0.36,
   ticks: {
-    callback: (value) => value.toFixed(2)
+    callback: v => v.toFixed(2)
   }
 }
-
       }
     }
-  });
-  
- 
-    // fix y axis so not affected by zoom
-
-    const initialYMin = myChart.scales.y1.min;
-    const initialYMax = myChart.scales.y1.max;
-
-    myChart.options.scales.y1.min = initialYMin;
-    myChart.options.scales.y1.max = initialYMax;
-
-    myChart.update();
     
+  });
 
-  // Zoom controls
-  // Add buttons after chart is created
+// ✅ DRAG TO PAN (MOUSE + TOUCH)
 
-  document.getElementById('zoomInBtn').addEventListener('click', () => myChart.zoom(ZOOM_FACTOR));
-  document.getElementById('zoomOutBtn').addEventListener('click', () => myChart.zoom(1 / ZOOM_FACTOR));
-  document.getElementById('panLeftBtn').addEventListener('click', () => myChart.pan({ x: PAN_PIXELS, y: 0 }));
-  document.getElementById('panRightBtn').addEventListener('click', () => myChart.pan({ x: -PAN_PIXELS, y: 0 }));
-  document.getElementById('resetZoomBtn').addEventListener('click', () => myChart.resetZoom());
+ // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
+
+const canvas = myChart.canvas;
+
+canvas.style.cursor = 'grab';
+
+let isDragging = false;
+let lastX = 0;
+
+// mouse
+canvas.addEventListener('mousedown', (e) => {
+  if (!isZoomed()) return;
+
+  isDragging = true;
+  lastX = e.clientX;
+  canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  canvas.style.cursor = 'grab';
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const deltaX = e.clientX - lastX;
+  lastX = e.clientX;
+
+  myChart.pan({ x: -deltaX });
+  updateControls();
+});
+
+// touch
+let touchX = null;
+
+canvas.addEventListener('touchstart', (e) => {
+  if (!isZoomed()) return;
+  touchX = e.touches[0].clientX;
+});
+
+canvas.addEventListener('touchmove', (e) => {
+  if (touchX === null) return;
+
+  const newX = e.touches[0].clientX;
+  const deltaX = newX - touchX;
+  touchX = newX;
+
+  myChart.pan({ x: -deltaX });
+  updateControls();
+});
+
+canvas.addEventListener('touchend', () => {
+  touchX = null;
+});
+  
+  // store original x-axis limits for comparison
+  const x = myChart.scales.x;
+  originalXRange = { min: x.min, max: x.max };
+  myChart.$context.originalXRange = originalXRange;
+
+  attachControls();
+  updateControls();
 }
 
+ 
+
+function attachControls() {
+  const ZOOM_FACTOR = 1.2;
+  const PAN_DISTANCE = 100;
+
+  document.getElementById('zoomInBtn').onclick = () => {
+    myChart.zoom(ZOOM_FACTOR);
+    updateControls();
+  };
+
+  document.getElementById('zoomOutBtn').onclick = () => {
+    myChart.zoom(1 / ZOOM_FACTOR);
+    updateControls();
+  };
+
+  document.getElementById('panLeftBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: PAN_DISTANCE });
+    updateControls();
+  };
+
+  document.getElementById('panRightBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: -PAN_DISTANCE });
+    updateControls();
+  };
+}
+
+ 
+
+document.addEventListener('keydown', (e) => {
+  if (!myChart) return;
+
+  const STEP = 80;
+
+  if (e.key === 'ArrowLeft') {
+    myChart.pan({ x: STEP });
+    updateControls();
+  }
+
+  if (e.key === 'ArrowRight') {
+    myChart.pan({ x: -STEP });
+    updateControls();
+  }
+});
+
+// --------------------
+// Formatting
+// --------------------
 function formatGovUKDateTime(ms) {
-  return new Date(ms).toLocaleString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  });
+  const d = new Date(ms);
+  const day = d.getDate();
+  const month = d.toLocaleString('en-GB', { month: 'short' });
+  const year = d.getFullYear();
+  let hours = d.getHours();
+  const minutes = d.getMinutes();
+  const ampm = hours >= 12 ? 'pm' : 'am';
+  hours = hours % 12 || 12;
+  const mins = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
+  return `${hours}${mins}${ampm} ${day} ${month} ${year}`;
 }
 
 function formatGovUKTime(iso) {
   return new Date(iso)
-    .toLocaleTimeString('en-GB', {
-      hour: 'numeric',
-      hour12: true
-    })
+    .toLocaleTimeString('en-GB', { hour: 'numeric', hour12: true })
     .toLowerCase()
     .replace(':00', '');
 }
@@ -639,19 +850,22 @@ function formatGovUKShortYearDate(iso) {
   });
 }
 
- 
-// Fetch CSV and render chart
-async function tryFetchCSV() {
+// --------------------
+// Data load
+// --------------------
+(async function init() {
   try {
-    const resp = await fetch('/public/data/cheddar-12month30.csv', { cache: 'no-cache' });
-    if (!resp.ok) throw new Error('No CSV');
-    const text = await resp.text();
+    const res = await fetch('/public/data/cheddar-12month30.csv', { cache: 'no-cache' });
+    if (!res.ok) throw new Error();
+
+    const text = await res.text();
     renderChart(csvRowsToChartData(parseCSV(text)));
+
   } catch {
     const now = Date.now();
     renderChart({
       datasets: [{
-        label: 'No data available',
+        label: 'No data',
         data: [
           { x: now - 172800000, y: 0 },
           { x: now - 86400000, y: 0 },
@@ -659,13 +873,19 @@ async function tryFetchCSV() {
         ]
       }]
     });
-  }
-}
 
-tryFetchCSV();
+    updateControls();
+ 
+  }
+})();
+
+
+
+
 
 
 </script>
+ 
 <!-- chart end-->
 
 

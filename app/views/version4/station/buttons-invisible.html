@@ -1,10 +1,8 @@
-
 {% extends "../../layouts/main.html" %}
 {% block pageTitle %}
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
 {% endblock %}
 
- 
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
@@ -17,9 +15,7 @@ body { padding: 2rem; }
   margin-top: 1rem;
 }
 
-
 /* Wrapper sets width only; height is auto */
-
 
 .chart-row {
   display: flex;
@@ -54,13 +50,7 @@ canvas {
     touch-action: none;
 }
 
-canvas {
-  cursor: grab;
-}
-
-canvas:active {
-  cursor: grabbing;
-}
+ 
  
 .chart-zoom-controls {
   display: flex;
@@ -198,10 +188,6 @@ form.form::after {
               <li class="defra-navbar__item">
                <a href="cheddar-1year#time">1 year</a>
                </li>
-
-              <li class="defra-navbar__item">
-                <a href="cheddar-18month#time">18 months</a>
-              </li>
 
               <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
@@ -434,7 +420,7 @@ const verticalLinePlugin = {
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#cccccc'; // GOV.UK black
+    ctx.strokeStyle = '#aaaaaa'; // GOV.UK black
  
     ctx.stroke();
     ctx.restore();
@@ -529,8 +515,7 @@ document.getElementById('latestBtn').onclick = () => {
 
   updateControls();
 };
-
-
+ 
 
 function updateControls() {
   if (!myChart) return;
@@ -544,7 +529,7 @@ function updateControls() {
   const panRightBtn = document.getElementById('panRightBtn');
 
   // Show reset zoom button only when zoomed in
-  latestBtn.style.display = !atLatest ? 'inline-block' : 'none';
+latestBtn.style.display = zoomed ? 'inline-block' : 'none';
 
   // Show zoom-out button only when zoomed in
   zoomOutBtn.style.display = zoomed ? 'inline-block' : 'none';
@@ -632,6 +617,7 @@ function renderChart(data) {
          },
         padding: 6}
       }
+      
  
     }
   },
@@ -640,10 +626,32 @@ zoom: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
   },
 
-pan: { enabled: true, mode: 'x', modifierKey: null },
-
- zoom: { wheel: { enabled: true }, pinch: { enabled: true }, drag: { enabled: false }, mode: 'x' }
+  pan: {
+  enabled: false // ❗ disable plugin pan completely
 },
+
+  zoom: {
+    wheel: { enabled: true },
+    pinch: { enabled: true },
+    drag: { enabled: false },
+    mode: 'x',
+
+    onZoom({ chart }) {
+      updateControls();
+    },
+    onZoomComplete({ chart }) {
+      updateControls();
+    }
+  },
+
+  onPan({ chart }) {
+    updateControls();
+  },
+  onPanComplete({ chart }) {
+    updateControls();
+  }
+},
+ 
 
         tooltip: {
           enabled: true,
@@ -681,18 +689,78 @@ pan: { enabled: true, mode: 'x', modifierKey: null },
             }
           }
         },
-        y: { display: false, grid: { display: false } },
-        y1: {
-          position: 'right',
-          min: 0.24,
-          max: 0.50,
-          ticks: { callback: v => v.toFixed(2) }
-        }
+     y: { display: false, grid: { display: false } },
+       y1: {
+  position: 'right',
+  grace: '10%',
+  suggestedMin: 0.24,
+  suggestedMax: 0.36,
+  ticks: {
+    callback: v => v.toFixed(2)
+  }
+}
       }
     }
     
   });
 
+// ✅ DRAG TO PAN (MOUSE + TOUCH)
+
+ // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
+
+const canvas = myChart.canvas;
+
+canvas.style.cursor = 'grab';
+
+let isDragging = false;
+let lastX = 0;
+
+// mouse
+canvas.addEventListener('mousedown', (e) => {
+  if (!isZoomed()) return;
+
+  isDragging = true;
+  lastX = e.clientX;
+  canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  canvas.style.cursor = 'grab';
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const deltaX = e.clientX - lastX;
+  lastX = e.clientX;
+
+  myChart.pan({ x: -deltaX });
+  updateControls();
+});
+
+// touch
+let touchX = null;
+
+canvas.addEventListener('touchstart', (e) => {
+  if (!isZoomed()) return;
+  touchX = e.touches[0].clientX;
+});
+
+canvas.addEventListener('touchmove', (e) => {
+  if (touchX === null) return;
+
+  const newX = e.touches[0].clientX;
+  const deltaX = newX - touchX;
+  touchX = newX;
+
+  myChart.pan({ x: -deltaX });
+  updateControls();
+});
+
+canvas.addEventListener('touchend', () => {
+  touchX = null;
+});
   
   // store original x-axis limits for comparison
   const x = myChart.scales.x;
@@ -703,8 +771,8 @@ pan: { enabled: true, mode: 'x', modifierKey: null },
   updateControls();
 }
 
-
  
+
 function attachControls() {
   const ZOOM_FACTOR = 1.2;
   const PAN_DISTANCE = 100;
@@ -732,18 +800,7 @@ function attachControls() {
   };
 }
 
-function updateNormalBand() {
-  if (!myChart) return;
-
-  const band = myChart.options.plugins.annotation.annotations.normalBand;
-  const zoomed = isZoomed();
-
-  band.backgroundColor = zoomed
-    ? 'rgba(29,112,184,0.15)'
-    : 'rgba(29,112,184,0.08)';
-
-  myChart.update('none');
-}
+ 
 
 document.addEventListener('keydown', (e) => {
   if (!myChart) return;
@@ -817,9 +874,12 @@ function formatGovUKShortYearDate(iso) {
     });
 
     updateControls();
-updateNormalBand();
+ 
   }
 })();
+
+
+
 
 
 

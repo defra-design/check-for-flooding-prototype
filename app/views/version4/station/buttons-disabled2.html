@@ -1,4 +1,3 @@
-
 {% extends "../../layouts/main.html" %}
 {% block pageTitle %}
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
@@ -17,52 +16,42 @@ body { padding: 2rem; }
 }
 
 /* Wrapper sets width only; height is auto */
-.chart-wrap {
-  position: relative;
-  width: 100%;
-  max-width: 900px;
-  min-height: 280px;
-  margin: 0 auto;
-  padding: 0 48px; /* reserve space for buttons */
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .pan-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-
-  width: 40px;
+  flex: 0 0 auto;
   height: 40px;
-  min-width: 40px;
-  padding: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.pan-left {
-  left: 0;
-}
-
-.pan-right {
-  right: 0;
-}
-
 .pan-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.03;
   pointer-events: none;
 }
- 
+
+/* Canvas should not have forced height */
+.chart-wrap canvas {
+  display: block;
+  width: 100% !important;   /* responsive width */
+  height: 320px !important;
+}
+
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-  touch-action: pan-y pinch-zoom;
-  -webkit-user-select: none;
-  user-select: none;
+    touch-action: none;
 }
 
+ 
+ 
 .chart-zoom-controls {
   display: flex;
   flex-wrap: wrap;   /* allow wrapping if needed */
@@ -202,10 +191,6 @@ form.form::after {
                </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-18month#time">18 months</a>
-              </li>
-
-              <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
             </li>
           </ul>
@@ -221,17 +206,49 @@ form.form::after {
  
 <div style="clear: both;"></div>
 
- <!-- chart --> 
+<style>
+.chart-section {
+  margin-top: 0rem;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 400px; /* taller chart */
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+ 
+
+/* Disabled state */
+.pan-btn:disabled {
+  opacity: 0.01;
+  pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .pan-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+</style>
  
 <section class="chart-section">
-  <div class="chart-wrap">
-   
-
- <canvas id="chart"></canvas>
-   
-
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+ 
   </div>
 </section>
+ 
  
 <!-- Zoom  controls -->
 <div style="max-width: 100%; margin-top: 10px;">
@@ -245,7 +262,7 @@ form.form::after {
        <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"> + &#128269; </button>
     </div>
    <div class="govuk-form-group"  style="max-width: 20%; float: inline-start; margin-left: 6px; margin-bottom: 11px;"> 
-      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" disabled> - &#128269; </button>
+      <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" > - &#128269; </button>
     </div>
 
  <div class="govuk-form-group" style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
@@ -256,8 +273,7 @@ form.form::after {
            <button type="button" class="govuk-button govuk-button--secondary" id="resetZoomBtn" style="display:none;">
   Reset zoom
 </button></div>
-
-   </div>
+</div>
 <div style="clear: both;"></div>
  
  <form class="form" action="cheddar-datepicker" method="post">  
@@ -289,7 +305,7 @@ form.form::after {
           <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
           </svg>
         </span>
-        <span class="defra-button-secondary__text">Download data CSV (12KB)</span>
+        <span class="defra-button-secondary__text">Download data CSV </span>
       </a>
   </div>
 
@@ -359,365 +375,251 @@ form.form::after {
   </nav>
 </div>
 
-
-
-<script>
-Chart.register(window['chartjs-plugin-annotation'], window.ChartZoom);
-
-// --------------------
-// Vertical hover line
-// --------------------
-Chart.register({
-  id: 'tooltipVerticalLine',
-  afterDraw(chart) {
-    const tooltip = chart.tooltip;
-    if (!tooltip?.getActiveElements()?.length) return;
-
-    const { ctx, scales: { y1 } } = chart;
-    const x = tooltip.getActiveElements()[0].element.x;
-
-    if (!y1) return;
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(x, y1.top);
-    ctx.lineTo(x, y1.bottom);
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#b1b4b6';
-    ctx.stroke();
-    ctx.restore();
+ <script>
+  // --------------------
+  // Helpers
+  // --------------------
+  function parseCSV(text) {
+    const lines = text.trim().split(/\r?\n/).map(l => l.trim());
+    return lines.map(line => line.split(','));
   }
-});
 
-// --------------------
-// Helpers
-// --------------------
-// CSV parsing
-function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/).map(l => l.trim());
-  return lines.map(line => line.split(','));
-}
+  function smoothData(data, windowSize = 3) {
+    return data.map((point, i, arr) => {
+      const start = Math.max(0, i - windowSize);
+      const end = Math.min(arr.length - 1, i + windowSize);
+      const subset = arr.slice(start, end + 1);
+      const avg = subset.reduce((sum, p) => sum + p.y, 0) / subset.length;
+      return { x: point.x, y: avg };
+    });
+  }
 
-function smoothData(data, windowSize = 3) {
-  return data.map((point, i, arr) => {
-    const start = Math.max(0, i - windowSize);
-    const end = Math.min(arr.length - 1, i + windowSize);
-
-    const subset = arr.slice(start, end + 1);
-    const avg = subset.reduce((sum, p) => sum + p.y, 0) / subset.length;
-
-    return { x: point.x, y: avg };
-  });
-}
-
-
-// Build Chart.js data
-function csvRowsToChartData(rows) {
-  const headers = rows[0];
-
-
-  const datasets = headers.slice(1).map((name, i) => {
-    return {
+  function csvRowsToChartData(rows) {
+    const headers = rows[0];
+    const datasets = headers.slice(1).map((name, i) => ({
       label: name,
       yAxisID: 'y1',
       data: smoothData(
-  rows.slice(1).map(r => ({
-    x: new Date(r[0]).getTime(),
-    y: Number(r[i + 1])
-  }))
-),
+        rows.slice(1).map(r => ({
+          x: new Date(r[0]).getTime(),
+          y: Number(r[i + 1])
+        }))
+      ),
       fill: true,
       borderColor: 'rgb(29, 112, 184)',
       backgroundColor: 'rgba(29, 112, 184, .1)',
       tension: 0.5,
       cubicInterpolationMode: 'monotone',
       pointRadius: 0
-    };
-  });
-  return { datasets };
-}
-
-function buildFiveEqualTicks(scale, anchorHour = 6) {
-  if (!scale.min || !scale.max) return [];
-
-  const span = (scale.max - scale.min) / 4;
-  return Array.from({ length: 5 }, (_, i) => {
-    const d = new Date(scale.min + span * i);
-    if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
-    return { value: d.getTime() };
-  });
-}
-
-// --------------------
-// Zoom detection + button toggle
-// --------------------
-function isZoomed() {
-  if (!myChart || !originalXRange) return false;
-  const x = myChart.scales.x;
-  return x.min !== originalXRange.min || x.max !== originalXRange.max;
-}
-
-function updateControls() {
-  if (!myChart) return;
-
-  const zoomed = isZoomed();
-
-  const resetBtn = document.getElementById('resetZoomBtn');
-  const panLeftBtn = document.getElementById('panLeftBtn');
-  const panRightBtn = document.getElementById('panRightBtn');
-  const zoomOutBtn = document.getElementById('zoomOutBtn');
-
-  // Reset button
-  resetBtn.style.display = 'inline-block';
-  resetBtn.disabled = !zoomed;
-  resetBtn.classList.toggle('govuk-button--disabled', !zoomed);
-
-  // Pan buttons
-  panLeftBtn.disabled = !zoomed;
-  panRightBtn.disabled = !zoomed;
-  panLeftBtn.classList.toggle('govuk-button--disabled', !zoomed);
-  panRightBtn.classList.toggle('govuk-button--disabled', !zoomed);
-
-  // Zoom Out button enabled only if zoomed in
-  zoomOutBtn.disabled = !zoomed;
-  zoomOutBtn.classList.toggle('govuk-button--disabled', !zoomed);
-}
-
-// --------------------
-// Chart & Controls
-// --------------------
-let originalXRange = null;
-let myChart = null;
-
-function renderChart(data) {
-  if (!data?.datasets?.[0]?.data?.length) return;
-  if (myChart) myChart.destroy();
-
-  const ctx = document.getElementById('chart').getContext('2d');
-
-  myChart = new Chart(ctx, {
-    type: 'line',
-    data,
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      parsing: { xAxisKey: 'x', yAxisKey: 'y' },
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        annotation: {
-    annotations: {
-      normalLine: {
-        type: 'line',
-        yMin: 0.36,
-        yMax: 0.36,
-        borderColor: '#000',
-        borderWidth: 2,
-        label: { display: true, 
-                content: '0.36m - Top of normal range',
-                position: 'center',
-               backgroundColor: 'rgba(255,255,255,0.85)',
-        color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold' 
-         },
-        padding: 6}
-      }
-      /*// normal range,
-      normalRange: {
-        type: 'box',
-        yMin: 0.24,
-        yMax: 0.36,
-        backgroundColor: 'rgba(50, 216, 230, 0.30)', // light blue fill
-        borderWidth: 0
-      } */
-    }
-  },
-  annotation: {
-  annotations: {
-    normalLine: {
-      type: 'line',
-      scaleID: 'y1',             // <- add this
-      value: 0.36,               // y position
-      borderColor: '#000',
-      borderWidth: 2,
-      label: {
-        display: true,
-        content: '0.36m - Top of normal range',
-        position: 'end',         // use 'end' or 'center' as needed
-        backgroundColor: 'rgba(255,255,255,0.85)',
-        color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold'
-        },
-        padding: 6
-      }
-    }
+    }));
+    return { datasets };
   }
-},
-        zoom: {
+
+  function buildFiveEqualTicks(scale, anchorHour = 6) {
+    if (!scale.min || !scale.max) return [];
+    const span = (scale.max - scale.min) / 4;
+    return Array.from({ length: 5 }, (_, i) => {
+      const d = new Date(scale.min + span * i);
+      if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
+      return { value: d.getTime() };
+    });
+  }
+
+  // --------------------
+  // Chart & state
+  // --------------------
+  let myChart = null;
+  let originalXRange = null;
+
+  // Vertical line on hover plugin
+  const verticalLinePlugin = {
+    id: 'verticalLine',
+    afterDraw(chart) {
+      const { ctx, chartArea, tooltip } = chart;
+      if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
+      const activePoint = tooltip._active[0];
+      const x = activePoint.element.x;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x, chartArea.top);
+      ctx.lineTo(x, chartArea.bottom);
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#aaaaaa';
+ 
+      ctx.stroke();
+      ctx.restore();
+    }
+  };
+
+  Chart.register(verticalLinePlugin, window['chartjs-plugin-annotation'], window.ChartZoom);
+
+  function renderChart(data) {
+    if (!data?.datasets?.[0]?.data?.length) return;
+
+    if (myChart) myChart.destroy();
+    const ctx = document.getElementById('chart').getContext('2d');
+
+    myChart = new Chart(ctx, {
+      type: 'line',
+      data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+        interaction: { mode: 'nearest', intersect: false, axis: 'x' },
+        plugins: {
+          legend: { display: false },
+          annotation: {
+            annotations: {
+              normalLine: {
+                type: 'line',
+                scaleID: 'y1',
+                value: 0.36,
+                borderColor: '#000',
+                borderWidth: 2,
+                label: {
+                  display: true,
+                  content: '0.36m - Top of normal range',
+                  position: 'center',
+                  backgroundColor: 'rgba(255,255,255,0.85)',
+                  color: '#0b0c0c',
+                  font: { size: 12, weight: 'bold' },
+                  padding: 6
+                }
+              }
+            }
+          },
           zoom: {
-            wheel: { enabled: true },
-            drag: { enabled: true,
-        borderColor: 'yellow',       // border of drag rectangle
-        borderWidth: 2,
-        backgroundColor: 'rgba(255, 255, 0, 0.25)', // semi-transparent yellow fill
-        mode: 'x'
-      },
-            mode: 'x',
-            onZoomComplete: updateControls,
+            pan: { enabled: false },
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              drag: { enabled: false },
+              mode: 'x',
+              onZoom: () => updateControls(),
+              onZoomComplete: () => updateControls()
+            },
+            limits: { x: { min: 'original', max: 'original', minRange: 3600000 } }
           },
-          pan: {
+          tooltip: {
             enabled: true,
-            mode: 'x',
-            onPanComplete: updateControls
-          },
-          limits: { x: { min: 'original', max: 'original', minRange: 3600000 } }
-        },
-        tooltip: {
-          enabled: true,
-          mode: 'index',
-          intersect: false,
-          backgroundColor: '#fff',
-          titleColor: '#0b0c0c',
-          bodyColor: '#0b0c0c',
-          borderColor: '#b1b4b6',
-          borderWidth: 1,
-          caretSize: 0,
-          cornerRadius: 0,
-          displayColors: false,
-          padding: 10,
-          titleFont: { size: 18, weight: 'bold' },
-          bodyFont: { size: 14 },
-          callbacks: {
-            title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
-            label: (item) => formatGovUKDateTime(item.raw.x)
-          }
-        }
-      },
-      scales: {
-        x: {
-          type: 'time',
-          bounds: 'data',
-          afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
-          ticks: {
-            autoSkip: false,
-            callback: v => {
-              const iso = new Date(v).toISOString();
-              return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
+            mode: 'index',
+            intersect: false,
+            backgroundColor: '#fff',
+            titleColor: '#0b0c0c',
+            bodyColor: '#0b0c0c',
+            borderColor: '#b1b4b6',
+            borderWidth: 1,
+            displayColors: false,
+            titleFont: { size: 18, weight: 'bold' },
+            bodyFont: { size: 14 },
+            callbacks: {
+              title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
+              label: (item) => new Date(item.raw.x).toLocaleString('en-GB')
             }
           }
         },
-        y: { display: false, grid: { display: false } },
-        y1: {
-          position: 'right',
-          min: 0.24,
-          max: 0.50,
-          ticks: { callback: v => v.toFixed(2) }
+        scales: {
+          x: {
+            type: 'time',
+            bounds: 'data',
+            afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
+            ticks: { autoSkip: false, callback: v => new Date(v).toLocaleDateString('en-GB') }
+          },
+          y: { display: false, grid: { display: false } },
+          y1: { position: 'right', grace: '10%', suggestedMin: 0.24, suggestedMax: 0.36, ticks: { callback: v => v.toFixed(2) } }
         }
       }
-    }
-  });
-
-  // store original x-axis limits for comparison
-  const x = myChart.scales.x;
-  originalXRange = { min: x.min, max: x.max };
-
-  attachControls();
-  updateControls();
-}
-
- 
-function attachControls() {
-  const ZOOM_FACTOR = 1.2;
-  const PAN_DISTANCE = 100;
-
-  document.getElementById('zoomInBtn').onclick = () => {
-    myChart.zoom(ZOOM_FACTOR);
-    updateControls();
-  };
-
-  document.getElementById('zoomOutBtn').onclick = () => {
-    myChart.zoom(1 / ZOOM_FACTOR);
-    updateControls();
-  };
-
-  document.getElementById('panLeftBtn').onclick = () => {
-    if (!isZoomed()) return;
-    myChart.pan({ x: PAN_DISTANCE });
-    updateControls();
-  };
-
-  document.getElementById('panRightBtn').onclick = () => {
-    if (!isZoomed()) return;
-    myChart.pan({ x: -PAN_DISTANCE });
-    updateControls();
-  };
-
-  document.getElementById('resetZoomBtn').onclick = () => {
-    myChart.resetZoom();
-    updateControls();
-  };
-}
-
-// --------------------
-// Formatting
-// --------------------
-function formatGovUKDateTime(ms) {
-  const d = new Date(ms);
-  const day = d.getDate();
-  const month = d.toLocaleString('en-GB', { month: 'short' });
-  const year = d.getFullYear();
-  let hours = d.getHours();
-  const minutes = d.getMinutes();
-  const ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12 || 12;
-  const mins = minutes === 0 ? '' : `:${minutes.toString().padStart(2, '0')}`;
-  return `${hours}${mins}${ampm} ${day} ${month} ${year}`;
-}
-
-function formatGovUKTime(iso) {
-  return new Date(iso)
-    .toLocaleTimeString('en-GB', { hour: 'numeric', hour12: true })
-    .toLowerCase()
-    .replace(':00', '');
-}
-
-function formatGovUKShortYearDate(iso) {
-  return new Date(iso).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: '2-digit'
-  });
-}
-
-// --------------------
-// Data load
-// --------------------
-(async function init() {
-  try {
-    const res = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
-    if (!res.ok) throw new Error();
-
-    const text = await res.text();
-    renderChart(csvRowsToChartData(parseCSV(text)));
-
-  } catch {
-    const now = Date.now();
-    renderChart({
-      datasets: [{
-        label: 'No data',
-        data: [
-          { x: now - 172800000, y: 0 },
-          { x: now - 86400000, y: 0 },
-          { x: now, y: 0 }
-        ]
-      }]
     });
+
+    originalXRange = { min: myChart.scales.x.min, max: myChart.scales.x.max };
+
+    attachControls();
+    enableDragPan();
+    updateControls();
   }
-})();
+
+  // --------------------
+  // Controls
+  // --------------------
+  function updateControls() {
+    if (!myChart) return;
+    const zoomed = Math.abs(myChart.scales.x.min - originalXRange.min) > 1;
+
+    document.getElementById('zoomOutBtn').style.display = zoomed ? 'inline-block' : 'none';
+    document.getElementById('resetZoomBtn').style.display = zoomed ? 'inline-block' : 'none';
+    document.getElementById('panLeftBtn').disabled = !zoomed;
+    document.getElementById('panRightBtn').disabled = !zoomed;
+  }
+
+  function attachControls() {
+    const ZOOM_FACTOR = 1.2;
+    const PAN_DISTANCE = 100;
+
+    document.getElementById('zoomInBtn').onclick = () => { myChart.zoom(ZOOM_FACTOR); updateControls(); };
+    document.getElementById('zoomOutBtn').onclick = () => { myChart.zoom(1 / ZOOM_FACTOR); updateControls(); };
+    document.getElementById('panLeftBtn').onclick = () => { myChart.pan({ x: PAN_DISTANCE }); updateControls(); };
+    document.getElementById('panRightBtn').onclick = () => { myChart.pan({ x: -PAN_DISTANCE }); updateControls(); };
+    document.getElementById('resetZoomBtn').onclick = () => { myChart.resetZoom(); updateControls(); };
+  }
+
+  // --------------------
+  // Drag / Touch pan
+  // --------------------
+  function enableDragPan() {
+    const canvas = myChart.canvas;
+    let isDragging = false;
+    let lastX = 0;
+
+    canvas.style.cursor = 'grab';
+
+    // mouse drag
+    canvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; canvas.style.cursor = 'grabbing'; });
+    window.addEventListener('mouseup', () => { isDragging = false; canvas.style.cursor = 'grab'; });
+    canvas.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - lastX;
+      lastX = e.clientX;
+      myChart.pan({ x: -deltaX });
+      updateControls();
+    });
+
+    // touch
+    let touchX = null;
+    canvas.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+    canvas.addEventListener('touchmove', e => {
+      if (touchX === null) return;
+      const deltaX = e.touches[0].clientX - touchX;
+      touchX = e.touches[0].clientX;
+      myChart.pan({ x: -deltaX });
+      updateControls();
+    });
+    canvas.addEventListener('touchend', () => { touchX = null; });
+  }
+
+  // --------------------
+  // Load CSV & init chart
+  // --------------------
+  (async function init() {
+    try {
+      const res = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
+      if (!res.ok) throw new Error('CSV not found');
+      const text = await res.text();
+      renderChart(csvRowsToChartData(parseCSV(text)));
+    } catch {
+      const now = Date.now();
+      renderChart({
+        datasets: [{
+          label: 'No data',
+          data: [
+            { x: now - 172800000, y: 0 },
+            { x: now - 86400000, y: 0 },
+            { x: now, y: 0 }
+          ]
+        }]
+      });
+    }
+  })();
 </script>
  
 <!-- chart end-->
