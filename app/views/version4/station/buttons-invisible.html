@@ -514,6 +514,7 @@ document.getElementById('latestBtn').onclick = () => {
   myChart.resetZoom(); // ✅ proper reset (plugin-aware)
 
   updateControls();
+  updateCursor();
 };
  
 
@@ -585,7 +586,9 @@ function renderChart(data) {
 
     ctx.stroke();
     ctx.restore();
+      updateCursor();
   }
+
 };
 
   myChart = new Chart(ctx, {
@@ -636,10 +639,12 @@ zoom: {
     drag: { enabled: false },
     mode: 'x',
 
-    onZoom({ chart }) {
+     onZoom: () => {
+      updateCursor();
       updateControls();
     },
-    onZoomComplete({ chart }) {
+    onZoomComplete: () => {
+      updateCursor();
       updateControls();
     }
   },
@@ -707,10 +712,15 @@ zoom: {
 // ✅ DRAG TO PAN (MOUSE + TOUCH)
 
  // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
-
 const canvas = myChart.canvas;
 
-canvas.style.cursor = 'grab';
+function updateCursor() {
+  if (isZoomed()) {
+    canvas.style.cursor = 'grab';
+  } else {
+    canvas.style.cursor = 'default';
+  }
+}
 
 let isDragging = false;
 let lastX = 0;
@@ -726,7 +736,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 window.addEventListener('mouseup', () => {
   isDragging = false;
-  canvas.style.cursor = 'grab';
+   updateCursor(); 
 });
 
 canvas.addEventListener('mousemove', (e) => {

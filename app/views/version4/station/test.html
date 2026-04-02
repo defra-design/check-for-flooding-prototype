@@ -54,16 +54,15 @@ canvas {
  
 .chart-zoom-controls {
   display: flex;
-  flex-wrap: wrap;       /* wrap if viewport is small */
-  gap: 8px;              /* spacing between buttons */
-  justify-content: flex-start; /* align left */
-  margin-top: 10px;
+  flex-wrap: wrap;   /* allow wrapping if needed */
+  gap: 8px;
+  justify-content: flex-start;
 }
 
-.chart-zoom-controls .govuk-button,
-.chart-zoom-controls .pan-btn {
-  flex: 0 0 auto;
-  width: 120px;          /* consistent width */
+/* Keep buttons a consistent size */
+.chart-zoom-controls .govuk-button {
+  width: 120px;      /* fixed width for all buttons */
+  flex: 0 0 auto;    /* prevent shrinking or growing */
   text-align: center;
   white-space: nowrap;
 }
@@ -127,8 +126,7 @@ form.form::after {
             
                <li class="defra-navbar__item">
                  <span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20">
-                  <path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span>
-                  <span class="defra-button-secondary__text"> </span><span class="govuk-visually-hidden">(Visual only)</span>
+                  <path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text"> </span><span class="govuk-visually-hidden">(Visual only)</span>
                 <a href="#">Map </a>
               </li>
  
@@ -205,7 +203,7 @@ form.form::after {
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
  
-<div style="clear: both;"></div>
+ 
 
 <style>
 .chart-section {
@@ -225,8 +223,32 @@ form.form::after {
   display: block;
 }
 
+/* Pan buttons overlay */
+.pan-btn {
+  position: absolute;
+  transform: translateY(-50%);
+  width: 48px;             /* GOV.UK recommended touch target */
+  height: 48px;            /* GOV.UK recommended touch target */
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  flex: 0 0 auto;
+  padding: 0;              /* remove default padding for perfect centering */
+}
 
- 
+/* Left and right positions */
+#panLeftBtn {
+  left: 28px;
+    top: 50%;
+}
+
+#panRightBtn {
+  right: 50px;
+    top: 50%;
+}
+
 /* Disabled state */
 .pan-btn:disabled {
   opacity: 0.01;
@@ -247,27 +269,102 @@ form.form::after {
   <div class="chart-container">
     <canvas id="chart"></canvas>
 
- 
+    <!-- Pan buttons overlay -->
+    <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart left">←</button>
+    <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart right">→</button>
   </div>
 </section>
  
  
  
 <!-- Zoom  controls -->
-<div style="width:100%; float: inline-start; margin-left: 6px; margin-bottom: 0px;">
+ 
+<div style="max-width: 100%; margin-top: 10px;">
 
-     <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
-       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" style="display:none;"> -  &#128269; </button>
-      <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart left" >←</button>
-       <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart right">→</button>
-  <button type="button" class="govuk-button govuk-button--secondary" id="latestBtn" style="display:none;"> Reset zoom </button>
- 
- 
+   <div class="govuk-form-group"
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
+  </div>
+    <div class="govuk-form-group"
+     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" style="display:none;"> - 🔍 </button></div>
+    
+ <div class="govuk-form-group"
+     style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
+  <button
+  type="button"
+  class="govuk-button govuk-button--secondary"
+  id="latestBtn"
+  style="display:none;">
+  Reset zoom
+</button>
+</div>
+</div>
    </div>
-<div style="clear: both;"></div>
  
- <form class="form" action="cheddar-datepicker" method="post">  
-<!-- moj date picker -->
+<div style="clear: both;"></div>
+
+     <div style="margin: 0px;"> 
+        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
+        <span class="defra-button-secondary__icon">
+          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
+          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
+          </svg>
+        </span>
+        <span class="defra-button-secondary__text">Download data CSV </span>
+      </a>
+  </div>
+
+
+ <hr>
+<!-- top of normal range --> 
+<div class="govuk-form-group">
+  <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+      <input
+          class="govuk-checkboxes__input"
+          id="toggleHighestCheckbox"
+          type="checkbox">
+        <label class="govuk-label govuk-checkboxes__label" for="toggleHighestCheckbox">
+          Show highest level recorded at this measuring station (0.64m) on 5 October 2020
+        </label>
+    </div>
+     <div class="govuk-checkboxes__item">
+      <input
+        class="govuk-checkboxes__input"
+        id="toggleNormalRange"
+        type="checkbox"
+        checked  >
+      <label class="govuk-label govuk-checkboxes__label" for="toggleNormalRange">
+        Show top of normal range (0.36m). Low-lying land flooding possible above this level
+      </label>
+
+    </div>
+  </div>
+</div>
+<hr>
+
+<div style="clear: both;"></div>
+
+
+  <p class="govuk-body-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">Flooding might not happen again at the same
+  historical levels. This may be because flood management schemes are now in place.<br></p>
+   <p class="govuk-!-margin-bottom-0"> 
+ 
+<a href="#">How we measure river, sea and groundwater levels</a><br><br>
+</p>
+ <!-- custom date picker -->
+  <!--
+<details class="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Custom date picker
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    Select a custom date suing the date picker.
+     <form class="form" action="cheddar-datepicker" method="post">  
+ 
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
         <label class="govuk-label--small" for="date">From:</label>
@@ -288,20 +385,13 @@ form.form::after {
   </div>
 <div style="clear: both;"></div>
   </form>
-  <div style="margin: 0px;"> 
-        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
-        <span class="defra-button-secondary__icon">
-          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
-          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
-          </svg>
-        </span>
-        <span class="defra-button-secondary__text">Download data CSV </span>
-      </a>
   </div>
+</details>
+-->
+
 
   
- 
-<div style="clear: both;"></div>
+
  
     <aside class="defra-context-footer">
     <div>
@@ -385,7 +475,7 @@ const verticalLinePlugin = {
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = '#aaaaaa'; // GOV.UK black
+    ctx.strokeStyle = '#cccccc'; // GOV.UK black
  
     ctx.stroke();
     ctx.restore();
@@ -477,9 +567,9 @@ document.getElementById('latestBtn').onclick = () => {
   if (!myChart) return;
 
   myChart.resetZoom(); // ✅ proper reset (plugin-aware)
-
+  initWindowedChart(fullChartData);
+  updateCursor();
   updateControls();
-   updateCursor();
 };
  
 
@@ -565,29 +655,46 @@ function renderChart(data) {
       interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
-        annotation: {
-    annotations: {
-      normalLine: {
-        type: 'line',
-        scaleID: 'y1',
-        value: 0.36,
-        borderColor: '#000',
-        borderWidth: 2,
-        label: { display: true, 
-                content: '0.36m - Top of normal range',
-                position: 'center',
-               backgroundColor: 'rgba(255,255,255,0.85)',
+  annotation: {
+   annotations: {
+    normalLine: {
+      type: 'line',
+      scaleID: 'y1',
+      value: 0.36,
+      display: true,
+      borderColor: '#000',
+      borderWidth: 2,
+      label: {
+        display: true,
+        content: '0.36m - Top of normal range',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.85)',
         color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold' 
-         },
-        padding: 6}
+        font: { size: 12, weight: 'bold' },
+        padding: 6
       }
-      
- 
+    },
+
+    highestRecordedLine: {
+      type: 'line',
+      scaleID: 'y1',
+      value: 0.64,
+      borderColor: '#d4351c',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      display: false,
+      label: {
+        display: true,
+        content: '0.64m - Highest level recorded (5 October 2020)',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        color: '#0b0c0c',
+        font: { size: 12, weight: 'bold' },
+        padding: 6
+      }
     }
-  },
+  }
+},
 zoom: {
   limits: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
@@ -621,11 +728,10 @@ zoom: {
   }
 },
  
-
         tooltip: {
           enabled: true,
           events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
-          animation: false,
+          animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
@@ -644,28 +750,48 @@ zoom: {
             label: (item) => formatGovUKDateTime(item.raw.x)
           }
         }
+            },
+            elements: {
+            point: {
+          radius: 0,
+          hitRadius: 20,
+          hoverRadius: 4
+        }
       },
       scales: {
         x: {
           type: 'time',
           bounds: 'data',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
-          ticks: {
+          ticks: { font: { size: 14 },
             autoSkip: false,
             callback: v => {
               const iso = new Date(v).toISOString();
               return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
             }
-          }
+          },
+           font: (ctx) => {
+    const ticks = ctx.chart.scales.x.ticks;
+    const lastTick = ticks[ticks.length - 1]?.value;
+
+    return {
+      weight: ctx.tick.value === lastTick ? 'bold' : 'normal'
+    };}
         },
      y: { display: false, grid: { display: false } },
        y1: {
   position: 'right',
   grace: '10%',
   suggestedMin: 0.24,
-  suggestedMax: 0.36,
+  suggestedMax: 0.65,
   ticks: {
-    callback: v => v.toFixed(2)
+    stepSize: 0.2,     
+     callback: v => v.toFixed(2) + ' m',
+      font: {
+      size: 14,               // increase font size (default is ~12)
+      weight: 'normal',       // optional: bold / normal
+      family: "'GDS Transport', Arial, sans-serif"  // GOV.UK font
+      }
   }
 }
       }
@@ -673,10 +799,7 @@ zoom: {
     
   });
 
-// ✅ DRAG TO PAN (MOUSE + TOUCH)
-
- // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
-
+// DRAG TO PAN (MOUSE + TOUCH)
 const canvas = myChart.canvas;
 
 function updateCursor() {
@@ -701,7 +824,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 window.addEventListener('mouseup', () => {
   isDragging = false;
-   updateCursor();
+  updateCursor(); // instead of forcing 'grab'
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -829,7 +952,7 @@ function formatGovUKShortYearDate(iso) {
 // --------------------
 (async function init() {
   try {
-    const res = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
+    const res = await fetch('/public/data/cheddar-6month30.csv', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
 
     const text = await res.text();
@@ -853,10 +976,32 @@ function formatGovUKShortYearDate(iso) {
   }
 })();
 
+/// toggle top of normal range ////
 
+document.getElementById('toggleNormalRange').addEventListener('change', (e) => {
+  if (!myChart) return;
 
+  const annotation = myChart.options.plugins.annotation.annotations.normalLine;
 
+  annotation.display = e.target.checked;
+ annotation.label.display = e.target.checked;
+  myChart.update();
+});
 
+// toggle highest ever ///
+const highestCheckbox = document.getElementById('toggleHighestCheckbox');
+
+highestCheckbox.addEventListener('change', () => {
+  if (!myChart) return;
+
+  const annotation =
+    myChart.options.plugins.annotation.annotations.highestRecordedLine;
+
+  annotation.display = highestCheckbox.checked;
+  annotation.label.display = highestCheckbox.checked;
+
+  myChart.update();
+});
 
 </script>
  
