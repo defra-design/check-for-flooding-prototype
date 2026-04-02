@@ -192,8 +192,6 @@ form.form::after {
               <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
             </li>
-
- 
           </ul>
         </div>
     </nav>
@@ -205,7 +203,7 @@ form.form::after {
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
  
-<div style="clear: both;"></div>
+ 
 
 <style>
 .chart-section {
@@ -247,7 +245,7 @@ form.form::after {
 }
 
 #panRightBtn {
-  right: 38px;
+  right: 50px;
     top: 50%;
 }
 
@@ -280,7 +278,9 @@ form.form::after {
  
  
 <!-- Zoom  controls -->
+ 
 <div style="max-width: 100%; margin-top: 10px;">
+
    <div class="govuk-form-group"
      style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
   <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
@@ -302,9 +302,18 @@ form.form::after {
 </div>
    </div>
 <div style="clear: both;"></div>
+ <!-- custom date picker -->
+  <!--
+<details class="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Custom date picker
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    Select a custom date suing the date picker.
+     <form class="form" action="cheddar-datepicker" method="post">  
  
- <form class="form" action="cheddar-datepicker" method="post">  
-<!-- moj date picker -->
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
         <label class="govuk-label--small" for="date">From:</label>
@@ -325,6 +334,9 @@ form.form::after {
   </div>
 <div style="clear: both;"></div>
   </form>
+  </div>
+</details>
+-->
   <div style="margin: 0px;"> 
         <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
         <span class="defra-button-secondary__icon">
@@ -514,7 +526,8 @@ document.getElementById('latestBtn').onclick = () => {
   if (!myChart) return;
 
   myChart.resetZoom(); // ✅ proper reset (plugin-aware)
-
+  initWindowedChart(fullChartData);
+  updateCursor();
   updateControls();
 };
  
@@ -587,6 +600,7 @@ function renderChart(data) {
 
     ctx.stroke();
     ctx.restore();
+    updateCursor();
   }
 };
 
@@ -638,10 +652,12 @@ zoom: {
     drag: { enabled: false },
     mode: 'x',
 
-    onZoom({ chart }) {
+   onZoom: () => {
+      updateCursor();
       updateControls();
     },
-    onZoomComplete({ chart }) {
+    onZoomComplete: () => {
+      updateCursor();
       updateControls();
     }
   },
@@ -654,11 +670,10 @@ zoom: {
   }
 },
  
-
         tooltip: {
           enabled: true,
           events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
-          animation: false,
+          animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
@@ -677,6 +692,13 @@ zoom: {
             label: (item) => formatGovUKDateTime(item.raw.x)
           }
         }
+            },
+            elements: {
+            point: {
+          radius: 0,
+          hitRadius: 20,
+          hoverRadius: 4
+        }
       },
       scales: {
         x: {
@@ -689,7 +711,14 @@ zoom: {
               const iso = new Date(v).toISOString();
               return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
             }
-          }
+          },
+           font: (ctx) => {
+    const ticks = ctx.chart.scales.x.ticks;
+    const lastTick = ticks[ticks.length - 1]?.value;
+
+    return {
+      weight: ctx.tick.value === lastTick ? 'bold' : 'normal'
+    };}
         },
      y: { display: false, grid: { display: false } },
        y1: {
@@ -698,7 +727,8 @@ zoom: {
   suggestedMin: 0.24,
   suggestedMax: 0.36,
   ticks: {
-    callback: v => v.toFixed(2)
+    stepSize: 0.05,     
+     callback: v => v.toFixed(2) + ' m'
   }
 }
       }
@@ -706,13 +736,16 @@ zoom: {
     
   });
 
-// ✅ DRAG TO PAN (MOUSE + TOUCH)
-
- // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
-
+// DRAG TO PAN (MOUSE + TOUCH)
 const canvas = myChart.canvas;
 
-canvas.style.cursor = 'grab';
+function updateCursor() {
+  if (isZoomed()) {
+    canvas.style.cursor = 'grab';
+  } else {
+    canvas.style.cursor = 'default';
+  }
+}
 
 let isDragging = false;
 let lastX = 0;
@@ -728,7 +761,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 window.addEventListener('mouseup', () => {
   isDragging = false;
-  canvas.style.cursor = 'grab';
+  updateCursor(); // instead of forcing 'grab'
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -856,7 +889,7 @@ function formatGovUKShortYearDate(iso) {
 // --------------------
 (async function init() {
   try {
-    const res = await fetch('/public/data/cheddar-5days.csv', { cache: 'no-cache' });
+    const res = await fetch('/public/data/cheddar-6month30.csv', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
 
     const text = await res.text();
