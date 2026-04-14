@@ -301,7 +301,58 @@ form.form::after {
 </div>
 </div>
    </div>
+ 
 <div style="clear: both;"></div>
+
+     <div style="margin: 0px;"> 
+        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
+        <span class="defra-button-secondary__icon">
+          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
+          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
+          </svg>
+        </span>
+        <span class="defra-button-secondary__text">Download data CSV </span>
+      </a>
+  </div>
+
+
+ <hr>
+<!-- top of normal range --> 
+<div class="govuk-form-group">
+  <div class="govuk-checkboxes govuk-checkboxes--small">
+        <div class="govuk-checkboxes__item">
+      <input
+          class="govuk-checkboxes__input"
+          id="toggleHighestCheckbox"
+          type="checkbox">
+        <label class="govuk-label govuk-checkboxes__label" for="toggleHighestCheckbox">
+          Show highest level recorded at this measuring station (0.64m) on 5 October 2020
+        </label>
+    </div>
+     <div class="govuk-checkboxes__item">
+      <input
+        class="govuk-checkboxes__input"
+        id="toggleNormalRange"
+        type="checkbox"
+        checked  >
+      <label class="govuk-label govuk-checkboxes__label" for="toggleNormalRange">
+        Show top of normal range (0.36m). Low-lying land flooding possible above this level
+      </label>
+
+    </div>
+  </div>
+</div>
+<hr>
+
+<div style="clear: both;"></div>
+
+
+  <p class="govuk-body-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">Flooding might not happen again at the same
+  historical levels. This may be because flood management schemes are now in place.<br></p>
+   <p class="govuk-!-margin-bottom-0"> 
+ 
+<a href="#">How we measure river, sea and groundwater levels</a><br><br>
+</p>
  <!-- custom date picker -->
   <!--
 <details class="govuk-details">
@@ -337,20 +388,10 @@ form.form::after {
   </div>
 </details>
 -->
-  <div style="margin: 0px;"> 
-        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
-        <span class="defra-button-secondary__icon">
-          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
-          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
-          </svg>
-        </span>
-        <span class="defra-button-secondary__text">Download data CSV </span>
-      </a>
-  </div>
+
 
   
- 
-<div style="clear: both;"></div>
+
  
     <aside class="defra-context-footer">
     <div>
@@ -614,29 +655,46 @@ function renderChart(data) {
       interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
         legend: { display: false },
-        annotation: {
-    annotations: {
-      normalLine: {
-        type: 'line',
-        scaleID: 'y1',
-        value: 0.36,
-        borderColor: '#000',
-        borderWidth: 2,
-        label: { display: true, 
-                content: '0.36m - Top of normal range',
-                position: 'center',
-               backgroundColor: 'rgba(255,255,255,0.85)',
+  annotation: {
+   annotations: {
+    normalLine: {
+      type: 'line',
+      scaleID: 'y1',
+      value: 0.36,
+      display: true,
+      borderColor: '#000',
+      borderWidth: 2,
+      label: {
+        display: true,
+        content: '0.36m - Top of normal range',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.85)',
         color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold' 
-         },
-        padding: 6}
+        font: { size: 12, weight: 'bold' },
+        padding: 6
       }
-      
- 
+    },
+
+    highestRecordedLine: {
+      type: 'line',
+      scaleID: 'y1',
+      value: 0.64,
+      borderColor: '#d4351c',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      display: false,
+      label: {
+        display: true,
+        content: '0.64m - Highest level recorded (5 October 2020)',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        color: '#0b0c0c',
+        font: { size: 12, weight: 'bold' },
+        padding: 6
+      }
     }
-  },
+  }
+},
 zoom: {
   limits: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
@@ -705,7 +763,7 @@ zoom: {
           type: 'time',
           bounds: 'data',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
-          ticks: {
+          ticks: { font: { size: 14 },
             autoSkip: false,
             callback: v => {
               const iso = new Date(v).toISOString();
@@ -725,10 +783,15 @@ zoom: {
   position: 'right',
   grace: '10%',
   suggestedMin: 0.24,
-  suggestedMax: 0.36,
+  suggestedMax: 0.65,
   ticks: {
-    stepSize: 0.05,     
-     callback: v => v.toFixed(2) + ' m'
+    stepSize: 0.2,     
+     callback: v => v.toFixed(2) + ' m',
+      font: {
+      size: 14,               // increase font size (default is ~12)
+      weight: 'normal',       // optional: bold / normal
+      family: "'GDS Transport', Arial, sans-serif"  // GOV.UK font
+      }
   }
 }
       }
@@ -889,7 +952,7 @@ function formatGovUKShortYearDate(iso) {
 // --------------------
 (async function init() {
   try {
-    const res = await fetch('/public/data/cheddar-6month30.csv', { cache: 'no-cache' });
+    const res = await fetch('/public/data/cheddar-5days30.csv', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
 
     const text = await res.text();
@@ -913,10 +976,32 @@ function formatGovUKShortYearDate(iso) {
   }
 })();
 
+/// toggle top of normal range ////
 
+document.getElementById('toggleNormalRange').addEventListener('change', (e) => {
+  if (!myChart) return;
 
+  const annotation = myChart.options.plugins.annotation.annotations.normalLine;
 
+  annotation.display = e.target.checked;
+ annotation.label.display = e.target.checked;
+  myChart.update();
+});
 
+// toggle highest ever ///
+const highestCheckbox = document.getElementById('toggleHighestCheckbox');
+
+highestCheckbox.addEventListener('change', () => {
+  if (!myChart) return;
+
+  const annotation =
+    myChart.options.plugins.annotation.annotations.highestRecordedLine;
+
+  annotation.display = highestCheckbox.checked;
+  annotation.label.display = highestCheckbox.checked;
+
+  myChart.update();
+});
 
 </script>
  
