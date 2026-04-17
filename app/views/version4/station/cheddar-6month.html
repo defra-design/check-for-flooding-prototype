@@ -597,8 +597,8 @@ if (myChart) {
        layout: {
   autoPadding: false
 },
-       animation: true,   
-       devicePixelRatio: 1,
+      animation: true,   
+      devicePixelRatio: Math.min(window.devicePixelRatio, 2),
       responsive: true,
       maintainAspectRatio: false,
       parsing: { xAxisKey: 'x', yAxisKey: 'y' },
