@@ -3,61 +3,31 @@
 {% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
 {% endblock %}
 
-
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
-body { padding: 2rem; }
-.chart-section {
-  clear: both;
-  margin-top: 1rem;
-}
-
-/* Wrapper sets width only; height is auto */
-
-.chart-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+body { 
+  padding: 2rem; 
 }
 
 .pan-btn {
   flex: 0 0 auto;
   height: 40px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.pan-btn:disabled {
-  opacity: 0.03;
-  pointer-events: none;
-}
-
-/* Canvas should not have forced height */
-.chart-wrap canvas {
-  display: block;
-  width: 100% !important;   /* responsive width */
-  height: 320px !important;
-}
-
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-    touch-action: none;
+  touch-action: none;
+  user-select: none;
 }
-
  
  
-.chart-zoom-controls {
-  display: flex;
-  flex-wrap: wrap;   /* allow wrapping if needed */
-  gap: 8px;
-  justify-content: flex-start;
-}
 
 /* Keep buttons a consistent size */
 .chart-zoom-controls .govuk-button {
@@ -76,11 +46,23 @@ canvas {
 
 .chart-controls {
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chart-controls .govuk-form-group {
+  float: none !important;   /* 🔥 kills the problem */
+   margin: 0 !important;     /* remove left offsets */
+}
+
+.chart-controls .govuk-button {
+  margin-bottom: 0;
 }
 
 .chart-section {
+  margin-top: 1rem;
   position: relative;
   height: auto;        /* let chart-wrap control height */
   clear: both;
@@ -178,45 +160,41 @@ form.form::after {
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time">5 days</a>
+                  <a href="cheddar-5days#time" >5 days</a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-6month#time" style="text-decoration: none;">6 months</a>
+                <a href="cheddar-6month#time" style="text-decoration: none;" >6 months</a>
               </li>
             
               <li class="defra-navbar__item">
-               <a href="cheddar-1year#time">1 year</a>
+               <a href="cheddar-1year#time" >1 year</a>
                </li>
 
               <li class="defra-navbar__item">
                 <a href="cheddar-3years#time">3 years</a>
             </li>
-
- 
           </ul>
         </div>
     </nav>
  
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
- 
-<div style="clear: both;"></div>
 
 <style>
-.chart-section {
-  margin-top: 0rem;
-}
 
 .chart-container {
+  overflow: hidden;
+   user-select: none;
+    -webkit-user-select: none;
   position: relative;
   width: 100%;
   max-width: 100%;
   height: 400px; /* taller chart */
+  overscroll-behavior: contain;
 }
 
 .chart-container canvas {
@@ -225,10 +203,7 @@ form.form::after {
   display: block;
 }
 
-/* Pan buttons overlay */
 .pan-btn {
-  position: absolute;
-  transform: translateY(-50%);
   width: 48px;             /* GOV.UK recommended touch target */
   height: 48px;            /* GOV.UK recommended touch target */
   font-size: 1.25rem;
@@ -240,20 +215,9 @@ form.form::after {
   padding: 0;              /* remove default padding for perfect centering */
 }
 
-/* Left and right positions */
-#panLeftBtn {
-  left: 28px;
-    top: 50%;
-}
-
-#panRightBtn {
-  right: 38px;
-    top: 50%;
-}
-
 /* Disabled state */
 .pan-btn:disabled {
-  opacity: 0.01;
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -268,43 +232,115 @@ form.form::after {
 </style>
  
 <section class="chart-section">
-  <div class="chart-container">
-    <canvas id="chart"></canvas>
 
-    <!-- Pan buttons overlay -->
-    <button id="panLeftBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart left">←</button>
-    <button id="panRightBtn" class="pan-btn govuk-button govuk-button--secondary" aria-label="Pan chart right">→</button>
+ <div class="chart-container">
+<canvas id="chart" role="img" aria-label="River level chart showing height over time"></canvas>
+</div>
+
+<!-- Unified controls row -->
+ <div style="max-width: 100%; margin: 10px auto; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
+ <div class="govuk-form-group">
+  <button type="button" class="govuk-button govuk-button--secondary" id="panLeftBtn" >
+    ← 
+  </button>
+</div>
+ <div class="govuk-form-group">
+  <button type="button" class="govuk-button govuk-button--secondary" id="panRightBtn" >
+     →
+  </button>
+</div>
+ <div class="govuk-form-group" >
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn">
+    + 🔍
+  </button>
+</div>
+ <div class="govuk-form-group">
+  <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn"  disabled>
+    - 🔍
+  </button>
   </div>
-</section>
- 
- 
- 
-<!-- Zoom  controls -->
-<div style="max-width: 100%; margin-top: 10px;">
-   <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-  <button type="button" class="govuk-button govuk-button--secondary" id="zoomInBtn"  > + &#128269; </button>
-  </div>
-    <div class="govuk-form-group"
-     style="max-width: 25%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-       <button type="button" class="govuk-button govuk-button--secondary" id="zoomOutBtn" style="display:none;"> - 🔍 </button></div>
-    
- <div class="govuk-form-group"
-     style="max-width: 50%; float: inline-start; margin-left: 6px; margin-bottom: 11px;">
-  <button
-  type="button"
-  class="govuk-button govuk-button--secondary"
-  id="latestBtn"
-  style="display:none;">
-  Reset zoom
+ <div class="govuk-form-group">
+<button
+  type="button" class="govuk-button govuk-button--secondary" id="latestBtn" disabled>
+  Reset view
 </button>
 </div>
 </div>
-   </div>
-<div style="clear: both;"></div>
  
- <form class="form" action="cheddar-datepicker" method="post">  
-<!-- moj date picker -->
+</section>
+
+<div style="clear: both;"></div>
+
+     <div style="margin: 10px;"> 
+        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
+        <span class="defra-button-secondary__icon">
+          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
+          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
+          </svg>
+        </span>
+        <span class="defra-button-secondary__text">Download data CSV </span>
+      </a>
+  </div>
+
+ <hr>
+<!-- top of normal range --> 
+<div class="govuk-form-group">
+  <div class="govuk-checkboxes govuk-checkboxes--small">
+<div class="govuk-checkboxes__item">
+  <input
+    class="govuk-checkboxes__input"
+    id="toggleCurrentLevel"
+    type="checkbox"
+     >
+  <label class="govuk-label govuk-checkboxes__label" for="toggleCurrentLevel">
+    Show current level (0.28m)
+  </label>
+</div>
+
+        <div class="govuk-checkboxes__item">
+      <input
+          class="govuk-checkboxes__input"
+          id="toggleHighestCheckbox"
+          type="checkbox">
+        <label class="govuk-label govuk-checkboxes__label" for="toggleHighestCheckbox">
+          Show highest level recorded at this measuring station (0.64m) on 5 October 2020
+        </label>
+    </div>
+     <div class="govuk-checkboxes__item">
+      <input
+        class="govuk-checkboxes__input"
+        id="toggleNormalRange"
+        type="checkbox"
+        checked  >
+      <label class="govuk-label govuk-checkboxes__label" for="toggleNormalRange">
+        Show top of normal range (0.36m). Low-lying land flooding possible above this level
+      </label>
+
+    </div>
+  </div>
+</div>
+<hr>
+
+<div style="clear: both;"></div>
+
+  <p class="govuk-body govuk-!-margin-top-3 govuk-!-margin-bottom-0">Flooding might not happen again at the same
+  historical levels. This may be because flood management schemes are now in place.<br></p>
+   <p class="govuk-!-margin-bottom-0"> 
+ 
+<a href="#">How we measure river, sea and groundwater levels</a><br><br>
+</p>
+ <!-- custom date picker -->
+  <!--
+<details class="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      Custom date picker
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    Select a custom date suing the date picker.
+     <form class="form" action="cheddar-datepicker" method="post">  
+ 
   <div class="moj-datepicker" data-module="moj-date-picker">
       <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
         <label class="govuk-label--small" for="date">From:</label>
@@ -325,21 +361,10 @@ form.form::after {
   </div>
 <div style="clear: both;"></div>
   </form>
-  <div style="margin: 0px;"> 
-        <a href="#" class="defra-button-secondary defra-button-secondary--icon govuk-!-margin-bottom-4" download="">
-        <span class="defra-button-secondary__icon">
-          <svg focusable="false" aria-hidden="true" width="14" height="20" viewBox="0 0 14 20" style="padding-right: 0px; left: 4px; margin-top: 0px; ">
-          <path d="M1.929 9L7 14.071 12.071 9M7 14.071V1M1 18h12" fill="none" stroke="currentColor" stroke-width="2"></path>
-          </svg>
-        </span>
-        <span class="defra-button-secondary__text">Download data CSV </span>
-      </a>
   </div>
+</details>
+-->
 
-  
- 
-<div style="clear: both;"></div>
- 
     <aside class="defra-context-footer">
     <div>
       
@@ -362,7 +387,6 @@ form.form::after {
     </div>
  </aside>
   
- 
 
       <div class="defra-related-items">
   <h2 class="govuk-heading-s" id="subsection-title">
@@ -401,17 +425,18 @@ form.form::after {
     </ul>
   </nav>
 </div>
-
-
-
+ 
 <script>
  
-// Define plugin first
+// =============================
+// CUSTOM PLUGINS
+// Adds vertical hover line
+// =============================
 const verticalLinePlugin = {
   id: 'verticalLine',
   afterDraw(chart) {
     const { ctx, chartArea, tooltip } = chart;
-    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
+    if (!tooltip || !tooltip.getActiveElements) return;
 
     const active = chart.tooltip.getActiveElements();
     if (!active.length) return;
@@ -430,14 +455,15 @@ const verticalLinePlugin = {
 };
 
 // Register all plugins at once
-Chart.register(verticalLinePlugin, window['chartjs-plugin-annotation'], window.ChartZoom);
+Chart.register(verticalLinePlugin);
+ 
 
-  
-
-// --------------------
-// Helpers
-// --------------------
-// CSV parsing
+// =============================
+// DATA HELPERS
+// - Parse CSV
+// - Smooth data
+// - Convert to Chart.js format
+// =============================
 function parseCSV(text) {
   const lines = text.trim().split(/\r?\n/).map(l => l.trim());
   return lines.map(line => line.split(','));
@@ -482,6 +508,7 @@ function csvRowsToChartData(rows) {
   return { datasets };
 }
 
+// Builds 5 evenly spaced time ticks for consistent GOV.UK-style axis
 function buildFiveEqualTicks(scale, anchorHour = 6) {
   if (!scale.min || !scale.max) return [];
 
@@ -493,28 +520,28 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
   });
 }
 
-
-
-
-// --------------------
-// Zoom detection + button toggle
-// --------------------
+// =============================
+// ZOOM STATE + UI CONTROLS
+// - Detect zoom
+// - Enable/disable buttons
+// =============================
 function isZoomed() {
   if (!myChart || !originalXRange) return false;
+
   const x = myChart.scales.x;
+  const TOLERANCE = (originalXRange.max - originalXRange.min) * 0.05;
 
   return (
-    Math.abs(x.min - originalXRange.min) > 1 ||
-    Math.abs(x.max - originalXRange.max) > 1
+    Math.abs(x.min - originalXRange.min) > TOLERANCE ||
+    Math.abs(x.max - originalXRange.max) > TOLERANCE
   );
 }
-
 
 document.getElementById('latestBtn').onclick = () => {
   if (!myChart) return;
 
   myChart.resetZoom(); // ✅ proper reset (plugin-aware)
-
+  requestAnimationFrame(updateCursor);
   updateControls();
 };
  
@@ -523,7 +550,6 @@ function updateControls() {
   if (!myChart) return;
 
   const zoomed = isZoomed();
-  const atLatest = isAtLatest();
 
   const latestBtn = document.getElementById('latestBtn');
   const zoomOutBtn = document.getElementById('zoomOutBtn');
@@ -531,117 +557,77 @@ function updateControls() {
   const panRightBtn = document.getElementById('panRightBtn');
 
   // Show reset zoom button only when zoomed in
-latestBtn.style.display = zoomed ? 'inline-block' : 'none';
+  latestBtn.disabled = !zoomed; 
 
   // Show zoom-out button only when zoomed in
-  zoomOutBtn.style.display = zoomed ? 'inline-block' : 'none';
+  zoomOutBtn.disabled = !zoomed;
 
   panLeftBtn.disabled = !zoomed;
   panRightBtn.disabled = !zoomed;
 }
 
 
-function isAtLatest() {
-  if (!myChart || !originalXRange) return true;
 
-  const x = myChart.scales.x;
-
-  // if max is close to original max → still at latest
-  return Math.abs(x.max - originalXRange.max) < 5;
-}
-
-// --------------------
-// Chart & Controls
-// --------------------
+// =============================
+// CHART INITIALISATION
+// - Create chart
+// - Configure plugins
+// - Attach interactions
+// =============================
 let originalXRange = null;
 let myChart = null;
 
-
-
 function renderChart(data) {
   if (!data?.datasets?.[0]?.data?.length) return;
-  if (myChart) myChart.destroy();
+if (myChart) {
+  myChart.destroy();
 
-  const ctx = document.getElementById('chart').getContext('2d');
-
-
-  const verticalLinePlugin = {
-  id: 'verticalLine',
-  afterDraw(chart) {
-    const { ctx, chartArea, tooltip } = chart;
-
-    if (!tooltip || !tooltip._active || tooltip._active.length === 0) return;
-
-    const activePoint = tooltip._active[0];
-    const x = activePoint.element.x;
-
-    ctx.save();
-
-    ctx.beginPath();
-    ctx.moveTo(x, chartArea.top);
-    ctx.lineTo(x, chartArea.bottom);
-
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#0b0c0c'; // GOV.UK black
-    ctx.setLineDash([4, 4]);     // dashed (optional)
-
-    ctx.stroke();
-    ctx.restore();
-  }
-};
-
+  // 🔥 remove ALL old event listeners safely
+  const oldCanvas = document.getElementById('chart');
+  const newCanvas = oldCanvas.cloneNode(true);
+  oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
+}
+  const canvas = document.getElementById('chart');
+  const ctx = canvas.getContext('2d');
+ 
   myChart = new Chart(ctx, {
     type: 'line',
     data,
     options: {
+       layout: {
+  autoPadding: false
+},
+       animation: true,   
+       devicePixelRatio: 1,
       responsive: true,
       maintainAspectRatio: false,
       parsing: { xAxisKey: 'x', yAxisKey: 'y' },
       interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
-        legend: { display: false },
-        annotation: {
-    annotations: {
-      normalLine: {
-        type: 'line',
-        scaleID: 'y1',
-        value: 0.36,
-        borderColor: '#000',
-        borderWidth: 2,
-        label: { display: true, 
-                content: '0.36m - Top of normal range',
-                position: 'center',
-               backgroundColor: 'rgba(255,255,255,0.85)',
-        color: '#0b0c0c',
-        font: {
-          size: 12,
-          weight: 'bold' 
-         },
-        padding: 6}
-      }
-      
- 
-    }
-  },
-zoom: {
+
+        zoom: {
   limits: {
     x: { min: 'original', max: 'original', minRange: 3600000 }
   },
-
-  pan: {
-  enabled: false // ❗ disable plugin pan completely
+pan: {
+  enabled: true,
+  mode: 'x',
+  onPanStart: ({ chart }) => {
+        chart.options.layout.autoPadding = false;
+      }
 },
-
   zoom: {
     wheel: { enabled: true },
     pinch: { enabled: true },
     drag: { enabled: false },
     mode: 'x',
 
-    onZoom({ chart }) {
+   onZoom: () => {
+      requestAnimationFrame(updateCursor);
       updateControls();
     },
-    onZoomComplete({ chart }) {
+    onZoomComplete: () => {
+      requestAnimationFrame(updateCursor);
       updateControls();
     }
   },
@@ -653,12 +639,69 @@ zoom: {
     updateControls();
   }
 },
- 
+        legend: { display: false },
+        annotation: {
+        annotations: {
+          normalLine: {
+          type: 'line',
+          scaleID: 'y1',
+          value: 0.36,
+          display: true,
+          borderColor: '#000',
+          borderWidth: 2,
+          label: {
+        display: true,
+        content: '0.36m - Top of normal range',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.85)',
+        color: '#0b0c0c',
+        font: { size: 12, weight: 'bold' },
+        padding: 6
+      }
+    },
+    currentLevelLine: {
+  type: 'line',
+  scaleID: 'y1',
+  value: 0.28,   // 👈 your current level
+  borderColor: '#1d70b8',   // GOV.UK blue (nice visual distinction)
+  borderWidth: 2,
+  borderDash: [2, 2],       // subtle dashed line (optional)
+  display: false,
+  label: {
+    display: false,
+    content: '0.28m - Current level',
+    position: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    color: '#0b0c0c',
+    font: { size: 12, weight: 'bold' },
+    padding: 6
+  }
+},
+    highestRecordedLine: {
+      type: 'line',
+      scaleID: 'y1',
+      value: 0.64,
+      borderColor: '#d4351c',
+      borderWidth: 2,
+      borderDash: [6, 4],
+      display: false,
+      label: {
+        display: true,
+        content: '0.64m - Highest level recorded (5 October 2020)',
+        position: 'center',
+        backgroundColor: 'rgba(255,255,255,0.9)',
+        color: '#0b0c0c',
+        font: { size: 12, weight: 'bold' },
+        padding: 6
+      }
+    }
+  }
+},
 
         tooltip: {
           enabled: true,
           events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
-          animation: false,
+          animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'index',
           intersect: false,
           backgroundColor: '#fff',
@@ -677,28 +720,61 @@ zoom: {
             label: (item) => formatGovUKDateTime(item.raw.x)
           }
         }
+            },
+            elements: {
+            point: {
+          radius: 0,
+          hitRadius: 20,
+          hoverRadius: 4
+        }
       },
+
+      
       scales: {
         x: {
+          offset: false, 
           type: 'time',
-          bounds: 'data',
+          bounds: 'ticks',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
           ticks: {
-            autoSkip: false,
-            callback: v => {
-              const iso = new Date(v).toISOString();
-              return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
-            }
+          autoSkip: true,
+          maxTicksLimit: 5,
+          callback: v => {
+            const iso = new Date(v).toISOString();
+            return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
           }
         },
+       
+
+  
+           font: (ctx) => {
+    const ticks = ctx.chart.scales.x.ticks;
+    const lastTick = ticks[ticks.length - 1]?.value;
+
+    return {
+      weight: ctx.tick.value === lastTick ? 'bold' : 'normal'
+    };}
+        },
+ 
      y: { display: false, grid: { display: false } },
-       y1: {
+      y1: {
   position: 'right',
   grace: '10%',
   suggestedMin: 0.24,
-  suggestedMax: 0.36,
+  suggestedMax: 0.65,
+
+  afterFit(scale) {
+    scale.width = 70;   // 🔥 THIS is the key fix
+  },
+
   ticks: {
-    callback: v => v.toFixed(2)
+    autoSkip: false,
+    stepSize: 0.2,
+    callback: v => v.toFixed(2) + ' m',
+    font: {
+      size: 14,
+      family: "'GDS Transport', Arial, sans-serif"
+    }
   }
 }
       }
@@ -706,13 +782,18 @@ zoom: {
     
   });
 
-// ✅ DRAG TO PAN (MOUSE + TOUCH)
-
- // ✅ DRAG TO PAN (WORKS ON MAC TRACKPAD)
-
-const canvas = myChart.canvas;
-
-canvas.style.cursor = 'grab';
+// =============================
+// INTERACTIONS: DRAG / TOUCH PAN
+// - Mouse drag
+// - Touch drag (Safari safe)
+// =============================
+function updateCursor() {
+  if (isZoomed()) {
+    canvas.style.cursor = 'grab';
+  } else {
+    canvas.style.cursor = 'default';
+  }
+}
 
 let isDragging = false;
 let lastX = 0;
@@ -728,7 +809,7 @@ canvas.addEventListener('mousedown', (e) => {
 
 window.addEventListener('mouseup', () => {
   isDragging = false;
-  canvas.style.cursor = 'grab';
+  requestAnimationFrame(updateCursor);
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -737,8 +818,12 @@ canvas.addEventListener('mousemove', (e) => {
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
 
-  myChart.pan({ x: -deltaX });
+myChart.pan({ x: -deltaX });
+
+
+requestAnimationFrame(() => {
   updateControls();
+});
 });
 
 // touch
@@ -746,21 +831,33 @@ let touchX = null;
 
 canvas.addEventListener('touchstart', (e) => {
   if (!isZoomed()) return;
+
+  e.preventDefault();
+
   touchX = e.touches[0].clientX;
-});
+}, { passive: false });
 
 canvas.addEventListener('touchmove', (e) => {
   if (touchX === null) return;
+
+  e.preventDefault();
 
   const newX = e.touches[0].clientX;
   const deltaX = newX - touchX;
   touchX = newX;
 
+requestAnimationFrame(() => {
   myChart.pan({ x: -deltaX });
-  updateControls();
 });
 
+  requestAnimationFrame(updateControls);
+}, { passive: false });
+
 canvas.addEventListener('touchend', () => {
+  touchX = null;
+});
+
+window.addEventListener('touchcancel', () => {
   touchX = null;
 });
   
@@ -773,21 +870,25 @@ canvas.addEventListener('touchend', () => {
   updateControls();
 }
 
- 
+// =============================
+// BUTTON CONTROLS
+// - Zoom in/out
+// - Pan left/right
+// =============================
 
 function attachControls() {
-  const ZOOM_FACTOR = 1.2;
-  const PAN_DISTANCE = 100;
+ const ZOOM_FACTOR = 1.1;
+ const PAN_DISTANCE = 80;
 
   document.getElementById('zoomInBtn').onclick = () => {
     myChart.zoom(ZOOM_FACTOR);
     updateControls();
   };
 
-  document.getElementById('zoomOutBtn').onclick = () => {
-    myChart.zoom(1 / ZOOM_FACTOR);
-    updateControls();
-  };
+document.getElementById('zoomOutBtn').onclick = () => {
+  myChart.zoom(1 / ZOOM_FACTOR);
+  updateControls();
+};
 
   document.getElementById('panLeftBtn').onclick = () => {
     if (!isZoomed()) return;
@@ -802,8 +903,10 @@ function attachControls() {
   };
 }
 
- 
-
+// =============================
+// KEYBOARD ACCESSIBILITY
+// Arrow keys pan chart
+// ============================= 
 document.addEventListener('keydown', (e) => {
   if (!myChart) return;
 
@@ -820,9 +923,9 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// --------------------
-// Formatting
-// --------------------
+// =============================
+// DATE / TIME FORMATTERS (GOV.UK style)
+// =============================
 function formatGovUKDateTime(ms) {
   const d = new Date(ms);
   const day = d.getDate();
@@ -851,9 +954,11 @@ function formatGovUKShortYearDate(iso) {
   });
 }
 
-// --------------------
-// Data load
-// --------------------
+// =============================
+// DATA LOADING
+// - Fetch CSV
+// - Fallback if unavailable
+// =============================
 (async function init() {
   try {
     const res = await fetch('/public/data/cheddar-6month30.csv', { cache: 'no-cache' });
@@ -880,15 +985,53 @@ function formatGovUKShortYearDate(iso) {
   }
 })();
 
+// =============================
+// ANNOTATION TOGGLES
+// - Normal range
+// - Highest level
+// - Current level
+// =============================
 
+/// toggle top of normal range ////
+document.getElementById('toggleNormalRange').addEventListener('change', (e) => {
+  if (!myChart) return;
 
+  const annotation = myChart.options.plugins.annotation.annotations.normalLine;
 
+  annotation.display = e.target.checked;
+ annotation.label.display = e.target.checked;
+  myChart.update();
+});
 
+// toggle highest ever ///
+const highestCheckbox = document.getElementById('toggleHighestCheckbox');
+
+highestCheckbox.addEventListener('change', () => {
+  if (!myChart) return;
+
+  const annotation =
+    myChart.options.plugins.annotation.annotations.highestRecordedLine;
+
+  annotation.display = highestCheckbox.checked;
+  annotation.label.display = highestCheckbox.checked;
+
+  myChart.update();
+});
+
+document.getElementById('toggleCurrentLevel').addEventListener('change', (e) => {
+  if (!myChart) return;
+
+  const annotation =
+    myChart.options.plugins.annotation.annotations.currentLevelLine;
+
+  annotation.display = e.target.checked;
+  annotation.label.display = e.target.checked;
+
+  myChart.update();
+});
 
 </script>
  
 <!-- chart end-->
 
-
 {% endblock %}
-
