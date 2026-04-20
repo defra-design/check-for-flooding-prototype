@@ -160,11 +160,11 @@ form.form::after {
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time" style="text-decoration: none;">5 days</a>
+                  <a href="cheddar-5days#time" onclick="location.reload()" style="text-decoration: none;">5 days</a>
               </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-6month#time"  >6 months</a>
+                <a href="cheddar-6month#time" >6 months</a>
               </li>
             
               <li class="defra-navbar__item">
@@ -737,7 +737,9 @@ pan: {
           bounds: 'ticks',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
           ticks: {
+          source: 'data',
           autoSkip: true,
+          
           maxTicksLimit: 5,
           callback: v => {
             const iso = new Date(v).toISOString();
@@ -745,8 +747,7 @@ pan: {
           }
         },
        
-
-  
+ 
            font: (ctx) => {
     const ticks = ctx.chart.scales.x.ticks;
     const lastTick = ticks[ticks.length - 1]?.value;
@@ -757,7 +758,7 @@ pan: {
         },
 
      y: { display: false, grid: { display: false } },
-      y1: {
+ y1: {
   position: 'right',
   grace: '10%',
   suggestedMin: 0.25,

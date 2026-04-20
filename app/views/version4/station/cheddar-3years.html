@@ -172,7 +172,7 @@ form.form::after {
                </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-3years#time" style="text-decoration: none;">3 years</a>
+                <a href="cheddar-3years#time" onclick="location.reload()" style="text-decoration: none;" >3 years</a>
             </li>
           </ul>
         </div>
@@ -734,7 +734,7 @@ pan: {
         x: {
           offset: false, 
           type: 'time',
-          bounds: 'ticks',
+          bounds: 'data',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
           ticks: {
           autoSkip: true,
