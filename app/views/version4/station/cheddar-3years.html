@@ -760,16 +760,16 @@ pan: {
       y1: {
   position: 'right',
   grace: '10%',
-  suggestedMin: 0.24,
+  suggestedMin: 0.25,
   suggestedMax: 0.65,
 
   afterFit(scale) {
-    scale.width = 70;   // 🔥 THIS is the key fix
+    scale.width = 60;   // 🔥 THIS is the key fix
   },
 
   ticks: {
     autoSkip: false,
-    stepSize: 0.2,
+    stepSize: 0.20,
     callback: v => v.toFixed(2) + ' m',
     font: {
       size: 14,
