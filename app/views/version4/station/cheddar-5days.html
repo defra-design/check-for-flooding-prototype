@@ -236,6 +236,11 @@ form.form::after {
  <div class="chart-container">
 <canvas id="chart" role="img" aria-label="River level chart showing height over time"></canvas>
 </div>
+<div id="chart-long-desc" class="govuk-visually-hidden">
+  River levels over the last 5 days ranged between 0.26 metres and 0.32 metres.
+  The level peaked on 21 April and has gradually fallen since.
+  Current level is 0.28 metres, which is within the normal range.
+</div>
 
 <!-- Unified controls row -->
  <div style="max-width: 100%; margin: 10px auto; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
@@ -663,7 +668,7 @@ pan: {
   type: 'line',
   scaleID: 'y1',
   value: 0.28,   // 👈 your current level
-  borderColor: '#1d70b8',   // GOV.UK blue (nice visual distinction)
+  borderColor: '#000',
   borderWidth: 2,
   borderDash: [2, 2],       // subtle dashed line (optional)
   display: false,
@@ -672,7 +677,7 @@ pan: {
     content: '0.28m - Current level',
     position: 'center',
     backgroundColor: 'rgba(255,255,255,0.9)',
-    color: '#0b0c0c',
+       color: '#0b0c0c',
     font: { size: 12, weight: 'bold' },
     padding: 6
   }
@@ -681,16 +686,15 @@ pan: {
       type: 'line',
       scaleID: 'y1',
       value: 0.64,
-      borderColor: '#d4351c',
+       borderColor: '#000',
       borderWidth: 2,
-      borderDash: [6, 4],
       display: false,
       label: {
         display: true,
         content: '0.64m - Highest level recorded (5 October 2020)',
         position: 'center',
         backgroundColor: 'rgba(255,255,255,0.9)',
-        color: '#0b0c0c',
+          color: '#0b0c0c',
         font: { size: 12, weight: 'bold' },
         padding: 6
       }
