@@ -22,13 +22,16 @@ body {
 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
+.chart-container {
+  touch-action: pan-x pan-y;
+    overscroll-behavior: contain;
+  -webkit-overflow-scrolling: auto;
+}
+
 canvas {
-   touch-action: pan-x pan-y;
   user-select: none;
 }
  
- 
-
 /* Keep buttons a consistent size */
 .chart-zoom-controls .govuk-button {
   width: 120px;      /* fixed width for all buttons */
@@ -461,7 +464,9 @@ const verticalLinePlugin = {
 
 // Register all plugins at once
 Chart.register(verticalLinePlugin);
- 
+
+const ChartZoom = window.ChartZoom;
+Chart.register(ChartZoom);
 
 // =============================
 // DATA HELPERS
