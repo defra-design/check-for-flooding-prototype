@@ -5,9 +5,14 @@
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
+
+html, body {
+  touch-action: pan-x pan-y;
+}
+
 body { 
   padding: 2rem; 
 }
@@ -22,12 +27,12 @@ body {
 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
-canvas {
-   touch-action: pan-x pan-y;
-  user-select: none;
+.chart-container {
+ touch-action: none;
 }
- 
 
+
+ 
 /* Keep buttons a consistent size */
 .chart-zoom-controls .govuk-button {
   width: 120px;      /* fixed width for all buttons */
@@ -159,7 +164,7 @@ form.form::after {
            <ul class="defra-navbar__list">   
             
               <li class="defra-navbar__item">
-                  <a href="cheddar-5days#time" >5 days</a>
+                  <a href="cheddar-5days#time">5 days</a>
               </li>
 
               <li class="defra-navbar__item">
@@ -171,7 +176,7 @@ form.form::after {
                </li>
 
               <li class="defra-navbar__item">
-                <a href="cheddar-3years#time" onclick="location.reload()" style="text-decoration: none;" >3 years</a>
+                <a href="cheddar-3years#time"  onclick="location.reload()" style="text-decoration: none;">3 years</a>
             </li>
           </ul>
         </div>
@@ -234,6 +239,11 @@ form.form::after {
 
  <div class="chart-container">
 <canvas id="chart" role="img" aria-label="River level chart showing height over time"></canvas>
+</div>
+<div id="chart-long-desc" class="govuk-visually-hidden">
+  River levels over the last 5 days ranged between 0.26 metres and 0.32 metres.
+  The level peaked on 21 April and has gradually fallen since.
+  Current level is 0.28 metres, which is within the normal range.
 </div>
 
 <!-- Unified controls row -->
@@ -328,42 +338,7 @@ form.form::after {
  
 <a href="#">How we measure river, sea and groundwater levels</a><br><br>
 </p>
- <!-- custom date picker -->
-  <!--
-<details class="govuk-details">
-  <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
-      Custom date picker
-    </span>
-  </summary>
-  <div class="govuk-details__text">
-    Select a custom date suing the date picker.
-     <form class="form" action="cheddar-datepicker" method="post">  
  
-  <div class="moj-datepicker" data-module="moj-date-picker">
-      <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;">
-        <label class="govuk-label--small" for="date">From:</label>
-        <input class="govuk-input moj-js-datepicker-input" id="from-date" name="from-date" type="text">
-      </div> 
-    </div>
- 
-  <div class="moj-datepicker" data-module="moj-date-picker">
-      <div class="govuk-form-group" style="max-width: 35%; float: inline-start; margin-left: 6px;"> 
-        <label class="govuk-label--small" for="date">To:</label>
-       <input class="govuk-input moj-js-datepicker-input" id="to-date" name="to-date" type="text">
-
-      </div> 
-  </div>
-  <div class="govuk-form-group" style="float: left;margin-left:6px; margin-right: 5px; margin-bottom: 0px;"> 
-  <label class="govuk-label--small" for="date"><br></label>
-    <button  class="govuk-button govuk-button--secondary" data-module="govuk-button" >Apply</button>
-  </div>
-<div style="clear: both;"></div>
-  </form>
-  </div>
-</details>
--->
-
     <aside class="defra-context-footer">
     <div>
       
@@ -455,7 +430,9 @@ const verticalLinePlugin = {
 
 // Register all plugins at once
 Chart.register(verticalLinePlugin);
- 
+
+const ChartZoom = window.ChartZoom;
+Chart.register(ChartZoom);
 
 // =============================
 // DATA HELPERS
@@ -565,6 +542,11 @@ function updateControls() {
   panRightBtn.disabled = !zoomed;
 }
 
+document.addEventListener('touchmove', function (e) {
+  if (e.target.tagName === 'CANVAS') {
+    e.preventDefault();
+  }
+}, { passive: false });
 
 
 // =============================
@@ -586,7 +568,7 @@ if (myChart) {
   const newCanvas = oldCanvas.cloneNode(true);
   oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
 }
-  const canvas = document.getElementById('chart');
+ const canvas = document.getElementById('chart');
   const ctx = canvas.getContext('2d');
  
   myChart = new Chart(ctx, {
@@ -611,14 +593,14 @@ if (myChart) {
 pan: {
   enabled: true,
   mode: 'x',
-   threshold: 10,
-  onPanStart: ({ chart }) => {
-        chart.options.layout.autoPadding = false;
-      }
+   threshold: 10
 },
   zoom: {
     wheel: { enabled: true },
-    pinch: { enabled: true },
+    pinch: {
+    enabled: true,
+    mode: 'x'
+  },
     drag: { enabled: false },
     mode: 'x',
 
@@ -663,7 +645,7 @@ pan: {
   type: 'line',
   scaleID: 'y1',
   value: 0.28,   // 👈 your current level
-  borderColor: '#1d70b8',   // GOV.UK blue (nice visual distinction)
+  borderColor: '#000',
   borderWidth: 2,
   borderDash: [2, 2],       // subtle dashed line (optional)
   display: false,
@@ -672,7 +654,7 @@ pan: {
     content: '0.28m - Current level',
     position: 'center',
     backgroundColor: 'rgba(255,255,255,0.9)',
-    color: '#0b0c0c',
+       color: '#0b0c0c',
     font: { size: 12, weight: 'bold' },
     padding: 6
   }
@@ -681,16 +663,15 @@ pan: {
       type: 'line',
       scaleID: 'y1',
       value: 0.64,
-      borderColor: '#d4351c',
+       borderColor: '#000',
       borderWidth: 2,
-      borderDash: [6, 4],
       display: false,
       label: {
         display: true,
         content: '0.64m - Highest level recorded (5 October 2020)',
         position: 'center',
         backgroundColor: 'rgba(255,255,255,0.9)',
-        color: '#0b0c0c',
+          color: '#0b0c0c',
         font: { size: 12, weight: 'bold' },
         padding: 6
       }
@@ -734,10 +715,12 @@ pan: {
         x: {
           offset: false, 
           type: 'time',
-          bounds: 'data',
+          bounds: 'ticks',
           afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
           ticks: {
+          source: 'data',
           autoSkip: true,
+          
           maxTicksLimit: 5,
           callback: v => {
             const iso = new Date(v).toISOString();
@@ -745,8 +728,7 @@ pan: {
           }
         },
        
-
-  
+ 
            font: (ctx) => {
     const ticks = ctx.chart.scales.x.ticks;
     const lastTick = ticks[ticks.length - 1]?.value;
@@ -755,9 +737,9 @@ pan: {
       weight: ctx.tick.value === lastTick ? 'bold' : 'normal'
     };}
         },
- 
+
      y: { display: false, grid: { display: false } },
-      y1: {
+ y1: {
   position: 'right',
   grace: '10%',
   suggestedMin: 0.25,
@@ -782,7 +764,8 @@ pan: {
     
   });
 
-  // =============================
+
+// =============================
 // PREVENT iOS DOUBLE-TAP ZOOM (chart only)
 // =============================
 let lastTap = 0;
@@ -852,6 +835,13 @@ requestAnimationFrame(() => {
   updateControls();
 }
 
+
+const isTouchDevice = 'ontouchstart' in window;
+
+if (isTouchDevice) {
+  // avoid manual drag logic interfering
+}
+
 // =============================
 // BUTTON CONTROLS
 // - Zoom in/out
@@ -904,6 +894,7 @@ document.addEventListener('keydown', (e) => {
     updateControls();
   }
 });
+
 
 // =============================
 // DATE / TIME FORMATTERS (GOV.UK style)
