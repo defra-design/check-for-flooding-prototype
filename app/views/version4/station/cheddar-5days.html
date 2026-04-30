@@ -5,7 +5,7 @@
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
 body { 
@@ -23,14 +23,12 @@ body {
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 .chart-container {
-  touch-action: pan-x pan-y;
+    touch-action: none;
     overscroll-behavior: contain;
   -webkit-overflow-scrolling: auto;
 }
 
-canvas {
-  user-select: none;
-}
+
  
 /* Keep buttons a consistent size */
 .chart-zoom-controls .govuk-button {
@@ -597,7 +595,8 @@ if (myChart) {
   const newCanvas = oldCanvas.cloneNode(true);
   oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
 }
-  const canvas = document.getElementById('chart');
+ const canvas = document.getElementById('chart');
+canvas.style.touchAction = 'none';
   const ctx = canvas.getContext('2d');
  
   myChart = new Chart(ctx, {
