@@ -5,7 +5,7 @@
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
 body { 
@@ -23,7 +23,7 @@ body {
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 .chart-container {
-    touch-action: none;
+    touch-action: pan-x pan-y;
     overscroll-behavior: contain;
   -webkit-overflow-scrolling: auto;
 }
@@ -596,7 +596,6 @@ if (myChart) {
   oldCanvas.parentNode.replaceChild(newCanvas, oldCanvas);
 }
  const canvas = document.getElementById('chart');
-canvas.style.touchAction = 'none';
   const ctx = canvas.getContext('2d');
  
   myChart = new Chart(ctx, {
@@ -621,14 +620,14 @@ canvas.style.touchAction = 'none';
 pan: {
   enabled: true,
   mode: 'x',
-   threshold: 10,
-  onPanStart: ({ chart }) => {
-        chart.options.layout.autoPadding = false;
-      }
+   threshold: 10
 },
   zoom: {
     wheel: { enabled: true },
-    pinch: { enabled: true },
+    pinch: {
+    enabled: true,
+    mode: 'x'
+  },
     drag: { enabled: false },
     mode: 'x',
 
@@ -861,6 +860,13 @@ requestAnimationFrame(() => {
 
   attachControls();
   updateControls();
+}
+
+
+const isTouchDevice = 'ontouchstart' in window;
+
+if (isTouchDevice) {
+  // avoid manual drag logic interfering
 }
 
 // =============================
