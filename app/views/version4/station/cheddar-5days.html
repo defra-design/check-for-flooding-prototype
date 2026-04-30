@@ -5,9 +5,14 @@
 
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <style>
     /* Small page tweaks to make the example a little lighter/cleaner */
+
+html, body {
+  touch-action: pan-x pan-y;
+}
+
 body { 
   padding: 2rem; 
 }
@@ -23,9 +28,7 @@ body {
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 .chart-container {
-    touch-action: pan-x pan-y;
-    overscroll-behavior: contain;
-  -webkit-overflow-scrolling: auto;
+ touch-action: none;
 }
 
 
@@ -574,6 +577,11 @@ function updateControls() {
   panRightBtn.disabled = !zoomed;
 }
 
+document.addEventListener('touchmove', function (e) {
+  if (e.target.tagName === 'CANVAS') {
+    e.preventDefault();
+  }
+}, { passive: false });
 
 
 // =============================
