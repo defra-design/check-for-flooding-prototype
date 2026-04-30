@@ -788,6 +788,23 @@ pan: {
     
   });
 
+
+// =============================
+// PREVENT iOS DOUBLE-TAP ZOOM (chart only)
+// =============================
+let lastTap = 0;
+
+canvas.addEventListener('touchend', (e) => {
+  const now = Date.now();
+
+  if (now - lastTap < 300) {
+    e.preventDefault(); // stops iOS double-tap zoom on chart
+  }
+
+  lastTap = now;
+}, { passive: false });
+
+
 // =============================
 // INTERACTIONS: DRAG / TOUCH PAN
 // - Mouse drag
@@ -894,16 +911,6 @@ document.addEventListener('keydown', (e) => {
     updateControls();
   }
 });
-
-let lastTap = 0;
-
-canvas.addEventListener('touchend', (e) => {
-  const now = Date.now();
-  if (now - lastTap < 300) {
-    e.preventDefault(); // stops double-tap zoom
-  }
-  lastTap = now;
-}, { passive: false });
 
 
 // =============================
