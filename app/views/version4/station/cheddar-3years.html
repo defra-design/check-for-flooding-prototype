@@ -23,10 +23,9 @@ body {
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
 }
- 
  
 
 /* Keep buttons a consistent size */
@@ -612,6 +611,7 @@ if (myChart) {
 pan: {
   enabled: true,
   mode: 'x',
+   threshold: 10,
   onPanStart: ({ chart }) => {
         chart.options.layout.autoPadding = false;
       }
@@ -826,40 +826,6 @@ requestAnimationFrame(() => {
 });
 });
 
-// touch
-let touchX = null;
-
-canvas.addEventListener('touchstart', (e) => {
-  if (!isZoomed()) return;
-
-  e.preventDefault();
-
-  touchX = e.touches[0].clientX;
-}, { passive: false });
-
-canvas.addEventListener('touchmove', (e) => {
-  if (touchX === null) return;
-
-  e.preventDefault();
-
-  const newX = e.touches[0].clientX;
-  const deltaX = newX - touchX;
-  touchX = newX;
-
-requestAnimationFrame(() => {
-  myChart.pan({ x: -deltaX });
-});
-
-  requestAnimationFrame(updateControls);
-}, { passive: false });
-
-canvas.addEventListener('touchend', () => {
-  touchX = null;
-});
-
-window.addEventListener('touchcancel', () => {
-  touchX = null;
-});
   
   // store original x-axis limits for comparison
   const x = myChart.scales.x;
