@@ -23,7 +23,7 @@ body {
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
 canvas {
-  touch-action: manipulation;
+ touch-action: pan-x pan-y;
   user-select: none;
 }
  
@@ -889,6 +889,18 @@ document.addEventListener('keydown', (e) => {
     updateControls();
   }
 });
+
+let lastTap = 0;
+
+canvas.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    e.preventDefault(); // stops double-tap zoom
+  }
+  lastTap = now;
+}, { passive: false });
+
+
 
 // =============================
 // DATE / TIME FORMATTERS (GOV.UK style)
