@@ -27,11 +27,6 @@ body {
 
 pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
 
-.chart-container {
- touch-action: none;
-}
-
-
  
 /* Keep buttons a consistent size */
 .chart-zoom-controls .govuk-button {
@@ -205,8 +200,10 @@ form.form::after {
   width: 100% !important;
   height: 100% !important;
   display: block;
-}
 
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
 .pan-btn {
   width: 48px;             /* GOV.UK recommended touch target */
   height: 48px;            /* GOV.UK recommended touch target */
@@ -541,12 +538,6 @@ function updateControls() {
   panLeftBtn.disabled = !zoomed;
   panRightBtn.disabled = !zoomed;
 }
-
-document.addEventListener('touchmove', function (e) {
-  if (e.target.tagName === 'CANVAS') {
-    e.preventDefault();
-  }
-}, { passive: false });
 
 
 // =============================
