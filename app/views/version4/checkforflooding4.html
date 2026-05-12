@@ -101,6 +101,11 @@
   background: #2b8cc4;
 }
 
+.defra-search__location-button[disabled] {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 </style>
 
 <div class="govuk-phase-banner">
@@ -307,6 +312,105 @@
 </div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  const locationBtn = document.getElementById('use-location-btn');
+  const locationInput = document.getElementById('location');
+  const form = locationBtn.closest('form');
+
+  locationBtn.addEventListener('click', function () {
+
+    // Browser support check
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    // Button loading state
+    locationBtn.disabled = true;
+    locationBtn.setAttribute('aria-busy', 'true');
+
+    navigator.geolocation.getCurrentPosition(
+      async function (position) {
+
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        try {
+
+          // Reverse geocode
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+          );
+
+          const data = await response.json();
+
+          // Try postcode first, then town/city/village
+          const address = data.address || {};
+
+          const locationValue =
+            address.postcode ||
+            address.town ||
+            address.city ||
+            address.village ||
+            address.county ||
+            '';
+
+          if (locationValue) {
+
+            // Populate input
+            locationInput.value = locationValue;
+
+            // Optional: auto-submit form
+            form.submit();
+
+          } else {
+            alert('Could not determine your location.');
+          }
+
+        } catch (error) {
+          console.error(error);
+          alert('There was a problem finding your location.');
+        }
+
+        locationBtn.disabled = false;
+        locationBtn.removeAttribute('aria-busy');
+      },
+
+      function (error) {
+
+        locationBtn.disabled = false;
+        locationBtn.removeAttribute('aria-busy');
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert('Location permission was denied.');
+            break;
+
+          case error.POSITION_UNAVAILABLE:
+            alert('Location information is unavailable.');
+            break;
+
+          case error.TIMEOUT:
+            alert('Location request timed out.');
+            break;
+
+          default:
+            alert('Unable to retrieve your location.');
+        }
+      },
+
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  });
+});
+</script>
 
 
 {% endblock %}
