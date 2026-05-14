@@ -347,34 +347,42 @@ document.addEventListener('DOMContentLoaded', function () {
   const locationInput = document.getElementById('location');
   const form = locationBtn.closest('form');
 
-  locationBtn.addEventListener('click', function () {
+  let isLoading = false;
 
-    // Browser support check
+  locationBtn.addEventListener('click', async function () {
+
+    if (isLoading) return;
+
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
       return;
     }
 
-    // Button loading state
+    isLoading = true;
+
     locationBtn.disabled = true;
     locationBtn.setAttribute('aria-busy', 'true');
 
     navigator.geolocation.getCurrentPosition(
-      async function (position) {
 
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+      async function (position) {
 
         try {
 
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+
           // Reverse geocode
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1`
           );
+
+          if (!response.ok) {
+            throw new Error('Geocoding failed');
+          }
 
           const data = await response.json();
 
-          // Try postcode first, then town/city/village
           const address = data.address || {};
 
           const locationValue =
@@ -385,33 +393,40 @@ document.addEventListener('DOMContentLoaded', function () {
             address.county ||
             '';
 
-          if (locationValue) {
-
-            // Populate input
-            locationInput.value = locationValue;
-
-            // Optional: auto-submit form
-            form.submit();
-
-          } else {
-            alert('Could not determine your location.');
+          if (!locationValue) {
+            throw new Error('No usable location found');
           }
 
-        } catch (error) {
-          console.error(error);
-          alert('There was a problem finding your location.');
-        }
+          // Populate input
+          locationInput.value = locationValue;
 
-        locationBtn.disabled = false;
-        locationBtn.removeAttribute('aria-busy');
+          // IMPORTANT:
+          // Re-enable BEFORE submit
+          locationBtn.disabled = false;
+          locationBtn.removeAttribute('aria-busy');
+
+          isLoading = false;
+
+          // Submit form
+          form.submit();
+
+        } catch (error) {
+
+          console.error(error);
+
+          alert('There was a problem finding your location.');
+
+          locationBtn.disabled = false;
+          locationBtn.removeAttribute('aria-busy');
+
+          isLoading = false;
+        }
       },
 
       function (error) {
 
-        locationBtn.disabled = false;
-        locationBtn.removeAttribute('aria-busy');
-
         switch (error.code) {
+
           case error.PERMISSION_DENIED:
             alert('Location permission was denied.');
             break;
@@ -427,12 +442,17 @@ document.addEventListener('DOMContentLoaded', function () {
           default:
             alert('Unable to retrieve your location.');
         }
+
+        locationBtn.disabled = false;
+        locationBtn.removeAttribute('aria-busy');
+
+        isLoading = false;
       },
 
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
+        enableHighAccuracy: false,
+        timeout: 15000,
+        maximumAge: 60000
       }
     );
   });
