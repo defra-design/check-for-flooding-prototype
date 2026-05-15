@@ -116,23 +116,8 @@
   display: block;
   margin-bottom: 8px;
 }
-
-/* Mobile */
-@media (max-width: 640px) {
-  .defra-search__label {
-    font-size: 16px;
-    line-height: 1.3;
-  }
-}
-
-@media (max-width: 640px) {
-  .defra-flood-status__text {
-    font-size: 16px;
-    line-height: 1.4;
-  }
-}
-
-
+ 
+ 
 </style>
 
 <div class="govuk-phase-banner">
@@ -450,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function () {
       },
 
       {
-        enableHighAccuracy: false,
+        enableHighAccuracy: true,
         timeout: 15000,
         maximumAge: 60000
       }
