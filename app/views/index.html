@@ -11,10 +11,18 @@
   <div class="govuk-grid-column-full">
  
     <h1 class="govuk-heading-xl">
-      {{ serviceName }}  
-      <span class="govuk-caption-l">Using GOV.UK Prototype Kit
-v13.19.1</span>
-    </h1>
+      {{ serviceName }}   </h1>
+
+      <p class="govuk-prototype-kit-manage-prototype-version">
+          GOV.UK Prototype Kit {{ releaseVersion }}
+        </p>
+        {% if kitUpdateAvailable %}
+          <p>
+            <a href="{{ currentUrl }}/plugins-installed">
+              New version available: {{ latestAvailableKit }}
+            </a>
+          </p>
+        {% endif %}
 
     <h2 class="govuk-heading-m" id="progress">
       Design team contacts:
