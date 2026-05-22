@@ -5,13 +5,13 @@
     "start": "govuk-prototype-kit start"
   },
   "dependencies": {
-    "@govuk-prototype-kit/common-templates": "2.0.1",
+    "@govuk-prototype-kit/common-templates": "3.0.0",
     "@ministryofjustice/frontend": "^9.0.0",
     "@x-govuk/govuk-prototype-filters": "2.1.0",
     "chart.js": "^4.5.1",
     "chartjs-plugin-annotation": "^3.1.0",
     "chartjs-plugin-zoom": "^2.2.0",
     "govuk-frontend": "6.1.0",
-    "govuk-prototype-kit": "13.19.1"
+    "govuk-prototype-kit": "13.20.1"
   }
 }
