@@ -457,11 +457,9 @@ function smoothData(data, windowSize = 3) {
   });
 }
 
-
 // Build Chart.js data
 function csvRowsToChartData(rows) {
   const headers = rows[0];
-
 
   const datasets = headers.slice(1).map((name, i) => {
     return {
