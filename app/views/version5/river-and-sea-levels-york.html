@@ -1,0 +1,648 @@
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+      Find river, sea, groundwater and rainfull levels
+    </h1>
+ 
+    
+    <div class="defra-search govuk-form-group govuk-!-margin-bottom-6">
+      <form method="post" autocomplete="off">
+        <label class="govuk-label defra-search__label" for="location">
+          Search river, town or postcode
+        </label>
+        <div class="defra-search__container">
+          <input class="defra-search__input" id="location" name="location" type="search" spellcheck="false" value="York">
+          <div class="defra-search__submit-container">
+            <button class="defra-search__button">
+              <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect x="0" y="0" width="50" height="50" style="fill:none;"/><path d="M12.316,14.791c-1.242,0.79 -2.716,1.248 -4.296,1.248c-4.426,0 -8.02,-3.593 -8.02,-8.019c0,-4.426 3.594,-8.02 8.02,-8.02c4.426,0 8.019,3.594 8.019,8.02c0,1.58 -0.458,3.054 -1.248,4.296l5.209,5.209l-2.475,2.475l-5.209,-5.209Zm-4.296,-12.771c3.311,0 6,2.688 6,6c0,3.311 -2.689,6 -6,6c-3.312,0 -6,-2.689 -6,-6c0,-3.312 2.688,-6 6,-6Z" style="fill:white;"/></svg>
+              <span class="govuk-visually-hidden">Search</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+      
+</div>    
+<!-- Tabs and table for River Sea Rainfall and Groundwater  -->
+
+    <div class="govuk-grid-column-full">
+      <nav class="defra-navbar defra-navbar--search-categories" aria-label="Levels by type">
+        <div class="defra-navbar__inner">
+          <a href="https://check-for-flooding.service.gov.uk/river-and-sea-levels/york?v=map-live&amp;lyr=mv,ri,ti,gr,rf&amp;ext=-1.3769324882681198,53.78464858987463,-0.7663535014932329,54.14680892812756" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">Map</span><span class="govuk-visually-hidden">(Visual only)</span></a>
+          <div class="defra-navbar__group">
+            <ul class="defra-navbar__list" id="filter" data-controls="results">
+              
+                <li class="defra-navbar__item defra-navbar__item--selected">
+                  <a href="/river-and-sea-levels/york?group=river" data-group-type="river" role="button" aria-controls="results" aria-current="true">River (46)</a>
+                </li>
+              
+                <li class="defra-navbar__item">
+                  <a href="/river-and-sea-levels/york?group=sea" data-group-type="sea" role="button" aria-controls="results" aria-current="false">Sea (0)</a>
+                </li>
+              
+                <li class="defra-navbar__item">
+                  <a href="/river-and-sea-levels/york?group=rainfall" data-group-type="rainfall" role="button" aria-controls="results" aria-current="false">Rainfall (3)</a>
+                </li>
+              
+                <li class="defra-navbar__item">
+                  <a href="/river-and-sea-levels/york?group=groundwater" data-group-type="groundwater" role="button" aria-controls="results" aria-current="false">Groundwater (0)</a>
+                </li>
+              
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+ 
+        <div class="govuk-grid-column-full">
+          <table class="defra-flood-levels-table" role="table" aria-labelledby="flood-table-caption" id="results">
+            <caption id="flood-table-caption" class="govuk-visually-hidden">
+              Results for
+              York, showing
+              <span>river</span>
+              levels
+            </caption>
+            <thead class="defra-flood-levels-table__head"><tr role="row" data-group-type="rainfall" style="display:none">
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" scope="col" role="columnheader">Measuring station</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall" scope="col" role="columnheader">1 hour</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall" scope="col" role="columnheader">6 hours</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall" scope="col" role="columnheader">24 hours</th>
+              </tr>
+              <tr role="row" data-group-type="river,sea,groundwater">
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" scope="col" role="columnheader">Measuring station</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height" scope="col" role="columnheader">Height</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend" scope="col" role="columnheader">Trend</th>
+                <th class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" scope="col" role="columnheader">State</th>
+              </tr>
+            </thead>
+            <tbody class="defra-flood-levels-table__body">
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <span class="govuk-heading-s govuk-!-margin-bottom-0"><a href="station/8208"> River Ouse at Viking Recorder  </a> </span> 
+    <span class="govuk-body-s govuk-!-margin-0" >  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.22m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+    <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> Tang Hall Beck at York James Street Trashscreen  </a>
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">5.77m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+    <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+    </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader"> 
+    <a href="#"> River Foss at York Castle Mills Sluices </a>
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">7.58m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> Browney Dyke at York Foss Barrier  </a>    
+    <span class="defra-flood-levels-table-meta"> Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">5.15m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> River Ouse at York Foss Barrier</a>
+    <span class="defra-flood-levels-table-meta"> Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} 
+    </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">5.18m</span>
+  
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+     <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> Tang Hall Beck at York Wolfe Avenue  </a>
+    
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  
+    </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.08m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Low</strong>  
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> River Ouse at Clifton Ings Outfall </a>
+    
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">5.23m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> Holgate Beck at Holgate </a>
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}   </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.02m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--falling">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.844 8.419l2.116-2.116 1.697 7.354-7.354-1.697 2.128-2.128-6.789-6.788L3.056 1.63l6.788 6.789z"></path>
+          </svg>
+        </span>
+        falling
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> River Foss at Huntington </a>
+    
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.68m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="rainfall" style="display:none">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location-rainfall" role="rowheader">
+    
+    <a href="#">York Acomb Landing rain gauge</a>
+    
+    <span class="defra-flood-levels-table-meta">
+      
+      Totals up to 10:30am on 15 October 
+      
+    </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall">
+    0mm
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall">
+    0mm
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--rainfall">
+    0.1mm
+  </td>
+
+  <!-- Sea or tide -->
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> Blue Beck at Rawcliffe </a>
+    <span class="defra-flood-levels-table-meta"> Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.56m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--rising">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M8.419 6.156L6.303 4.04l7.354-1.697-1.697 7.354-2.128-2.128-6.788 6.789-1.414-1.414 6.789-6.788z"></path>
+          </svg>
+        </span>
+        rising
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> River Ouse at Skelton </a>
+    
+    <span class="defra-flood-levels-table-meta"> Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }}  </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.68m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    <a href="#"> River Ouse at Naburn Lock  </a>
+    <span class="defra-flood-levels-table-meta"> Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">0.62m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--steady">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.6,6.992l0,-2.992l6.4,4l-6.4,4l0,-3.009l-9.6,0l0,-1.999l9.6,0Z"></path>
+          </svg>
+        </span>
+        steady
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Normal</strong>
+  </td>
+  
+</tr>
+
+              
+                <tr class="defra-flood-levels-table__row" role="row" data-group-type="river">
+  <!-- Location -->
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--location" role="rowheader">
+    
+    <a href="#"> River Ouse at Naburn Lock  - Downstream </a>
+    
+    <span class="defra-flood-levels-table-meta">  Latest at {{ "now" | govukTime }} on  {{ "today" | govukDate }} </span>
+  </td>
+
+  <!-- Rainfall -->
+  
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--height">
+    
+    <span class="defra-flood-levels-table-numeric">2.33m</span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--trend">
+    
+      <span class="defra-flood-levels-table-trend">
+        <span class="defra-flood-levels-table-trend__icon defra-flood-levels-tables-trend__icon--falling">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="fill:currentColor">
+            <path d="M9.844 8.419l2.116-2.116 1.697 7.354-7.354-1.697 2.128-2.128-6.789-6.788L3.056 1.63l6.788 6.789z"></path>
+          </svg>
+        </span>
+        falling
+      </span>
+    
+  </td>
+  <td class="defra-flood-levels-table__cell defra-flood-levels-table__cell--state" role="cell">
+      <strong class="govuk-tag govuk-tag--grey">Low</strong>
+  </td>
+  
+</tr>
+ 
+            </tbody>
+          </table>
+        </div>
+ </div>
+ <div><p><br></p></div>
+ 
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week
+          <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+
+    </div>
+ </aside>
+ 
+    <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+</div>
+ 
+
+{% endblock %}
+
