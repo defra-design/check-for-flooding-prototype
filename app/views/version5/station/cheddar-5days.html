@@ -585,8 +585,7 @@ function csvRowsToChartData(rows) {
         borderColor: '#505a5f',
         backgroundColor: 'rgba(29, 112, 184, .035)',
         borderDash: [4, 2],
-        borderWidth: 3,
-        pointRadius: 0
+        borderWidth: 3
       }
     ];
   });
@@ -805,7 +804,7 @@ pan: {
           enabled: true,
           events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
           animation: { duration: 120, easing: 'easeOutQuad'  },
-          mode: 'index',
+          mode: 'nearest',
           intersect: false,
           backgroundColor: '#fff',
           titleColor: '#0b0c0c',
