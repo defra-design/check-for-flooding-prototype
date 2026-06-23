@@ -307,7 +307,7 @@ form.form::after {
 <div id="chart-long-desc" class="govuk-visually-hidden">
   River levels over the last 5 days ranged between 0.26 metres and 0.32 metres.
   The level peaked on 21 April and has gradually fallen since.
-  Current level is 0.28 metres, which is within the normal range.
+  Latest level is 0.28 metres, which is within the normal range.
 </div>
 
 <!-- Unified controls row -->
@@ -377,7 +377,7 @@ form.form::after {
     type="checkbox"
      >
   <label class="govuk-label govuk-checkboxes__label" for="toggleCurrentLevel">
-    Show current level (0.28m)
+    Show latest level (0.28m)
   </label>
 </div>
 
@@ -750,14 +750,14 @@ pan: {
     currentLevelLine: {
   type: 'line',
   scaleID: 'y1',
-  value: 0.28,   // 👈 your current level
+  value: 0.28,   // 👈 your Latest level
   borderColor: '#000',
   borderWidth: 2,
   borderDash: [2, 2],       // subtle dashed line (optional)
   display: false,
   label: {
     display: false,
-    content: '0.28m - Current level',
+    content: '0.28m - Latest level',
     position: 'center',
     backgroundColor: 'rgba(255,255,255,0.9)',
        color: '#0b0c0c',
@@ -1098,7 +1098,7 @@ document.addEventListener('touchend', (event) => {
 // ANNOTATION TOGGLES
 // - Normal range
 // - Highest level
-// - Current level
+// - Latestlevel
 // =============================
 
 /// toggle top of normal range ////
