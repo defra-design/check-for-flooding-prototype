@@ -370,10 +370,10 @@
   <input
     class="govuk-checkboxes__input"
     id="toggleCurrentLevel"
-    type="checkbox"
+    type="checkbox" checked
      >
   <label class="govuk-label govuk-checkboxes__label" for="toggleCurrentLevel">
-    Show current level (0.28m)
+    Show latest level (0.28m)
   </label>
 </div>
 
@@ -391,7 +391,7 @@
         class="govuk-checkboxes__input"
         id="toggleNormalRange"
         type="checkbox"
-        checked  >
+        >
       <label class="govuk-label govuk-checkboxes__label" for="toggleNormalRange">
         Show top of normal range (0.36m). Low-lying land flooding possible above this level
       </label>
@@ -693,11 +693,11 @@ pan: {
           type: 'line',
           scaleID: 'y1',
           value: 0.36,
-          display: true,
+          display: false,
           borderColor: '#000',
           borderWidth: 2,
           label: {
-        display: true,
+        display: false,
         content: '0.36m - Top of normal range',
         position: 'center',
         backgroundColor: 'rgba(255,255,255,0.85)',
@@ -709,14 +709,14 @@ pan: {
     currentLevelLine: {
   type: 'line',
   scaleID: 'y1',
-  value: 0.28,   // 👈 your current level
+  value: 0.28,   // 👈 your latest level
   borderColor: '#000',
   borderWidth: 2,
   borderDash: [2, 2],       // subtle dashed line (optional)
-  display: false,
+  display: true,
   label: {
-    display: false,
-    content: '0.28m - Current level',
+    display: true,
+    content: '0.28m - Latest level',
     position: 'center',
     backgroundColor: 'rgba(255,255,255,0.9)',
        color: '#0b0c0c',
