@@ -819,7 +819,21 @@ pan: {
           bodyFont: { size: 14 },
           callbacks: {
             title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
-            label: (item) => formatGovUKDateTime(item.raw.x)
+            label: (item) => {
+  const points = item.chart.tooltip.dataPoints;
+
+  const firstMatch = points.findIndex(
+    p => p.raw.x === item.raw.x
+  );
+
+  const currentIndex = points.indexOf(item);
+
+  if (currentIndex !== firstMatch) {
+    return null;
+  }
+
+  return formatGovUKDateTime(item.raw.x);
+}
           },    
         }
             },
