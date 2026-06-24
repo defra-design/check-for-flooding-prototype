@@ -311,8 +311,48 @@ form.form::after {
 </div>
 
 <!-- Unified controls row -->
-  
-<br>
+ 
+ <div style="max-width: 100%; margin: 4px auto; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
+ 
+  <button type="button" class="govuk-button govuk-button--secondary pan-btn" id="panLeftBtn" >
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="7" y2="12"></line>
+              <polyline points="11 8 7 12 11 16"></polyline>
+            </svg>
+  </button>
+ 
+ 
+  <button type="button" class="govuk-button govuk-button--secondary pan-btn" id="panRightBtn" >
+   
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="17" y2="12"></line>
+              <polyline points="13 8 17 12 13 16"></polyline>
+            </svg>
+  </button>
+ 
+  <button type="button" class="govuk-button govuk-button--secondary pan-btn" id="zoomInBtn">
+   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+           
+  </button>
+ 
+  <button type="button" class="govuk-button govuk-button--secondary pan-btn" id="zoomOutBtn"  disabled>
+ <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+  </button>
+ 
+<button
+  type="button" class="govuk-button govuk-button--secondary pan-btn" id="latestBtn" disabled>
+ <svg class="defra-line-chart__reset-full" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"></path>
+            </svg>    
+</button>
+ 
+</div>
+
 <a href="#" class="chart-download-link">
   Download latest 5 days of data (CSV, 16KB)
 </a> <br><br>
@@ -562,9 +602,52 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
   });
 }
 
+// =============================
+// ZOOM STATE + UI CONTROLS
+// - Detect zoom
+// - Enable/disable buttons
+// =============================
+function isZoomed() {
+  if (!myChart || !originalXRange) return false;
+
+  const x = myChart.scales.x;
+  const TOLERANCE = (originalXRange.max - originalXRange.min) * 0.05;
+
+  return (
+    Math.abs(x.min - originalXRange.min) > TOLERANCE ||
+    Math.abs(x.max - originalXRange.max) > TOLERANCE
+  );
+}
+
+document.getElementById('latestBtn').onclick = () => {
+  if (!myChart) return;
+
+  myChart.resetZoom(); // ✅ proper reset (plugin-aware)
+  requestAnimationFrame(updateCursor);
+  updateControls();
+};
  
- 
- 
+
+function updateControls() {
+  if (!myChart) return;
+
+  const zoomed = isZoomed();
+
+  const latestBtn = document.getElementById('latestBtn');
+  const zoomOutBtn = document.getElementById('zoomOutBtn');
+  const panLeftBtn = document.getElementById('panLeftBtn');
+  const panRightBtn = document.getElementById('panRightBtn');
+
+  // Show reset zoom button only when zoomed in
+  latestBtn.disabled = !zoomed; 
+
+  // Show zoom-out button only when zoomed in
+  zoomOutBtn.disabled = !zoomed;
+
+  panLeftBtn.disabled = !zoomed;
+  panRightBtn.disabled = !zoomed;
+}
+
 
 // =============================
 // CHART INITIALISATION
@@ -603,20 +686,39 @@ if (myChart) {
       interaction: { mode: 'nearest', intersect: false, axis: 'x' },
       plugins: {
 
-       zoom: {
-  pan: {
-    enabled: false
+        zoom: {
+  limits: {
+    x: { min: 'original', max: 'original', minRange: 3600000 }
   },
+pan: {
+  enabled: true,
+  mode: 'x',
+   threshold: 10
+},
   zoom: {
-    wheel: {
-      enabled: false
-    },
+    wheel: { enabled: true },
     pinch: {
-      enabled: false
+    enabled: true,
+    mode: 'x'
+  },
+    drag: { enabled: false },
+    mode: 'x',
+
+   onZoom: () => {
+      requestAnimationFrame(updateCursor);
+      updateControls();
     },
-    drag: {
-      enabled: false
+    onZoomComplete: () => {
+      requestAnimationFrame(updateCursor);
+      updateControls();
     }
+  },
+
+  onPan({ chart }) {
+    updateControls();
+  },
+  onPanComplete({ chart }) {
+    updateControls();
   }
 },
         legend: { display: false },
@@ -792,7 +894,50 @@ if (myChart) {
   });
 
 
-  
+ 
+// =============================
+// INTERACTIONS: DRAG / TOUCH PAN
+// - Mouse drag
+// - Touch drag (Safari safe)
+// =============================
+function updateCursor() {
+  if (isZoomed()) {
+    canvas.style.cursor = 'grab';
+  } else {
+    canvas.style.cursor = 'default';
+  }
+}
+
+let isDragging = false;
+let lastX = 0;
+
+// mouse
+canvas.addEventListener('mousedown', (e) => {
+  if (!isZoomed()) return;
+
+  isDragging = true;
+  lastX = e.clientX;
+  canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  requestAnimationFrame(updateCursor);
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const deltaX = e.clientX - lastX;
+  lastX = e.clientX;
+
+myChart.pan({ x: -deltaX });
+
+
+requestAnimationFrame(() => {
+  updateControls();
+});
+});
 
   
   // store original x-axis limits for comparison
@@ -800,9 +945,69 @@ if (myChart) {
   originalXRange = { min: x.min, max: x.max };
   myChart.$context.originalXRange = originalXRange;
 
-} ;
+  attachControls();
+  updateControls();
+}
 
-  
+
+const isTouchDevice = 'ontouchstart' in window;
+
+if (isTouchDevice) {
+  // avoid manual drag logic interfering
+}
+
+// =============================
+// BUTTON CONTROLS
+// - Zoom in/out
+// - Pan left/right
+// =============================
+
+function attachControls() {
+ const ZOOM_FACTOR = 1.1;
+ const PAN_DISTANCE = 80;
+
+  document.getElementById('zoomInBtn').onclick = () => {
+    myChart.zoom(ZOOM_FACTOR);
+    updateControls();
+  };
+
+document.getElementById('zoomOutBtn').onclick = () => {
+  myChart.zoom(1 / ZOOM_FACTOR);
+  updateControls();
+};
+
+  document.getElementById('panLeftBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: PAN_DISTANCE });
+    updateControls();
+  };
+
+  document.getElementById('panRightBtn').onclick = () => {
+    if (!isZoomed()) return;
+    myChart.pan({ x: -PAN_DISTANCE });
+    updateControls();
+  };
+}
+
+// =============================
+// KEYBOARD ACCESSIBILITY
+// Arrow keys pan chart
+// ============================= 
+document.addEventListener('keydown', (e) => {
+  if (!myChart) return;
+
+  const STEP = 80;
+
+  if (e.key === 'ArrowLeft') {
+    myChart.pan({ x: STEP });
+    updateControls();
+  }
+
+  if (e.key === 'ArrowRight') {
+    myChart.pan({ x: -STEP });
+    updateControls();
+  }
+});
 
 
 // =============================
@@ -862,7 +1067,8 @@ function formatGovUKShortYearDate(iso) {
       }]
     });
 
-
+    updateControls();
+ 
   }
 })();
 
