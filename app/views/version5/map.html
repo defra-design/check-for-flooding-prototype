@@ -1,0 +1,264 @@
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+ 
+ <style>
+
+  .river-label {
+    color: #1d70b8;
+    font-size: 14px;
+    font-weight: bold;
+    text-shadow:
+        1px 1px 2px white,
+       -1px -1px 2px white;
+}
+ </style>
+{% block beforeContent %}
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+window.onload = function () {
+
+  console.log("Creating map");
+
+    // Create map
+    const map = L.map('myMap').setView([52.7, -1.5], 6);
+
+    // Add OpenStreetMap tiles
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    subdomains: 'abcd',
+    maxZoom: 20,
+    attribution: '&copy; OpenStreetMap &copy; CARTO'
+}).addTo(map);
+
+
+// River Avon
+const avon = [
+    [51.378, -2.360], // Bath
+    [51.387, -2.400],
+    [51.395, -2.450],
+    [51.402, -2.500],
+    [51.410, -2.540],
+    [51.421, -2.575],
+    [51.447, -2.593], // Bristol
+    [51.454, -2.610],
+    [51.455, -2.640],
+    [51.462, -2.670],
+    [51.470, -2.700]
+];
+
+L.polyline(avon, {
+    color: '#1d70b8',
+    weight: 4,
+    opacity: 0.8
+}).addTo(map);
+
+L.marker([51.43, -2.57], {
+    icon: L.divIcon({
+        className: 'river-label',
+        html: 'River Avon',
+        iconSize: [100, 20]
+    })
+}).addTo(map);
+
+
+// add scale control to the map
+L.control.scale({
+    metric: true,
+    imperial: false
+}).addTo(map);
+
+
+
+
+    // Load flood polygons
+    fetch('/public/data/demo-flood-areas.geojson')
+        .then(response => response.json())
+        .then(data => {
+
+            console.log("GeoJSON loaded:", data);
+
+            const floodLayer = L.geoJSON(data, {
+
+               style: function(feature) {
+
+    switch(feature.properties.severity){
+
+        case "Severe Flood Warning":
+            return {
+                color:"#8C1419",
+                fillColor:"#8C1419",
+                fillOpacity:0.45,
+                weight:2
+            };
+
+        case "Flood Warning":
+            return {
+                color:"#E84952",
+                fillColor:"#E84952",
+                fillOpacity:0.35,
+                weight:2
+            };
+
+        default:
+            return {
+                color:"#F2A747",
+                fillColor:"#F2A747",
+                fillOpacity:0.25,
+                weight:2
+            };
+    }
+
+},
+
+                onEachFeature: function(feature, layer){
+
+    layer.bindPopup(`
+        <strong>${feature.properties.name}</strong><br>
+        ${feature.properties.severity}
+    `);
+
+}
+
+            }).addTo(map);
+
+          map.setView([51.39, -2.82], 11);
+
+        })
+        .catch(error => {
+            console.error("Couldn't load GeoJSON:", error);
+        });
+
+};
+</script>
+
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+ 
+ 
+<h1 class="govuk-heading-xl">
+    Map of river, sea, groundwater and rainfall levels
+</h1>
+
+<div id="myMap"
+     style="height:600px;
+            width:100%;
+            margin-bottom:30px;
+            border:1px solid #b1b4b6;
+            border-radius:4px;">
+</div>
+
+<div class="govuk-grid-row">
+
+  <div class="govuk-grid-column-two-thirds">
+ 
+ 
+ 
+<div class="defra-search govuk-form-group govuk-!-margin-bottom-6">
+  <form method="post" autocomplete="off" action="river-and-sea-levels-york">
+    <label class="govuk-label defra-search__label" for="location">
+      Search river, town or postcode
+    </label>
+    <div class="defra-search__container">
+      <input class="defra-search__input" id="location" name="location" type="search" spellcheck="false" value="">
+      <div class="defra-search__submit-container">
+        <button class="defra-search__button">
+          <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 20 20" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;"><rect x="0" y="0" width="50" height="50" style="fill:none;"/><path d="M12.316,14.791c-1.242,0.79 -2.716,1.248 -4.296,1.248c-4.426,0 -8.02,-3.593 -8.02,-8.019c0,-4.426 3.594,-8.02 8.02,-8.02c4.426,0 8.019,3.594 8.019,8.02c0,1.58 -0.458,3.054 -1.248,4.296l5.209,5.209l-2.475,2.475l-5.209,-5.209Zm-4.296,-12.771c3.311,0 6,2.688 6,6c0,3.311 -2.689,6 -6,6c-3.312,0 -6,-2.689 -6,-6c0,-3.312 2.688,-6 6,-6Z" style="fill:white;"/></svg>
+          <span class="govuk-visually-hidden">Search</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+   
+ 
+ 
+</div>
+
+
+
+
+ 
+ <div class="govuk-grid-column-two-thirds"> 
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week
+          <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+
+    </div>
+ </aside>
+ 
+    <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+</div>
+
+
+{% endblock %}
+
