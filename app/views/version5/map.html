@@ -17,127 +17,32 @@
         1px 1px 2px white,
        -1px -1px 2px white;
 }
+
+.map-legend {
+    margin-top:10px;
+    font-size:14px;
+}
+
+.swatch {
+    display:inline-block;
+    width:18px;
+    height:18px;
+    margin-right:6px;
+}
+
+.severe { background:#d4351c; }
+.warning { background:#1d70b8; }
+.alert { background:#28a197; }
+
+
+
  </style>
 {% block beforeContent %}
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-window.onload = function () {
-
-  console.log("Creating map");
-
-    // Create map
-    const map = L.map('myMap').setView([52.7, -1.5], 6);
-
-    // Add OpenStreetMap tiles
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    subdomains: 'abcd',
-    maxZoom: 20,
-    attribution: '&copy; OpenStreetMap &copy; CARTO'
-}).addTo(map);
-
-
-// River Avon
-const avon = [
-    [51.378, -2.360], // Bath
-    [51.387, -2.400],
-    [51.395, -2.450],
-    [51.402, -2.500],
-    [51.410, -2.540],
-    [51.421, -2.575],
-    [51.447, -2.593], // Bristol
-    [51.454, -2.610],
-    [51.455, -2.640],
-    [51.462, -2.670],
-    [51.470, -2.700]
-];
-
-L.polyline(avon, {
-    color: '#1d70b8',
-    weight: 4,
-    opacity: 0.8
-}).addTo(map);
-
-L.marker([51.43, -2.57], {
-    icon: L.divIcon({
-        className: 'river-label',
-        html: 'River Avon',
-        iconSize: [100, 20]
-    })
-}).addTo(map);
-
-
-// add scale control to the map
-L.control.scale({
-    metric: true,
-    imperial: false
-}).addTo(map);
-
-
-
-
-    // Load flood polygons
-    fetch('/public/data/demo-flood-areas.geojson')
-        .then(response => response.json())
-        .then(data => {
-
-            console.log("GeoJSON loaded:", data);
-
-            const floodLayer = L.geoJSON(data, {
-
-               style: function(feature) {
-
-    switch(feature.properties.severity){
-
-        case "Severe Flood Warning":
-            return {
-                color:"#8C1419",
-                fillColor:"#8C1419",
-                fillOpacity:0.45,
-                weight:2
-            };
-
-        case "Flood Warning":
-            return {
-                color:"#E84952",
-                fillColor:"#E84952",
-                fillOpacity:0.35,
-                weight:2
-            };
-
-        default:
-            return {
-                color:"#F2A747",
-                fillColor:"#F2A747",
-                fillOpacity:0.25,
-                weight:2
-            };
-    }
-
-},
-
-                onEachFeature: function(feature, layer){
-
-    layer.bindPopup(`
-        <strong>${feature.properties.name}</strong><br>
-        ${feature.properties.severity}
-    `);
-
-}
-
-            }).addTo(map);
-
-          map.setView([51.39, -2.82], 11);
-
-        })
-        .catch(error => {
-            console.error("Couldn't load GeoJSON:", error);
-        });
-
-};
-</script>
+<script src="/public/javascripts/pages/maps.js"></script>
 
 <div class="govuk-phase-banner">
 	<p class="govuk-phase-banner__content">
@@ -165,6 +70,14 @@ L.control.scale({
             border:1px solid #b1b4b6;
             border-radius:4px;">
 </div>
+
+
+<div class="map-legend">
+    <div><span class="swatch severe"></span> Severe Flood Warning</div>
+    <div><span class="swatch warning"></span> Flood Warning</div>
+    <div><span class="swatch alert"></span> Flood Alert</div>
+</div>
+
 
 <div class="govuk-grid-row">
 
