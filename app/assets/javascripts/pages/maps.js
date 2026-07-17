@@ -1,125 +1,456 @@
-function styleFloodArea(feature) {
-
-    return {
-        color: "#005ea5",
-        weight: 1,
-        fillColor: "#1d70b8",
-        fillOpacity: 0.18
-    };
-
-}
+// ----------------------------------------------------
+// Flood map prototype
+// Part 1 - Setup, helpers and panel
+// ----------------------------------------------------
 
 window.addEventListener("load", () => {
 
-    console.log("Loading map...");
+    //--------------------------------------------------
+    // COLOURS
+    //--------------------------------------------------
 
-    // Create map
+    const floodColours = {
+        severe: "#8C1419",
+        warning: "#D4351C",
+        alert: "#F47738",
+        normal: "#00703C",
+        station: "#005EA5",
+        default: "#6F777B"
+    };
+
+    //--------------------------------------------------
+    // MAP
+    //--------------------------------------------------
+
     const map = L.map("myMap", {
         zoomControl: false
     }).setView([51.45, -2.60], 11);
 
-    // Zoom buttons
     L.control.zoom({
-        position: "topright"
+        position: "bottomright"
     }).addTo(map);
 
-    // Scale
-    L.control.scale({
-        imperial: false
-    }).addTo(map);
-
-    // Background map
     L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
         {
             subdomains: "abcd",
-            maxZoom: 20,
-            attribution: "&copy; OpenStreetMap &copy; CARTO"
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
         }
     ).addTo(map);
 
-    // -----------------------------
-    // Flood polygons
-    // -----------------------------
+    setTimeout(() => map.invalidateSize(), 200);
+
+    //--------------------------------------------------
+    // LAYERS
+    //--------------------------------------------------
+
+    const floodAreaLayer = L.layerGroup().addTo(map);
+    const stationLayer = L.layerGroup().addTo(map);
+
+    let floodGeoJson = null;
+
+    let selectedFloodArea = null;
+    let selectedStation = null;
+
+    //--------------------------------------------------
+    // PANEL
+    //--------------------------------------------------
+
+    const infoPanel = document.getElementById("infoPanel");
+    const closePanel = document.getElementById("closePanel");
+
+    closePanel.addEventListener("click", () => {
+        infoPanel.classList.remove("open");
+    });
+
+    function openPanel() {
+        infoPanel.classList.add("open");
+    }
+
+    function setPanel(title, html, status) {
+
+        document.getElementById("panelTitle").textContent = title;
+        document.getElementById("panelDescription").innerHTML = html;
+
+        const banner = document.getElementById("warningBanner");
+
+        banner.textContent = status;
+        banner.style.background = getStatusColour(status);
+
+    }
+
+    //--------------------------------------------------
+    // HELPERS
+    //--------------------------------------------------
+
+    function getStatusColour(status) {
+
+        switch (status) {
+
+            case "Severe Flood Warning":
+                return floodColours.severe;
+
+            case "Flood Warning":
+                return floodColours.warning;
+
+            case "Flood Alert":
+                return floodColours.alert;
+
+            default:
+                return floodColours.normal;
+
+        }
+
+    }
+
+    function styleFloodArea(feature) {
+
+        const colour = getStatusColour(feature.properties.severity);
+
+        let opacity = 0.20;
+
+        if (feature.properties.severity === "Flood Alert") {
+            opacity = 0.30;
+        }
+
+        if (feature.properties.severity === "Flood Warning") {
+            opacity = 0.35;
+        }
+
+        if (feature.properties.severity === "Severe Flood Warning") {
+            opacity = 0.45;
+        }
+
+        return {
+            color: colour,
+            fillColor: colour,
+            fillOpacity: opacity,
+            weight: 2
+        };
+
+    }
+
+    //--------------------------------------------------
+    // FILTER FLOOD AREAS
+    //--------------------------------------------------
+
+    function showSeverity(severity) {
+
+        switch (severity) {
+
+            case "Severe Flood Warning":
+                return document.getElementById("toggleSevere").checked;
+
+            case "Flood Warning":
+                return document.getElementById("toggleWarning").checked;
+
+            case "Flood Alert":
+                return document.getElementById("toggleAlert").checked;
+
+            default:
+                return true;
+        }
+
+    }
+
+    function refreshFloodAreas() {
+
+        if (!floodGeoJson) return;
+
+        floodGeoJson.eachLayer(layer => {
+
+            const visible = showSeverity(
+                layer.feature.properties.severity
+            );
+
+            layer.setStyle({
+
+                opacity: visible ? 1 : 0,
+
+                fillOpacity: visible
+                    ? styleFloodArea(layer.feature).fillOpacity
+                    : 0
+
+            });
+
+        });
+
+    }
+
+        //--------------------------------------------------
+    // FLOOD AREAS
+    //--------------------------------------------------
 
     fetch("/public/data/demo-flood-areas.geojson")
+
         .then(response => response.json())
+
         .then(data => {
 
-            console.log(`Loaded ${data.features.length} flood areas`);
-
-            const floodLayer = L.geoJSON(data, {
+            floodGeoJson = L.geoJSON(data, {
 
                 style: styleFloodArea,
 
-                onEachFeature: function(feature, layer) {
+                onEachFeature(feature, polygon) {
 
-                    layer.on({
+                    polygon.on({
 
-                        mouseover: function(e) {
+                        mouseover() {
 
-                            e.target.setStyle({
-                                weight: 3,
-                                fillOpacity: 0.5
-                            });
+                            if (
+                                selectedFloodArea !== polygon &&
+                                showSeverity(feature.properties.severity)
+                            ) {
+
+                                polygon.setStyle({
+                                    weight: 4,
+                                    fillOpacity:
+                                        styleFloodArea(feature).fillOpacity + 0.15
+                                });
+
+                            }
 
                         },
 
-                        mouseout: function(e) {
+                        mouseout() {
 
-                            floodLayer.resetStyle(e.target);
+                            if (selectedFloodArea !== polygon) {
+
+                                floodGeoJson.resetStyle(polygon);
+
+                                if (!showSeverity(feature.properties.severity)) {
+
+                                    polygon.setStyle({
+                                        opacity: 0,
+                                        fillOpacity: 0
+                                    });
+
+                                }
+
+                            }
+
+                        },
+
+                        click(e) {
+
+                            if (!showSeverity(feature.properties.severity)) {
+                                return;
+                            }
+
+                            L.DomEvent.stopPropagation(e);
+
+                            if (selectedFloodArea) {
+                                floodGeoJson.resetStyle(selectedFloodArea);
+                            }
+
+                            selectedFloodArea = polygon;
+
+                            polygon.setStyle({
+                                weight: 4,
+                                fillOpacity: 0.60
+                            });
+
+                            openPanel();
+
+                            const severity =
+                                feature.properties.severity;
+
+                            setPanel(
+
+                                feature.properties.name,
+
+                                `
+                                <strong>Status:</strong> ${severity}
+                                `,
+
+                                severity
+
+                            );
 
                         }
 
                     });
 
-                    layer.bindPopup(`
-                        <strong>${feature.properties.name}</strong><br>
-                        ${feature.properties.severity}
-                    `);
-
                 }
 
-            }).addTo(map);
+            });
+
+            floodGeoJson.addTo(floodAreaLayer);
+
+            refreshFloodAreas();
 
         });
 
-    // -----------------------------
-    // River stations
-    // -----------------------------
+    //--------------------------------------------------
+    // FLOOD WARNING FILTERS
+    //--------------------------------------------------
+
+    document
+        .getElementById("toggleSevere")
+        .addEventListener("change", refreshFloodAreas);
+
+    document
+        .getElementById("toggleWarning")
+        .addEventListener("change", refreshFloodAreas);
+
+    document
+        .getElementById("toggleAlert")
+        .addEventListener("change", refreshFloodAreas);
+
+            //--------------------------------------------------
+    // RIVER STATIONS
+    //--------------------------------------------------
 
     fetch("/public/data/demo-river-stations.json")
-        .then(response => response.json())
-        .then(stations => {
 
-            console.log(`Loaded ${stations.length} stations`);
+        .then(response => response.json())
+
+        .then(stations => {
 
             stations.forEach(station => {
 
-                L.circleMarker([station.lat, station.lng], {
+                const marker = L.circleMarker(
 
-                    radius: 6,
-                    color: station.status === "Flood Warning"
-                        ? "#d4351c"
-                        : "#005ea5",
+                    [station.lat, station.lng],
 
-                    fillColor: station.status === "Flood Warning"
-                        ? "#d4351c"
-                        : "#1d70b8",
+                    {
+                        radius: 8,
+                        color: "#ffffff",
+                        weight: 3,
+                        fillColor: floodColours.station,
+                        fillOpacity: 1
+                    }
 
-                    fillOpacity: 1,
-                    weight: 2
+                );
 
-                })
-                .addTo(map)
-                .bindPopup(`
-                    <strong>${station.name}</strong><br>
-                    ${station.river}<br><br>
-                    Current level: <strong>${station.level}</strong><br>
-                    Status: ${station.status}
-                `);
+                marker.on("mouseover", () => {
+
+                    if (marker !== selectedStation) {
+
+                        marker.setStyle({
+                            radius: 11,
+                            weight: 4
+                        });
+
+                    }
+
+                });
+
+                marker.on("mouseout", () => {
+
+                    if (marker !== selectedStation) {
+
+                        marker.setStyle({
+                            radius: 8,
+                            weight: 3
+                        });
+
+                    }
+
+                });
+
+                marker.on("click", e => {
+
+                    L.DomEvent.stopPropagation(e);
+
+                    if (selectedStation) {
+
+                        selectedStation.setStyle({
+                            radius: 8,
+                            weight: 3
+                        });
+
+                    }
+
+                    selectedStation = marker;
+
+                    marker.setStyle({
+                        radius: 12,
+                        weight: 4
+                    });
+
+                    openPanel();
+
+                    setPanel(
+
+                        station.name,
+
+                        `
+                        <strong>River:</strong> ${station.river}
+                        <br><br>
+                        <strong>Current level:</strong> ${station.level}
+                        <br><br>
+                        <strong>Status:</strong> ${station.status}
+                        `,
+
+                        station.status
+
+                    );
+
+                });
+
+                marker.addTo(stationLayer);
 
             });
+
+        });
+
+    //--------------------------------------------------
+    // CLEAR SELECTIONS
+    //--------------------------------------------------
+
+    map.on("click", () => {
+
+        if (selectedFloodArea && floodGeoJson) {
+
+            floodGeoJson.resetStyle(selectedFloodArea);
+
+            if (!showSeverity(selectedFloodArea.feature.properties.severity)) {
+
+                selectedFloodArea.setStyle({
+                    opacity: 0,
+                    fillOpacity: 0
+                });
+
+            }
+
+            selectedFloodArea = null;
+
+        }
+
+        if (selectedStation) {
+
+            selectedStation.setStyle({
+                radius: 8,
+                weight: 3
+            });
+
+            selectedStation = null;
+
+        }
+
+        infoPanel.classList.remove("open");
+
+    });
+
+    //--------------------------------------------------
+    // LAYER TOGGLES
+    //--------------------------------------------------
+
+    document
+        .getElementById("toggleStations")
+        .addEventListener("change", function () {
+
+            if (this.checked) {
+
+                map.addLayer(stationLayer);
+
+            } else {
+
+                map.removeLayer(stationLayer);
+
+            }
 
         });
 

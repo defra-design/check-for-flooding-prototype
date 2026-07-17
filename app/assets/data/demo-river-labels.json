@@ -1,0 +1,27 @@
+[
+  {
+    "name": "River Avon",
+    "lat": 51.451,
+    "lng": -2.598
+  },
+  {
+    "name": "River Frome",
+    "lat": 51.473,
+    "lng": -2.589
+  },
+  {
+    "name": "River Trym",
+    "lat": 51.494,
+    "lng": -2.620
+  },
+  {
+    "name": "River Chew",
+    "lat": 51.392,
+    "lng": -2.556
+  },
+  {
+    "name": "River Boyd",
+    "lat": 51.470,
+    "lng": -2.675
+  }
+]

@@ -11,17 +11,42 @@
 {% block beforeContent %}
 
  <style> 
-.map-wrapper {
+ .map-wrapper{
     position:relative;
-    height:calc(100vh - 120px);
-
+    height:720px;
+    overflow:hidden;
+    border:1px solid #b1b4b6;
+    border-radius:4px;
 }
 
-#myMap {
-    position:absolute;
-    inset:0;
+#myMap{
     width:100%;
-    height:100%;
+        height: 100vh;
+}
+
+/* SEARCH */
+
+.map-search{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    width:360px;
+    background:#fff;
+    padding:15px;
+    border-radius:4px;
+    box-shadow:0 2px 12px rgba(0,0,0,.18);
+    z-index:1000;
+}
+
+.map-search-row{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.map-search-row input{
+    flex:1;
 }
 
 /* RIGHT PANEL */
@@ -29,8 +54,8 @@
 
     position:absolute;
 
-    top:20px;
     right:20px;
+    bottom:20px;
 
     width:280px;
 
@@ -43,15 +68,10 @@
     box-shadow:0 4px 12px rgba(0,0,0,.18);
 
     z-index:1002;
-    max-height: calc(100% - 40px);
-
-    overflow-y:auto;
 
 }
 
-.info-panel {
-
-    display:none;
+.info-panel{
 
     position:absolute;
 
@@ -61,22 +81,15 @@
 
     background:#fff;
 
-    border-radius:6px;
+    padding:24px;
 
-    padding:28px 28px 28px 40px; /* extra left space */
+    border-radius:4px;
 
-    min-height:180px;
+    box-shadow:0 4px 12px rgba(0,0,0,.18);
 
-    box-shadow:
-        0 2px 6px rgba(0,0,0,.12);
+    min-height:200px;
 
-    z-index:1000;
-
-}
-
-.info-panel.open{
-
-    display:block;
+    z-index:1001;
 
 }
 
@@ -90,11 +103,16 @@
 
     margin-bottom:22px;
 
-    padding-right:0px;
+    padding-right:320px;
 
 }
 
- 
+#panelTitle{
+
+    padding-right:320px;
+
+}
+
 .info-item{
 
     display:flex;
@@ -129,27 +147,44 @@
 
 }
 
- 
-/* LEGEND */
 
-.swatch {
+/* RIVER LABELS */
 
-    display:inline-block;
+.river-label{
 
-    width:16px;
+    color:#005ea5;
 
-    height:16px;
+    font-family:"GDS Transport",Arial,sans-serif;
 
-    border-radius:0;
+    font-size:15px;
 
-    margin-right:8px;
+    font-weight:bold;
 
-    vertical-align:middle;
+    white-space:nowrap;
+
+    text-shadow:
+        -2px -2px 0 #fff,
+         2px -2px 0 #fff,
+        -2px  2px 0 #fff,
+         2px  2px 0 #fff,
+         0 0 6px #fff;
 
 }
 
-.swatch.station {
-    background:#005ea5;
+/* LEGEND */
+
+.swatch{
+
+    display:inline-block;
+
+    width:14px;
+
+    height:14px;
+
+    border-radius:50%;
+
+    margin-right:8px;
+
 }
 
 .severe{
@@ -164,23 +199,13 @@
     background:#f2a747;
 }
 
-.warning-banner {
+.warning-banner{
 
-    position:absolute;
-
-    left:0;
-    top:0;
-    bottom:0;
-
-    width:8px;
-
-    padding:0;
-
-    margin:0;
-
-    border-radius:6px 0 0 6px;
-
-    color:transparent;
+    color:#fff;
+    font-weight:bold;
+    padding:10px 18px;
+    margin:-24px -24px 20px;
+    border-radius:4px 4px 0 0;
 
 }
 
@@ -200,39 +225,23 @@
     background:#00703c;
 }
 
-
-.close-panel{
-
-    position:absolute;
-
-    right:20px;
-
-    top:20px;
-
-    border:none;
-
-    background:none;
-
-    font-size:28px;
-
-    cursor:pointer;
-
-    color:#505a5f;
-
-}
-
 /* MOBILE */
 
 @media (max-width:900px){
 
- 
+.map-search{
+    left:15px;
+    right:15px;
+    width:auto;
+    transform:none;
+}
 
 .map-sidebar{
     display:none;
 }
 
 .info-panel{
- 
+
     position:absolute;
 
     left:15px;
@@ -255,7 +264,7 @@
 			Beta
 		</strong>
 		<span class="govuk-phase-banner__text">
-			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+			This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
 		</span>
 	</p>
 </div>
@@ -266,110 +275,106 @@
 <h1 class="govuk-heading-xl">
     Map of river, sea, groundwater and rainfall levels
 </h1>
+
 <div class="map-wrapper">
 
     <!-- Leaflet map -->
     <div id="myMap"></div>
 
+    <!-- Search -->
+    <div class="map-search">
 
-    <!-- Map key -->
-     <aside class="map-sidebar">
+        <label class="govuk-label govuk-!-font-weight-bold" for="location">
+            Search river, town or postcode
+        </label>
 
-    <h2 class="govuk-heading-s">
-        Map layers
-    </h2>
+        <div class="map-search-row">
 
-    <div class="govuk-checkboxes govuk-checkboxes--small">
+            <input
+                id="location"
+                class="govuk-input"
+                type="text"
+                placeholder="Bath, Bristol or BS1 5AH">
 
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleSevere"
-                   type="checkbox"
-                   checked>
+            <button class="govuk-button govuk-!-margin-bottom-0">
+                Search
+            </button>
 
-            <label class="govuk-checkboxes__label" for="toggleSevere">
-                <span class="swatch severe"></span>
-                Severe Flood Warning
-            </label>
-        </div>
-
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleWarning"
-                   type="checkbox"
-                   checked>
-
-            <label class="govuk-checkboxes__label" for="toggleWarning">
-                <span class="swatch warning"></span>
-                Flood Warning
-            </label>
-        </div>
-
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleAlert"
-                   type="checkbox"
-                   checked>
-
-            <label class="govuk-checkboxes__label" for="toggleAlert">
-                <span class="swatch alert"></span>
-                Flood Alert
-            </label>
-        </div>
-
-        <hr>
-
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleStations"
-                   type="checkbox"
-                   checked>
-
-            <label class="govuk-checkboxes__label" for="toggleStations">
-                <span class="swatch station"></span>
-                River level stations
-            </label>
         </div>
 
     </div>
 
-</aside>
+    <!-- Right panel -->
 
- 
+    <aside class="map-sidebar">
+
+        <h2 class="govuk-heading-s">
+            Map layers
+        </h2>
+
+        <div class="govuk-checkboxes govuk-checkboxes--small">
+
+            <div class="govuk-checkboxes__item">
+                <input checked class="govuk-checkboxes__input" id="toggleStations" type="checkbox">
+                <label class="govuk-checkboxes__label" for="toggleStations">
+                    River stations
+                </label>
+            </div>
+
+            <div class="govuk-checkboxes__item">
+                <input checked class="govuk-checkboxes__input" id="toggleWarnings" type="checkbox">
+                <label class="govuk-checkboxes__label" for="toggleWarnings">
+                    Flood warning areas
+                </label>
+            </div>
+
+            <div class="govuk-checkboxes__item">
+                <input checked class="govuk-checkboxes__input" id="toggleRivers" type="checkbox">
+                <label class="govuk-checkboxes__label" for="toggleRivers">
+                    River names
+                </label>
+            </div>
+
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m">
+
+        <h2 class="govuk-heading-s">
+            Key
+        </h2>
+
+        <p><span class="swatch severe"></span> Severe Flood Warning</p>
+        <p><span class="swatch warning"></span> Flood Warning</p>
+        <p><span class="swatch alert"></span> Flood Alert</p>
+
+    </aside>
+
     <!-- Bottom drawer -->
 <div id="infoPanel" class="info-panel">
-<button id="closePanel"
-        class="close-panel">
 
-    ✕
-
-</button>
-    <div id="warningBanner" class="warning-banner">
+    <div id="warningBanner" class="warning-banner warning-alert">
         Flood Alert
     </div>
 
     <div class="info-content">
-<a id="panelLink"
-           href="#"
-           class="govuk-link govuk-!-font-weight-bold">
 
-           
-
-       
         <h2 id="panelTitle" class="govuk-heading-m">
             River Avon at Bath
         </h2>
- </a>
+
         <p class="govuk-body govuk-!-margin-bottom-2">
             <strong>River:</strong>
             <span id="panelRiver">River Avon</span>
         </p>
 
- 
+        <p class="govuk-body govuk-!-margin-bottom-2">
+            <strong>Current level:</strong>
+            <span id="panelLevel">0.82 m</span>
+        </p>
 
         <p class="govuk-body govuk-!-margin-bottom-2">
             <strong>Updated:</strong>
-            <span id="panelUpdated">11 minutes ago</span>
+            <span id="panelUpdated">15 minutes ago</span>
         </p>
 
         <p class="govuk-body govuk-!-margin-bottom-4">
@@ -378,12 +383,18 @@
             </span>
         </p>
 
-        
+        <a id="panelLink"
+           href="#"
+           class="govuk-link govuk-!-font-weight-bold">
+
+            View station details →
+
+        </a>
 
     </div>
 
 </div>
-</div> <!-- map wrapper -->
+
 
 <div class="govuk-grid-row">
 
