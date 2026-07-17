@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Bristol Netham Weir",
+    "river": "River Avon",
+    "lat": 51.4545,
+    "lng": -2.5655,
+    "level": "0.82m",
+    "status": "Flood Warning"
+  },
+  {
+    "name": "St Anne's",
+    "river": "River Avon",
+    "lat": 51.4488,
+    "lng": -2.5518,
+    "level": "0.64m",
+    "status": "Flood Alert"
+  },
+  {
+    "name": "Eastville",
+    "river": "River Frome",
+    "lat": 51.4725,
+    "lng": -2.5675,
+    "level": "0.41m",
+    "status": "Normal"
+  },
+  {
+    "name": "Stapleton",
+    "river": "River Frome",
+    "lat": 51.4865,
+    "lng": -2.5420,
+    "level": "0.53m",
+    "status": "Flood Alert"
+  },
+  {
+    "name": "Sea Mills",
+    "river": "River Trym",
+    "lat": 51.4855,
+    "lng": -2.6370,
+    "level": "0.38m",
+    "status": "Normal"
+  },
+  {
+    "name": "Henbury",
+    "river": "River Trym",
+    "lat": 51.5055,
+    "lng": -2.6210,
+    "level": "0.61m",
+    "status": "Flood Warning"
+  },
+  {
+    "name": "Keynsham",
+    "river": "River Avon",
+    "lat": 51.4155,
+    "lng": -2.4975,
+    "level": "0.72m",
+    "status": "Flood Warning"
+  },
+  {
+    "name": "Chew Magna",
+    "river": "River Chew",
+    "lat": 51.3665,
+    "lng": -2.6105,
+    "level": "0.55m",
+    "status": "Flood Alert"
+  },
+  {
+    "name": "Bitton",
+    "river": "River Boyd",
+    "lat": 51.4215,
+    "lng": -2.4665,
+    "level": "0.44m",
+    "status": "Normal"
+  },
+  {
+    "name": "Saltford",
+    "river": "River Avon",
+    "lat": 51.4060,
+    "lng": -2.4610,
+    "level": "0.92m",
+    "status": "Severe Flood Warning"
+  }
+]
