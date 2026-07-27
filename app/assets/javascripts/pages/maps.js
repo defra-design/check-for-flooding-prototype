@@ -98,13 +98,13 @@ window.addEventListener("load", () => {
 
         switch (status) {
 
-            case "Severe Flood Warning":
+            case "Severe flood warning":
                 return floodColours.severe;
 
-            case "Flood Warning":
+            case "Flood warning":
                 return floodColours.warning;
 
-            case "Flood Alert":
+            case "Flood alert":
                 return floodColours.alert;
 
             default:
@@ -120,15 +120,15 @@ window.addEventListener("load", () => {
 
         let opacity = 0.20;
 
-        if (feature.properties.severity === "Flood Alert") {
+        if (feature.properties.severity === "Flood alert") {
             opacity = 0.30;
         }
 
-        if (feature.properties.severity === "Flood Warning") {
+        if (feature.properties.severity === "Flood warning") {
             opacity = 0.35;
         }
 
-        if (feature.properties.severity === "Severe Flood Warning") {
+        if (feature.properties.severity === "Severe flood warning") {
             opacity = 0.45;
         }
 
@@ -149,13 +149,13 @@ window.addEventListener("load", () => {
 
         switch (severity) {
 
-            case "Severe Flood Warning":
+            case "Severe flood warning":
                 return document.getElementById("toggleSevere").checked;
 
-            case "Flood Warning":
+            case "Flood warning":
                 return document.getElementById("toggleWarning").checked;
 
-            case "Flood Alert":
+            case "Flood alert":
                 return document.getElementById("toggleAlert").checked;
 
             default:
@@ -400,11 +400,11 @@ const severity = feature.properties.severity;
 
                         station.name,
 
-                        `<p class="govuk-body govuk-!-margin-bottom-2">
+                        `<p class="govuk-body-s govuk-!-margin-bottom-2">
                         <strong>River:</strong> ${station.river}
-                        </p><p class="govuk-body govuk-!-margin-bottom-2">
+                        </p><p class="govuk-body-s govuk-!-margin-bottom-2">
                         <strong>Current level:</strong> ${station.level}
-                         </p><p class="govuk-body govuk-!-margin-bottom-2">
+                         </p><p class="govuk-body-s govuk-!-margin-bottom-2">
                         <strong>Status:</strong> ${station.status}</p>
                         `,
 
