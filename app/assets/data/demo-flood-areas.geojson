@@ -6,7 +6,7 @@
       "properties": {
         "name": "River Avon Area 1",
         "river": "River Avon",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO001",
         "county": "Bristol"
       },
@@ -47,7 +47,7 @@
       "properties": {
         "name": "River Frome Area 2",
         "river": "River Frome",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO002",
         "county": "Bristol"
       },
@@ -82,7 +82,7 @@
       "properties": {
         "name": "River Chew Area 3",
         "river": "River Chew",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO003",
         "county": "Bristol"
       },
@@ -135,7 +135,7 @@
       "properties": {
         "name": "River Trym Area 4",
         "river": "River Trym",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO004",
         "county": "Bristol"
       },
@@ -166,7 +166,7 @@
       "properties": {
         "name": "River Boyd Area 5",
         "river": "River Boyd",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO005",
         "county": "Bristol"
       },
@@ -219,7 +219,7 @@
       "properties": {
         "name": "River Avon Area 6",
         "river": "River Avon",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO006",
         "county": "Bristol"
       },
@@ -272,7 +272,7 @@
       "properties": {
         "name": "River Frome Area 7",
         "river": "River Frome",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO007",
         "county": "Bristol"
       },
@@ -325,7 +325,7 @@
       "properties": {
         "name": "River Chew Area 8",
         "river": "River Chew",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO008",
         "county": "Bristol"
       },
@@ -378,7 +378,7 @@
       "properties": {
         "name": "River Trym Area 9",
         "river": "River Trym",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO009",
         "county": "Bristol"
       },
@@ -431,7 +431,7 @@
       "properties": {
         "name": "River Boyd Area 10",
         "river": "River Boyd",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO010",
         "county": "Bristol"
       },
@@ -484,7 +484,7 @@
       "properties": {
         "name": "River Avon Area 11",
         "river": "River Avon",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO011",
         "county": "Bristol"
       },
@@ -537,7 +537,7 @@
       "properties": {
         "name": "River Frome Area 12",
         "river": "River Frome",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO012",
         "county": "Bristol"
       },
@@ -590,7 +590,7 @@
       "properties": {
         "name": "River Chew Area 13",
         "river": "River Chew",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO013",
         "county": "Bristol"
       },
@@ -643,7 +643,7 @@
       "properties": {
         "name": "River Trym Area 14",
         "river": "River Trym",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO014",
         "county": "Bristol"
       },
@@ -696,7 +696,7 @@
       "properties": {
         "name": "River Boyd Area 15",
         "river": "River Boyd",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO015",
         "county": "Bristol"
       },
@@ -749,7 +749,7 @@
       "properties": {
         "name": "River Avon Area 16",
         "river": "River Avon",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO016",
         "county": "Bristol"
       },
@@ -802,7 +802,7 @@
       "properties": {
         "name": "River Frome Area 17",
         "river": "River Frome",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO017",
         "county": "Bristol"
       },
@@ -855,7 +855,7 @@
       "properties": {
         "name": "River Chew Area 18",
         "river": "River Chew",
-        "severity": "Severe Flood Warning",
+        "severity": "Severe flood warning",
         "fwdCode": "DEMO018",
         "county": "Bristol"
       },
@@ -908,7 +908,7 @@
       "properties": {
         "name": "River Trym Area 19",
         "river": "River Trym",
-        "severity": "Flood Alert",
+        "severity": "Flood alert",
         "fwdCode": "DEMO019",
         "county": "Bristol"
       },
@@ -961,7 +961,7 @@
       "properties": {
         "name": "River Boyd Area 20",
         "river": "River Boyd",
-        "severity": "Flood Warning",
+        "severity": "Flood warning",
         "fwdCode": "DEMO020",
         "county": "Bristol"
       },

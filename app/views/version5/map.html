@@ -47,13 +47,9 @@
     flex-shrink:0;
 
     background:#fff;
-
     border-left:1px solid #b1b4b6;
-
     overflow:auto;
-
     padding:24px;
-
     box-sizing:border-box;
 }
 
@@ -63,16 +59,11 @@
     left:20px;
     right:20px;
     bottom:20px;
-
     background:#fff;
     border-radius:0px;
-
     padding:28px 28px 28px 40px;
-
-    min-height:180px;
-
+    min-height:150px;
     box-shadow:0 2px 8px rgba(0,0,0,.15);
-
     z-index:1000;
 }
 
@@ -91,7 +82,7 @@
 }
 
 .swatch.severe {
-    background:#8c1419;
+    background:#8C1419;
 }
 
 .swatch.warning {
@@ -99,32 +90,28 @@
 }
 
 .swatch.alert {
-    background:#F2A747;;
+    background:#fc9e3c;
 }
 
 .swatch.station {
     
     background:#5694ca;
-
-      border-radius:50%;
+    border-radius:50%;
 }
  
-
-
 .warning-banner{
     position:absolute;
     left:0;
     top:0;
     bottom:0;
-    width:8px;
-    border-radius:6px 0 0 6px;
-       color:transparent;
+    width:10px;
+    color:transparent;
     font-size:0;
     overflow:hidden;
 }
 
 .warning-alert{
-    background:#F47738;
+    background:#fc9e3c;
 }
 
 .warning-warning{
@@ -145,7 +132,7 @@
     right:20px;
     border:0;
     background:none;
-    font-size:28px;
+    font-size:20px;
     cursor:pointer;
 }
 
@@ -223,19 +210,17 @@
                     River Avon at Bath
                 </h2></a>
 
- 
-
-                <p class="govuk-body govuk-!-margin-bottom-2">
+                <p class="govuk-body-s govuk-!-margin-bottom-2">
                     <strong>River:</strong>
                     <span id="panelRiver">River Avon</span>
                 </p>
 
-                <p class="govuk-body govuk-!-margin-bottom-2">
+                <p class="govuk-body-s govuk-!-margin-bottom-2">
                     <strong>Updated:</strong>
                     <span id="panelUpdated"> {{ "now" | duration(-2, "hours")  |  govukTime }} on  {{ "today" | govukDate }}</span>
                 </p>
  
-                <p class="govuk-body govuk-!-margin-bottom-4">
+                <p class="govuk-body-s govuk-!-margin-bottom-4">
                     <span id="panelDescription">
                         River levels are above normal and rising.
                     </span>
