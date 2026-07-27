@@ -11,236 +11,164 @@
 {% block beforeContent %}
 
  <style> 
-.map-wrapper {
-    position:relative;
-    height:calc(100vh - 120px);
 
+
+.govuk-main-wrapper{
+    padding-top:0;
+    padding-bottom:40px;
 }
 
-#myMap {
-    position:absolute;
-    inset:0;
+ 
+
+.map-app{
+    display:flex;
+    height:720px;          /* or 700px / 750px */
+    width:100%;
+    margin-bottom:40px;
+    border:1px solid #b1b4b6;
+    background:#fff;
+}
+
+.map-area{
+    flex:1;
+    position:relative;
+    overflow:hidden;
+}
+
+#myMap{
     width:100%;
     height:100%;
 }
 
-/* RIGHT PANEL */
 .map-sidebar{
 
-    position:absolute;
+    width:320px;
 
-    top:20px;
-    right:20px;
-
-    width:280px;
+    flex-shrink:0;
 
     background:#fff;
 
-    padding:20px;
+    border-left:1px solid #b1b4b6;
 
-    border-radius:4px;
+    overflow:auto;
 
-    box-shadow:0 4px 12px rgba(0,0,0,.18);
+    padding:24px;
 
-    z-index:1002;
-    max-height: calc(100% - 40px);
-
-    overflow-y:auto;
-
+    box-sizing:border-box;
 }
 
-.info-panel {
-
+.info-panel{
     display:none;
-
     position:absolute;
-
     left:20px;
     right:20px;
     bottom:20px;
 
     background:#fff;
+    border-radius:0px;
 
-    border-radius:6px;
-
-    padding:28px 28px 28px 40px; /* extra left space */
+    padding:28px 28px 28px 40px;
 
     min-height:180px;
 
-    box-shadow:
-        0 2px 6px rgba(0,0,0,.12);
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
 
     z-index:1000;
-
 }
 
 .info-panel.open{
-
     display:block;
-
-}
-
-.info-grid{
-
-    display:grid;
-
-    grid-template-columns:repeat(2,1fr);
-
-    gap:18px 30px;
-
-    margin-bottom:22px;
-
-    padding-right:0px;
-
 }
 
  
-.info-item{
-
-    display:flex;
-
-    flex-direction:column;
-
-}
-
-.info-label{
-
-    font-size:14px;
-
-    color:#505a5f;
-
-    margin-bottom:4px;
-
-}
-
-.info-item strong{
-
-    font-size:20px;
-
-    font-weight:700;
-
-    color:#0b0c0c;
-
-}
-
-#panelStatus{
-
-    color:#005ea5;
-
-}
-
- 
-/* LEGEND */
-
 .swatch {
-
     display:inline-block;
-
-    width:16px;
-
-    height:16px;
-
-    border-radius:0;
-
+    width:20px;
+    height:20px;
     margin-right:8px;
-
     vertical-align:middle;
-
+    border-radius:0;
 }
 
-.swatch.station {
-    background:#005ea5;
-}
-
-.severe{
+.swatch.severe {
     background:#8c1419;
 }
 
-.warning{
-    background:#e84952;
-}
-
-.alert{
-    background:#f2a747;
-}
-
-.warning-banner {
-
-    position:absolute;
-
-    left:0;
-    top:0;
-    bottom:0;
-
-    width:8px;
-
-    padding:0;
-
-    margin:0;
-
-    border-radius:6px 0 0 6px;
-
-    color:transparent;
-
-}
-
-.warning-alert{
-    background:#f47738;
-}
-
-.warning-warning{
+.swatch.warning {
     background:#d4351c;
 }
 
+.swatch.alert {
+    background:#F2A747;;
+}
+
+.swatch.station {
+    
+    background:#5694ca;
+
+      border-radius:50%;
+}
+ 
+
+
+.warning-banner{
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:8px;
+    border-radius:6px 0 0 6px;
+       color:transparent;
+    font-size:0;
+    overflow:hidden;
+}
+
+.warning-alert{
+    background:#F47738;
+}
+
+.warning-warning{
+    background:#D4351C;
+}
+
 .warning-severe{
-    background:#8c1419;
+    background:#8C1419;
 }
 
 .warning-normal{
-    background:#00703c;
+    background:#00703C;
 }
-
 
 .close-panel{
-
     position:absolute;
-
-    right:20px;
-
     top:20px;
-
-    border:none;
-
+    right:20px;
+    border:0;
     background:none;
-
     font-size:28px;
-
     cursor:pointer;
-
-    color:#505a5f;
-
 }
 
-/* MOBILE */
+@media (max-width: 900px){
 
-@media (max-width:900px){
+    .map-app{
+        flex-direction:column;
+        height:auto;
+    }
 
- 
+    #myMap{
+        height:500px;
+    }
 
-.map-sidebar{
-    display:none;
-}
+    .map-sidebar{
+        width:100%;
+        border-left:none;
+        border-top:1px solid #b1b4b6;
+    }
 
-.info-panel{
- 
-    position:absolute;
-
-    left:15px;
-    right:15px;
-    bottom:15px;
-
-}
-
+    .info-panel{
+        right:20px;
+    }
 }
 
  </style>
@@ -258,137 +186,144 @@
 			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
 		</span>
 	</p>
-</div>
+ </div>
 {% endblock %}
 
 {% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l govuk-!-margin-top-4">
+            River, sea, groundwater and rainfall levels
+        </h1>
 
-<h1 class="govuk-heading-xl">
-    Map of river, sea, groundwater and rainfall levels
-</h1>
-<div class="map-wrapper">
+ 
 
-    <!-- Leaflet map -->
-    <div id="myMap"></div>
+ <div class="map-app">
 
+    <!-- LEFT SIDE -->
+    <div class="map-area">
 
-    <!-- Map key -->
-     <aside class="map-sidebar">
+        <!-- Leaflet map -->
+        <div id="myMap"></div>
 
-    <h2 class="govuk-heading-s">
-        Map layers
-    </h2>
+        <!-- Bottom information panel -->
+        <div id="infoPanel" class="info-panel">
 
-    <div class="govuk-checkboxes govuk-checkboxes--small">
+            <button id="closePanel" class="close-panel">
+                ✕
+            </button>
 
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleSevere"
-                   type="checkbox"
-                   checked>
+          <div id="warningBanner" class="warning-banner"></div>
 
-            <label class="govuk-checkboxes__label" for="toggleSevere">
-                <span class="swatch severe"></span>
-                Severe Flood Warning
-            </label>
+            <div class="info-content">
+
+               <a id="panelLink"
+                       href="#"
+                       class="govuk-link"> <h2 id="panelTitle" class="govuk-heading-m">
+                    River Avon at Bath
+                </h2></a>
+
+ 
+
+                <p class="govuk-body govuk-!-margin-bottom-2">
+                    <strong>River:</strong>
+                    <span id="panelRiver">River Avon</span>
+                </p>
+
+                <p class="govuk-body govuk-!-margin-bottom-2">
+                    <strong>Updated:</strong>
+                    <span id="panelUpdated"> {{ "now" | duration(-2, "hours")  |  govukTime }} on  {{ "today" | govukDate }}</span>
+                </p>
+ 
+                <p class="govuk-body govuk-!-margin-bottom-4">
+                    <span id="panelDescription">
+                        River levels are above normal and rising.
+                    </span>
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleWarning"
-                   type="checkbox"
-                   checked>
+    </div>
 
-            <label class="govuk-checkboxes__label" for="toggleWarning">
-                <span class="swatch warning"></span>
-                Flood Warning
-            </label>
-        </div>
+    <!-- RIGHT SIDEBAR -->
+    <aside class="map-sidebar">
 
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleAlert"
-                   type="checkbox"
-                   checked>
-
-            <label class="govuk-checkboxes__label" for="toggleAlert">
-                <span class="swatch alert"></span>
-                Flood Alert
-            </label>
-        </div>
-
+        <h2 class="govuk-heading-m"> Key </h2>
         <hr>
+        <h3 class="govuk-heading-s"> Flood warnings </h3>
 
-        <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                   id="toggleStations"
-                   type="checkbox"
-                   checked>
+        <div class="govuk-checkboxes govuk-checkboxes--small">
 
-            <label class="govuk-checkboxes__label" for="toggleStations">
-                <span class="swatch station"></span>
-                River level stations
-            </label>
+            <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                       id="toggleSevere"
+                       type="checkbox"
+                       checked>
+
+                <label class="govuk-checkboxes__label govuk-body-s"
+                       for="toggleSevere">
+                    <span class="swatch severe"></span>
+                    Severe flood warning
+                </label>
+            </div>
+
+            <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                       id="toggleWarning"
+                       type="checkbox"
+                       checked>
+
+                <label class="govuk-checkboxes__label govuk-body-s"
+                       for="toggleWarning">
+                    <span class="swatch warning"></span>
+                    Flood warning
+                </label>
+            </div>
+
+            <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                       id="toggleAlert"
+                       type="checkbox"
+                       checked>
+
+                <label class="govuk-checkboxes__label govuk-body-s"
+                       for="toggleAlert">
+                    <span class="swatch alert"></span>
+                    Flood alert
+                </label>
+            </div>
+
+            <hr>
+
+            <h3 class="govuk-heading-s">River levels</h3>
+
+            <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                       id="toggleStations"
+                       type="checkbox"
+                       checked>
+
+                <label class="govuk-checkboxes__label govuk-body-s"
+                       for="toggleStations">
+                    <span class="swatch station">
+        </span>
+                    River level stations
+                </label>
+            </div>
+
         </div>
 
-    </div>
-
-</aside>
-
- 
-    <!-- Bottom drawer -->
-<div id="infoPanel" class="info-panel">
-<button id="closePanel"
-        class="close-panel">
-
-    ✕
-
-</button>
-    <div id="warningBanner" class="warning-banner">
-        Flood Alert
-    </div>
-
-    <div class="info-content">
-<a id="panelLink"
-           href="#"
-           class="govuk-link govuk-!-font-weight-bold">
-
-           
-
-       
-        <h2 id="panelTitle" class="govuk-heading-m">
-            River Avon at Bath
-        </h2>
- </a>
-        <p class="govuk-body govuk-!-margin-bottom-2">
-            <strong>River:</strong>
-            <span id="panelRiver">River Avon</span>
-        </p>
-
- 
-
-        <p class="govuk-body govuk-!-margin-bottom-2">
-            <strong>Updated:</strong>
-            <span id="panelUpdated">11 minutes ago</span>
-        </p>
-
-        <p class="govuk-body govuk-!-margin-bottom-4">
-            <span id="panelDescription">
-                River levels are above normal and rising.
-            </span>
-        </p>
-
-        
-
-    </div>
+    </aside>
 
 </div>
-</div> <!-- map wrapper -->
 
-<div class="govuk-grid-row">
+ 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
 
- <br><br>
- <div class="govuk-grid-column-two-thirds"> 
+ 
     <aside class="defra-context-footer">
     <div>
        <header class="govuk-heading-m">Contact Floodline for advice</header>
@@ -446,12 +381,11 @@
       </li>
     </ul>
   </nav>
-</div>
-
-</div>
-
-
-
+        </div>
+        </div>
+       </div>
+    </div>
+</div> 
 {% endblock %}
  
 

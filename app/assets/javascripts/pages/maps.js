@@ -12,9 +12,9 @@ window.addEventListener("load", () => {
     const floodColours = {
         severe: "#8C1419",
         warning: "#D4351C",
-        alert: "#F47738",
+        alert: "#F2A747",
         normal: "#00703C",
-        station: "#005EA5",
+        station: "#5694ca",
         default: "#6F777B"
     };
 
@@ -23,11 +23,12 @@ window.addEventListener("load", () => {
     //--------------------------------------------------
 
     const map = L.map("myMap", {
-        zoomControl: false
+        zoomControl: false,
+        keyboard: true
     }).setView([51.45, -2.60], 11);
 
     L.control.zoom({
-        position: "bottomright"
+        position: "topright"
     }).addTo(map);
 
     L.tileLayer(
@@ -40,6 +41,15 @@ window.addEventListener("load", () => {
     ).addTo(map);
 
     setTimeout(() => map.invalidateSize(), 200);
+
+    // Allow arrow keys to control the map
+        const mapContainer = map.getContainer();
+
+        mapContainer.setAttribute("tabindex", "0");
+
+        mapContainer.addEventListener("click", () => {
+            mapContainer.focus();
+        });
 
     //--------------------------------------------------
     // LAYERS
@@ -205,8 +215,10 @@ window.addEventListener("load", () => {
 
                                 polygon.setStyle({
                                     weight: 4,
-                                    fillOpacity:
-                                        styleFloodArea(feature).fillOpacity + 0.15
+                                    fillOpacity: Math.min(
+                                    styleFloodArea(feature).fillOpacity + 0.15,
+                                    0.7
+                                )
                                 });
 
                             }
@@ -246,15 +258,27 @@ window.addEventListener("load", () => {
 
                             selectedFloodArea = polygon;
 
-                            polygon.setStyle({
-                                weight: 4,
-                                fillOpacity: 0.60
-                            });
+const severity = feature.properties.severity;
 
-                            openPanel();
+                        polygon.setStyle({
+                            weight: 4,
+                            fillOpacity: 0.60,
+                            color: getStatusColour(severity)
+                        });
 
-                            const severity =
-                                feature.properties.severity;
+                        openPanel();
+
+                        setPanel(
+
+                            feature.properties.name,
+
+                            `
+                            <strong>Status:</strong> ${severity}
+                            `,
+
+                            severity
+
+                        );
 
                             setPanel(
 
@@ -376,12 +400,12 @@ window.addEventListener("load", () => {
 
                         station.name,
 
-                        `
+                        `<p class="govuk-body govuk-!-margin-bottom-2">
                         <strong>River:</strong> ${station.river}
-                        <br><br>
+                        </p><p class="govuk-body govuk-!-margin-bottom-2">
                         <strong>Current level:</strong> ${station.level}
-                        <br><br>
-                        <strong>Status:</strong> ${station.status}
+                         </p><p class="govuk-body govuk-!-margin-bottom-2">
+                        <strong>Status:</strong> ${station.status}</p>
                         `,
 
                         station.status
@@ -453,5 +477,7 @@ window.addEventListener("load", () => {
             }
 
         });
+
+
 
 });
