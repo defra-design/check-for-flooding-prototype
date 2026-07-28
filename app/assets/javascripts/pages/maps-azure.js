@@ -78,61 +78,17 @@ window.addEventListener("load", () => {
         infoPanel.classList.add("open");
     }
 
-function setPanel(title, html, status) {
+    function setPanel(title, html, status) {
 
-    document.getElementById("panelTitle").textContent = title;
-    document.getElementById("panelDescription").innerHTML = html;
+        document.getElementById("panelTitle").textContent = title;
+        document.getElementById("panelDescription").innerHTML = html;
 
-    const banner = document.getElementById("warningBanner");
-    banner.textContent = status;
-    banner.style.background = getStatusColour(status);
+        const banner = document.getElementById("warningBanner");
 
-    updateStatusItem(status);
+        banner.textContent = status;
+        banner.style.background = getStatusColour(status);
 
-}
-
-
-    const severityConfig = {
-    "Flood alert": {
-        className: 'defra-flood-status-item--alert',
-        message: 'Flooding is possible - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#flood-alert">be prepared</a>'
-    },
-    "Flood warning": {
-        className: 'defra-flood-status-item--warning',
-        message: 'Flooding is expected - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#flood-warning">act now</a>'
-    },
-    "Severe flood warning": {
-        className: 'defra-flood-status-item--severe',
-        message: 'Danger to life - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#severe-flood-warning">act now</a>'
     }
-};
-
-function updateStatusItem(status) {
-
-    const statusItem = document.getElementById('statusItem');
-    const statusMessage = document.getElementById('statusMessage');
-    const config = severityConfig[status];
-
-    if (!statusItem || !statusMessage) return;
-
-    statusItem.classList.remove(
-        'defra-flood-status-item--alert',
-        'defra-flood-status-item--warning',
-        'defra-flood-status-item--severe'
-    );
-
-    if (!config) {
-        // No active warning/alert - hide the status item
-        statusItem.style.display = 'none';
-        return;
-    }
-
-    statusItem.style.display = '';
-    statusItem.classList.add(config.className);
-    statusItem.setAttribute('data-severity-status', status);
-    statusMessage.innerHTML = config.message;
-
-}
 
     //--------------------------------------------------
     // HELPERS
@@ -312,7 +268,7 @@ const severity = feature.properties.severity;
 
                         openPanel();
 
-                         setPanel(
+                        setPanel(
 
                             feature.properties.name,
 
@@ -323,6 +279,18 @@ const severity = feature.properties.severity;
                             severity
 
                         );
+
+                            setPanel(
+
+                                feature.properties.name,
+
+                                `
+                                <strong>Status:</strong> ${severity}
+                                `,
+
+                                severity
+
+                            );
 
                         }
 
