@@ -1,0 +1,136 @@
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+
+    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
+  <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" type="text/css" />
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.js"></script>
+  
+  
+    <script type="text/javascript">
+    var map;
+    
+    function InitMap()
+    {
+        map = new atlas.Map('myMap', {
+        center: [-122.33, 47.6],
+        zoom: 12,
+        view: 'Auto',
+        style: 'road',
+
+      
+        // Add authentication details for connecting to Azure Maps.
+        authOptions: {
+          // Get an Azure Maps key at https://azuremaps.com/.
+          authType: 'subscriptionKey',
+          subscriptionKey: '{Your-Azure-Maps-Subscription-key}'
+        }      
+      });
+    }
+    
+    /* Animate map view to set camera location
+       to random points on the map*/
+    function animateMap() {
+      map.setCamera({
+      zoom: Math.random() *2 + 12,
+      duration: 1000,
+      type: 'fly'  
+      });
+    }
+  </script>
+
+  <style>
+    button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }  
+  </style>
+
+
+{% block beforeContent %}
+ 
+
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+ </div>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l govuk-!-margin-top-4">
+            River, sea, groundwater and rainfall levels
+        </h1>
+
+ 
+
+ <div class="map-app"> 
+
+   dd
+
+</div>
+
+ 
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+
+  
+ 
+    <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+        </div>
+        </div>
+       </div>
+    </div>
+</div> 
+{% endblock %}
+ 
+
