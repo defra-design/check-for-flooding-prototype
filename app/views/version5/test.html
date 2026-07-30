@@ -1,0 +1,177 @@
+
+{% extends "../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
+
+    <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
+  <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/3/atlas.min.css" type="text/css" />
+
+
+
+  <style>
+  .map-container {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #b1b4b6;
+    margin-bottom: 30px;
+  }
+
+  #azureMap {
+    width: 100%;
+    height: 100%;
+  }
+
+  .map-controls {
+    margin-bottom: 20px;
+  }
+
+  .map-controls button {
+    margin-right: 10px;
+    padding: 10px 15px;
+    background-color: #1d70b8;
+    color: white;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  .map-controls button:hover {
+    background-color: #105eaa;
+  }
+
+  .info-panel {
+    background-color: #f3f2f1;
+    border-left: 4px solid #1d70b8;
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+</style>
+
+
+{% block beforeContent %}
+ 
+
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+ </div>
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">Azure Maps Integration</h1>
+
+    <div class="info-panel">
+      <p class="govuk-body">
+        This page demonstrates Azure Maps tiles integration for the Check for Flooding prototype.
+      </p>
+    </div>
+
+    <div class="map-controls">
+      <button onclick="zoomIn()" class="govuk-button">Zoom In</button>
+      <button onclick="zoomOut()" class="govuk-button">Zoom Out</button>
+      <button onclick="centerMap()" class="govuk-button">Center Map</button>
+    </div>
+
+    <div class="map-container">
+      <div id="azureMap"></div>
+    </div>
+
+    <h2 class="govuk-heading-m">Map Information</h2>
+    <p class="govuk-body">
+      This map uses Azure Maps to display map tiles. The map is configured with:
+    </p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>Azure Maps authentication using API key</li>
+      <li>Centered on UK coordinates (London: 51.5074, -0.1278)</li>
+      <li>Zoom level 10 by default</li>
+      <li>Interactive controls (zoom, pan)</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Load Azure Maps SDK -->
+
+<link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" />
+
+<script>
+  // Azure Maps configuration
+  const azureMapsKey = '{{ azureMapsKey }}';
+  const azureMapsUrl = '{{ azureMapsUrl }}';
+
+  if (!azureMapsKey) {
+    console.error('Azure Maps API key not found. Please set FLOOD_APP_AZURE_MAPS_KEY environment variable.');
+  }
+
+  if (!azureMapsUrl) {
+    console.warn('Azure Maps URL not configured. Using default endpoint.');
+  }
+
+  // Initialize Azure Maps
+  const map = new atlas.Map('azureMap', {
+    center: [-0.1278, 51.5074], // London, UK
+    zoom: 10,
+    language: 'en-GB',
+    authOptions: {
+      authType: atlas.AuthenticationType.subscriptionKey,
+      subscriptionKey: azureMapsKey,
+      
+    },
+    style: 'road', // Options: 'road', 'grayscale_light', 'grayscale_dark', 'night', 'satellite', 'satellite_road_labels'
+    showBuildingModels: false,
+    showLogo: true,
+    showFeedbackLink: false
+  });
+
+  // Wait for the map to load resources
+  map.events.add('load', function () {
+    console.log('Azure Maps loaded successfully');
+
+    // Add a marker
+    const marker = new atlas.HtmlMarker({
+      color: 'DodgerBlue',
+      text: 'A',
+      position: [-0.1278, 51.5074]
+    });
+    map.markers.add(marker);
+
+    // Optional: Add a popup when marker is clicked
+    map.events.add('click', marker, function () {
+      map.popups.add(new atlas.Popup({
+        content: '<div style="padding:10px">Sample location</div>',
+        position: [-0.1278, 51.5074]
+      }));
+    });
+  });
+
+  // Handle errors
+  map.events.add('error', function (error) {
+    console.error('Map error:', error);
+  });
+
+  // Map control functions
+  function zoomIn() {
+    map.setCamera({ zoom: map.getCamera().zoom + 1 });
+  }
+
+  function zoomOut() {
+    map.setCamera({ zoom: map.getCamera().zoom - 1 });
+  }
+
+  function centerMap() {
+    map.setCamera({ center: [-0.1278, 51.5074], zoom: 10 });
+  }
+</script>
+{% endblock %}
