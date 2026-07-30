@@ -1,9 +1,14 @@
 // ----------------------------------------------------
-// Flood map prototype
-// Part 1 - Setup, helpers and panel
+// Flood map prototype — Azure Maps version
+// Converted from Leaflet
 // ----------------------------------------------------
 
 window.addEventListener("load", () => {
+
+    if (!window.azureMapsKey) {
+        console.error('Azure Maps API key not found. Please set FLOOD_APP_AZURE_MAPS_KEY environment variable.');
+        return;
+    }
 
     //--------------------------------------------------
     // COLOURS
@@ -22,46 +27,38 @@ window.addEventListener("load", () => {
     // MAP
     //--------------------------------------------------
 
-    const map = L.map("myMap", {
-        zoomControl: false,
-        keyboard: true
-    }).setView([51.45, -2.60], 11);
-
-    L.control.zoom({
-        position: "topright"
-    }).addTo(map);
-
-    L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-        {
-            subdomains: "abcd",
-            maxZoom: 19,
-            attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+    const map = new atlas.Map("myMap", {
+        center: [-2.60, 51.45],
+        zoom: 11,
+        style: "road",
+        showLogo: false,
+        showFeedbackLink: false,
+        authOptions: {
+            authType: "subscriptionKey",
+            subscriptionKey: window.azureMapsKey
         }
-    ).addTo(map);
+    });
 
-    setTimeout(() => map.invalidateSize(), 200);
+    // Azure Maps initializes asynchronously — sources, layers and markers
+    // can only be added once the map fires its 'ready' event.
+    map.events.add("ready", () => {
 
-    // Allow arrow keys to control the map
-        const mapContainer = map.getContainer();
+    map.controls.add(new atlas.control.ZoomControl(), {
+        position: "top-right"
+    });
 
-        mapContainer.setAttribute("tabindex", "0");
+    // Allow arrow keys to control the map (Azure's default keyboard nav
+    // already handles arrows/+/- once the map container has focus)
+    const mapContainer = map.getMapContainer();
+    mapContainer.setAttribute("tabindex", "0");
+    mapContainer.addEventListener("click", () => {
+        mapContainer.focus();
+    });
 
-        mapContainer.addEventListener("click", () => {
-            mapContainer.focus();
-        });
-
-    //--------------------------------------------------
-    // LAYERS
-    //--------------------------------------------------
-
-    const floodAreaLayer = L.layerGroup().addTo(map);
-    const stationLayer = L.layerGroup().addTo(map);
-
-    let floodGeoJson = null;
-
-    let selectedFloodArea = null;
-    let selectedStation = null;
+    let selectedFloodAreaId = null;
+    let selectedStationMarker = null;
+    let stationMarkers = []; // { marker, el, station }
+    let shapeClickHandledThisTick = false;
 
     //--------------------------------------------------
     // PANEL
@@ -84,9 +81,51 @@ window.addEventListener("load", () => {
         document.getElementById("panelDescription").innerHTML = html;
 
         const banner = document.getElementById("warningBanner");
-
         banner.textContent = status;
         banner.style.background = getStatusColour(status);
+
+        updateStatusItem(status);
+
+    }
+
+    const severityConfig = {
+        "Flood alert": {
+            className: 'defra-flood-status-item--alert',
+            message: 'Flooding is possible - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#flood-alert">be prepared</a>'
+        },
+        "Flood warning": {
+            className: 'defra-flood-status-item--warning',
+            message: 'Flooding is expected - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#flood-warning">act now</a>'
+        },
+        "Severe flood warning": {
+            className: 'defra-flood-status-item--severe',
+            message: 'Danger to life - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#severe-flood-warning">act now</a>'
+        }
+    };
+
+    function updateStatusItem(status) {
+
+        const statusItem = document.getElementById('statusItem');
+        const statusMessage = document.getElementById('statusMessage');
+        const config = severityConfig[status];
+
+        if (!statusItem || !statusMessage) return;
+
+        statusItem.classList.remove(
+            'defra-flood-status-item--alert',
+            'defra-flood-status-item--warning',
+            'defra-flood-status-item--severe'
+        );
+
+        if (!config) {
+            statusItem.style.display = 'none';
+            return;
+        }
+
+        statusItem.style.display = '';
+        statusItem.classList.add(config.className);
+        statusItem.setAttribute('data-severity-status', status);
+        statusMessage.innerHTML = config.message;
 
     }
 
@@ -97,100 +136,129 @@ window.addEventListener("load", () => {
     function getStatusColour(status) {
 
         switch (status) {
-
             case "Severe flood warning":
                 return floodColours.severe;
-
             case "Flood warning":
                 return floodColours.warning;
-
             case "Flood alert":
                 return floodColours.alert;
-
             default:
                 return floodColours.normal;
-
         }
 
     }
 
-    function styleFloodArea(feature) {
+    function baseFillOpacity(severity) {
 
-        const colour = getStatusColour(feature.properties.severity);
-
-        let opacity = 0.20;
-
-        if (feature.properties.severity === "Flood alert") {
-            opacity = 0.30;
-        }
-
-        if (feature.properties.severity === "Flood warning") {
-            opacity = 0.35;
-        }
-
-        if (feature.properties.severity === "Severe flood warning") {
-            opacity = 0.45;
-        }
-
-        return {
-            color: colour,
-            fillColor: colour,
-            fillOpacity: opacity,
-            weight: 2
-        };
+        if (severity === "Flood alert") return 0.30;
+        if (severity === "Flood warning") return 0.35;
+        if (severity === "Severe flood warning") return 0.45;
+        return 0.20;
 
     }
-
-    //--------------------------------------------------
-    // FILTER FLOOD AREAS
-    //--------------------------------------------------
 
     function showSeverity(severity) {
 
         switch (severity) {
-
             case "Severe flood warning":
                 return document.getElementById("toggleSevere").checked;
-
             case "Flood warning":
                 return document.getElementById("toggleWarning").checked;
-
             case "Flood alert":
                 return document.getElementById("toggleAlert").checked;
-
             default:
                 return true;
         }
 
     }
 
+    //--------------------------------------------------
+    // FLOOD AREAS (data source + declarative layers)
+    //--------------------------------------------------
+
+    const floodDataSource = new atlas.source.DataSource();
+    map.sources.add(floodDataSource);
+
+    // displayState drives styling: "normal" | "hover" | "selected" | "hidden"
+    // set per-feature via shape.setProperties(...) and read back via
+    // data-driven expressions on the layers below.
+
+    const floodFillLayer = new atlas.layer.PolygonLayer(floodDataSource, "floodFillLayer", {
+        fillColor: [
+            "case",
+            ["==", ["get", "severity"], "Severe flood warning"], floodColours.severe,
+            ["==", ["get", "severity"], "Flood warning"], floodColours.warning,
+            ["==", ["get", "severity"], "Flood alert"], floodColours.alert,
+            floodColours.normal
+        ],
+        fillOpacity: [
+            "case",
+            ["==", ["get", "displayState"], "hidden"], 0,
+            ["==", ["get", "displayState"], "selected"], 0.60,
+            ["==", ["get", "displayState"], "hover"], ["get", "hoverOpacity"],
+            ["get", "baseOpacity"]
+        ]
+    });
+
+    const floodOutlineLayer = new atlas.layer.LineLayer(floodDataSource, "floodOutlineLayer", {
+        strokeColor: [
+            "case",
+            ["==", ["get", "severity"], "Severe flood warning"], floodColours.severe,
+            ["==", ["get", "severity"], "Flood warning"], floodColours.warning,
+            ["==", ["get", "severity"], "Flood alert"], floodColours.alert,
+            floodColours.normal
+        ],
+        strokeWidth: [
+            "case",
+            ["any",
+                ["==", ["get", "displayState"], "hover"],
+                ["==", ["get", "displayState"], "selected"]
+            ], 4,
+            2
+        ],
+        strokeOpacity: [
+            "case",
+            ["==", ["get", "displayState"], "hidden"], 0,
+            1
+        ]
+    });
+
+    map.layers.add([floodFillLayer, floodOutlineLayer]);
+
+    function setFeatureDisplayState(shape, state) {
+
+        const props = shape.getProperties();
+        const severity = props.severity;
+
+        shape.setProperties(Object.assign({}, props, {
+            displayState: state,
+            baseOpacity: baseFillOpacity(severity),
+            hoverOpacity: Math.min(baseFillOpacity(severity) + 0.15, 0.7)
+        }));
+
+    }
+
     function refreshFloodAreas() {
 
-        if (!floodGeoJson) return;
+        const shapes = floodDataSource.getShapes();
 
-        floodGeoJson.eachLayer(layer => {
+        shapes.forEach(shape => {
 
-            const visible = showSeverity(
-                layer.feature.properties.severity
-            );
+            const props = shape.getProperties();
+            const visible = showSeverity(props.severity);
+            const isSelected = shape.getId() === selectedFloodAreaId;
 
-            layer.setStyle({
-
-                opacity: visible ? 1 : 0,
-
-                fillOpacity: visible
-                    ? styleFloodArea(layer.feature).fillOpacity
-                    : 0
-
-            });
+            if (!visible) {
+                setFeatureDisplayState(shape, "hidden");
+            } else if (isSelected) {
+                setFeatureDisplayState(shape, "selected");
+            } else {
+                setFeatureDisplayState(shape, "normal");
+            }
 
         });
 
     }
-
-        //--------------------------------------------------
-    // FLOOD AREAS
-    //--------------------------------------------------
 
     fetch("/public/data/demo-flood-areas.geojson")
 
@@ -198,111 +266,96 @@ window.addEventListener("load", () => {
 
         .then(data => {
 
-            floodGeoJson = L.geoJSON(data, {
+            // Give every feature an id (used for tracking selection) and
+            // seed the display-state properties before adding to the source.
+            data.features.forEach((feature, index) => {
 
-                style: styleFloodArea,
+                feature.id = feature.id || `flood-area-${index}`;
 
-                onEachFeature(feature, polygon) {
+                const severity = feature.properties.severity;
 
-                    polygon.on({
+                feature.properties.displayState = "normal";
+                feature.properties.baseOpacity = baseFillOpacity(severity);
+                feature.properties.hoverOpacity = Math.min(baseFillOpacity(severity) + 0.15, 0.7);
 
-                        mouseover() {
+            });
 
-                            if (
-                                selectedFloodArea !== polygon &&
-                                showSeverity(feature.properties.severity)
-                            ) {
+            floodDataSource.add(data);
 
-                                polygon.setStyle({
-                                    weight: 4,
-                                    fillOpacity: Math.min(
-                                    styleFloodArea(feature).fillOpacity + 0.15,
-                                    0.7
-                                )
-                                });
+            refreshFloodAreas();
 
-                            }
+            //----------------------------------------------
+            // Hover / click behaviour for flood area layer
+            //----------------------------------------------
 
-                        },
+            map.events.add("mousemove", floodFillLayer, e => {
 
-                        mouseout() {
+                if (!e.shapes || !e.shapes.length) return;
 
-                            if (selectedFloodArea !== polygon) {
+                const shape = e.shapes[0];
+                const props = shape.getProperties();
 
-                                floodGeoJson.resetStyle(polygon);
+                if (shape.getId() === selectedFloodAreaId) return;
+                if (!showSeverity(props.severity)) return;
 
-                                if (!showSeverity(feature.properties.severity)) {
+                map.getCanvasContainer().style.cursor = "pointer";
 
-                                    polygon.setStyle({
-                                        opacity: 0,
-                                        fillOpacity: 0
-                                    });
-
-                                }
-
-                            }
-
-                        },
-
-                        click(e) {
-
-                            if (!showSeverity(feature.properties.severity)) {
-                                return;
-                            }
-
-                            L.DomEvent.stopPropagation(e);
-
-                            if (selectedFloodArea) {
-                                floodGeoJson.resetStyle(selectedFloodArea);
-                            }
-
-                            selectedFloodArea = polygon;
-
-const severity = feature.properties.severity;
-
-                        polygon.setStyle({
-                            weight: 4,
-                            fillOpacity: 0.60,
-                            color: getStatusColour(severity)
-                        });
-
-                        openPanel();
-
-                        setPanel(
-
-                            feature.properties.name,
-
-                            `
-                            <strong>Status:</strong> ${severity}
-                            `,
-
-                            severity
-
-                        );
-
-                            setPanel(
-
-                                feature.properties.name,
-
-                                `
-                                <strong>Status:</strong> ${severity}
-                                `,
-
-                                severity
-
-                            );
-
-                        }
-
-                    });
-
+                if (props.displayState !== "hover") {
+                    setFeatureDisplayState(shape, "hover");
                 }
 
             });
 
-            floodGeoJson.addTo(floodAreaLayer);
+            map.events.add("mouseleave", floodFillLayer, () => {
 
-            refreshFloodAreas();
+                map.getCanvasContainer().style.cursor = "";
+
+                floodDataSource.getShapes().forEach(shape => {
+
+                    if (shape.getId() === selectedFloodAreaId) return;
+
+                    const props = shape.getProperties();
+                    const visible = showSeverity(props.severity);
+
+                    setFeatureDisplayState(shape, visible ? "normal" : "hidden");
+
+                });
+
+            });
+
+            map.events.add("click", floodFillLayer, e => {
+
+                shapeClickHandledThisTick = true;
+
+                if (!e.shapes || !e.shapes.length) return;
+
+                const shape = e.shapes[0];
+                const props = shape.getProperties();
+
+                if (!showSeverity(props.severity)) return;
+
+                if (selectedFloodAreaId) {
+
+                    const previous = floodDataSource.getShapeById(selectedFloodAreaId);
+
+                    if (previous) {
+                        setFeatureDisplayState(previous, showSeverity(previous.getProperties().severity) ? "normal" : "hidden");
+                    }
+
+                }
+
+                selectedFloodAreaId = shape.getId();
+                setFeatureDisplayState(shape, "selected");
+
+                openPanel();
+
+                setPanel(
+                    props.name,
+                    `<strong>Status:</strong> ${props.severity}`,
+                    props.severity
+                );
+
+            });
 
         });
 
@@ -322,8 +375,8 @@ const severity = feature.properties.severity;
         .getElementById("toggleAlert")
         .addEventListener("change", refreshFloodAreas);
 
-            //--------------------------------------------------
-    // RIVER STATIONS
+    //--------------------------------------------------
+    // RIVER STATIONS (HtmlMarkers)
     //--------------------------------------------------
 
     fetch("/public/data/demo-river-stations.json")
@@ -334,65 +387,54 @@ const severity = feature.properties.severity;
 
             stations.forEach(station => {
 
-                const marker = L.circleMarker(
+                const el = document.createElement("div");
+                el.className = "station-marker";
 
-                    [station.lat, station.lng],
+                const marker = new atlas.HtmlMarker({
+                    position: [station.lng, station.lat],
+                    htmlContent: el
+                });
 
-                    {
-                        radius: 8,
-                        color: "#ffffff",
-                        weight: 3,
-                        fillColor: floodColours.station,
-                        fillOpacity: 1
-                    }
+                map.markers.add(marker);
 
-                );
+                stationMarkers.push({ marker, el, station });
 
-                marker.on("mouseover", () => {
+                map.events.add("mouseenter", marker, () => {
 
-                    if (marker !== selectedStation) {
-
-                        marker.setStyle({
-                            radius: 11,
-                            weight: 4
-                        });
-
+                    if (marker !== selectedStationMarker) {
+                        el.classList.add("is-hover");
                     }
 
                 });
 
-                marker.on("mouseout", () => {
+                map.events.add("mouseleave", marker, () => {
 
-                    if (marker !== selectedStation) {
-
-                        marker.setStyle({
-                            radius: 8,
-                            weight: 3
-                        });
-
+                    if (marker !== selectedStationMarker) {
+                        el.classList.remove("is-hover");
                     }
 
                 });
 
-                marker.on("click", e => {
+                map.events.add("click", marker, e => {
 
-                    L.DomEvent.stopPropagation(e);
+                    shapeClickHandledThisTick = true;
 
-                    if (selectedStation) {
+                    if (e && e.originalEvent) {
+                        e.originalEvent.stopPropagation();
+                    }
 
-                        selectedStation.setStyle({
-                            radius: 8,
-                            weight: 3
-                        });
+                    if (selectedStationMarker) {
+
+                        const previous = stationMarkers.find(m => m.marker === selectedStationMarker);
+
+                        if (previous) {
+                            previous.el.classList.remove("is-selected", "is-hover");
+                        }
 
                     }
 
-                    selectedStation = marker;
-
-                    marker.setStyle({
-                        radius: 12,
-                        weight: 4
-                    });
+                    selectedStationMarker = marker;
+                    el.classList.add("is-selected");
 
                     openPanel();
 
@@ -414,43 +456,45 @@ const severity = feature.properties.severity;
 
                 });
 
-                marker.addTo(stationLayer);
-
             });
 
         });
 
     //--------------------------------------------------
-    // CLEAR SELECTIONS
+    // CLEAR SELECTIONS (click on empty map)
     //--------------------------------------------------
 
-    map.on("click", () => {
+    map.events.add("click", e => {
 
-        if (selectedFloodArea && floodGeoJson) {
+        // If a shape/marker click handler already ran for this click,
+        // skip the "clicked empty map" deselect logic below.
+        if (shapeClickHandledThisTick) {
+            shapeClickHandledThisTick = false;
+            return;
+        }
 
-            floodGeoJson.resetStyle(selectedFloodArea);
+        if (selectedFloodAreaId) {
 
-            if (!showSeverity(selectedFloodArea.feature.properties.severity)) {
+            const previous = floodDataSource.getShapeById(selectedFloodAreaId);
 
-                selectedFloodArea.setStyle({
-                    opacity: 0,
-                    fillOpacity: 0
-                });
-
+            if (previous) {
+                const props = previous.getProperties();
+                setFeatureDisplayState(previous, showSeverity(props.severity) ? "normal" : "hidden");
             }
 
-            selectedFloodArea = null;
+            selectedFloodAreaId = null;
 
         }
 
-        if (selectedStation) {
+        if (selectedStationMarker) {
 
-            selectedStation.setStyle({
-                radius: 8,
-                weight: 3
-            });
+            const previous = stationMarkers.find(m => m.marker === selectedStationMarker);
 
-            selectedStation = null;
+            if (previous) {
+                previous.el.classList.remove("is-selected", "is-hover");
+            }
+
+            selectedStationMarker = null;
 
         }
 
@@ -459,25 +503,19 @@ const severity = feature.properties.severity;
     });
 
     //--------------------------------------------------
-    // LAYER TOGGLES
+    // LAYER TOGGLES — river stations
     //--------------------------------------------------
 
     document
         .getElementById("toggleStations")
         .addEventListener("change", function () {
 
-            if (this.checked) {
-
-                map.addLayer(stationLayer);
-
-            } else {
-
-                map.removeLayer(stationLayer);
-
-            }
+            stationMarkers.forEach(({ marker }) => {
+                marker.setOptions({ visible: this.checked });
+            });
 
         });
 
-
+    }); // end map.events.add("ready", ...)
 
 });
