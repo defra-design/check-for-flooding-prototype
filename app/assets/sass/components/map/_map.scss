@@ -399,10 +399,7 @@
 // Mapbox layer
 //
 
-// Required to depress missing css console warning
-.maplibregl-canvas-container {
-  display:none;
-}
+
 .mapboxgl-canary {
   background-color: salmon;
 }
