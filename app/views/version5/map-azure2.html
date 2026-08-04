@@ -103,7 +103,7 @@
   .warning-alert{ background:#fc9e3c; }
   .warning-warning{ background:#D4351C; }
   .warning-severe{ background:#8C1419; }
-  .warning-normal{ background:#00703C; }
+  .warning-normal{ background:#5694ca; }
 
   .close-panel{
       position:absolute;
@@ -282,6 +282,20 @@
     <aside class="map-sidebar">
 
         <h2 class="govuk-heading-m"> Key </h2>
+
+        <div class="govuk-checkboxes govuk-checkboxes--small govuk-!-margin-bottom-4">
+            <div class="govuk-checkboxes__item">
+                <input class="govuk-checkboxes__input"
+                       id="toggleSatellite"
+                       type="checkbox">
+
+                <label class="govuk-checkboxes__label govuk-body-s"
+                       for="toggleSatellite">
+                    Show satellite
+                </label>
+            </div>
+        </div>
+
         <hr>
         <h3 class="govuk-heading-s"> Flood warnings </h3>
 
@@ -328,7 +342,7 @@
 
             <hr>
 
-            <h3 class="govuk-heading-s">River levels</h3>
+            <h3 class="govuk-heading-s">Levels</h3>
 
             <div class="govuk-checkboxes__item">
                 <input class="govuk-checkboxes__input"
@@ -343,6 +357,8 @@
                     River level stations
                 </label>
             </div>
+
+            <hr>
 
         </div>
 
