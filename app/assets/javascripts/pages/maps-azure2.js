@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
         severe: "#8C1419",
         warning: "#D4351C",
         alert: "#F2A747",
-        normal: "#00703C",
+        normal: "#5694ca",
         station: "#5694ca",
         default: "#6F777B"
     };
@@ -30,7 +30,7 @@ window.addEventListener("load", () => {
     const map = new atlas.Map("myMap", {
         center: [-2.60, 51.45],
         zoom: 11,
-        style: "grayscale_light",
+        style: "road",
         showLogo: false,
         showFeedbackLink: false,
         authOptions: {
@@ -443,8 +443,6 @@ window.addEventListener("load", () => {
                         station.name,
 
                         `<p class="govuk-body-s govuk-!-margin-bottom-2">
-                        <strong>River:</strong> ${station.river}
-                        </p><p class="govuk-body-s govuk-!-margin-bottom-2">
                         <strong>Current level:</strong> ${station.level}
                          </p><p class="govuk-body-s govuk-!-margin-bottom-2">
                         <strong>Status:</strong> ${station.status}</p>
@@ -514,6 +512,13 @@ window.addEventListener("load", () => {
                 marker.setOptions({ visible: this.checked });
             });
 
+        });
+
+    document
+        .getElementById("toggleSatellite")
+        .addEventListener("change", function () {
+            const style = this.checked ? "satellite_road_labels" : "road";
+            map.setStyle({ style: style });
         });
 
     }); // end map.events.add("ready", ...)

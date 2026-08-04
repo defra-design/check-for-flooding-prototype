@@ -30,7 +30,7 @@ window.addEventListener("load", () => {
     const map = new atlas.Map("myMap", {
         center: [-2.60, 51.45],
         zoom: 11,
-        style: "road",
+        style: "satellite_road_labels",
         showLogo: false,
         showFeedbackLink: false,
         authOptions: {
