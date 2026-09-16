@@ -1,0 +1,195 @@
+
+{% extends "../../layouts/main.html" %}
+
+{% block pageTitle %}
+{% if model.isError %}Error: {% endif %}Find location - Check for flooding - GOV.UK
+{% endblock %}
+
+{% block beforeContent %}
+<div class="govuk-phase-banner">
+	<p class="govuk-phase-banner__content">
+		<strong class="govuk-tag govuk-phase-banner__content__tag">
+			Beta
+		</strong>
+		<span class="govuk-phase-banner__text">
+			This is a new service - your <a class="govuk-link" href="#">feedback</a> will help us to improve it.
+		</span>
+	</p>
+</div>
+{% endblock %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+<!-- FIRST BANNER FOR ACTIVE ALERTS/WARNING -->
+      <div class="defra-flood-status govuk-!-margin-bottom-3">
+         
+         <div class="defra-flood-status-item defra-flood-status-item--warning" data-severity-status="warning">
+            <span class="defra-flood-status-item__icon">
+               <svg width="40" height="40" viewBox="0 0 40 40" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2"><path d="M20.133 1.117c1.292.067 2.5.798 3.159 1.926l16.316 30.251c.14.282.146.318.198.468.097.286.158.584.183.885.166 2.062-1.497 4.103-3.681 4.175H3.672c-.314-.011-.349-.022-.506-.048-.28-.047-.553-.127-.814-.237-1.925-.814-2.951-3.285-1.98-5.243L16.688 3.043c.244-.419.364-.556.598-.796.748-.767 1.637-1.172 2.847-1.13z" fill="#fff"/><path d="M20.026 2.811c.731.019 1.426.433 1.79 1.068l16.283 30.189c.639 1.26-.277 3.02-1.826 3.058H3.707c-1.416-.034-2.521-1.688-1.826-3.058L18.164 3.879a2.07 2.07 0 0 1 1.862-1.068z" fill="#e3000f"/><path d="M19.643 5.681c.069-.128.202-.207.347-.207s.278.079.347.207L35.821 34.41c.065.122.062.27-.009.389s-.199.192-.338.192H4.506c-.139 0-.267-.073-.338-.192s-.075-.267-.009-.389L19.643 5.681z" fill="#fff"/><path d="M17.096 16.51v1.272l2.25-2.586c.131-.153.324-.24.524-.239s.393.088.524.24l6.509 7.525.001.001c.251.289.219.728-.071.978s-.728.219-.979-.071l-.595-.687v3.671c-.203.017-.304.07-.483.181-.199.124-.462.368-.892.566-.286.129-.64.216-1.039.215h-.028a2.48 2.48 0 0 1-1.372-.424c-.325-.217-.52-.385-.693-.459-.116-.051-.225-.084-.42-.085-.276.007-.378.06-.585.187-.2.124-.462.368-.891.565a2.5 2.5 0 0 1-1.039.216c-.581.004-1.059-.203-1.388-.413l-.709-.469a.6.6 0 0 0-.287-.072c-.218-.01-.591.143-1.018.378v-4.018l-.596.685a.69.69 0 0 1-.524.238c-.162 0-.324-.055-.455-.17-.289-.251-.32-.69-.068-.979l2.701-3.106v-3.14h1.623z" fill="#181c1b"/><path d="M7.503 30.719l.17.154a10.59 10.59 0 0 0 1.204.919c.228.146.462.279.705.383a2.04 2.04 0 0 0 .809.19c.798-.02 1.381-.403 1.941-.687.553-.302 1.057-.522 1.398-.512.172.002.289.036.441.109.226.107.505.343.909.598a3.04 3.04 0 0 0 1.659.492c.479.002.898-.102 1.238-.255.511-.234.835-.53 1.101-.698.273-.17.448-.256.834-.263.27.002.438.049.605.123.247.107.501.327.896.588a2.95 2.95 0 0 0 1.672.505c.48.002.899-.102 1.239-.255.512-.234.835-.53 1.102-.698.273-.17.448-.256.833-.263.261-.004.57.107.805.237.117.063.214.128.279.174l.07.053.014.011.049.039c.397.294 1.03.702 1.921.702h.037c.807-.015 1.495-.389 2.089-.76a7.96 7.96 0 0 0 .771-.563l.202-.173 1.586 2.937H5.831l1.672-3.087zm1.711-3.158c.028.049.061.096.1.14a5.78 5.78 0 0 0 .843.785c.393.285.881.596 1.559.609.793-.023 1.332-.391 1.84-.647.502-.277.941-.46 1.196-.448.13.002.208.024.33.083.181.083.433.295.813.538s.926.479 1.594.474c.458.002.865-.099 1.192-.248.492-.226.793-.506 1.023-.648.236-.146.354-.207.671-.215a1.1 1.1 0 0 1 .483.098c.198.084.421.277.794.526a2.85 2.85 0 0 0 1.575.487h.033a2.84 2.84 0 0 0 1.192-.248c.493-.226.795-.505 1.025-.648.236-.147.353-.207.67-.215.197-.004.455.085.655.196.099.055.182.11.236.149l.058.044.062.05a3.94 3.94 0 0 0 .746.444 2.78 2.78 0 0 0 1.129.228c.724.002 1.302-.315 1.681-.633.12-.1.227-.203.32-.3l.724 1.34a.79.79 0 0 0-.089.085h0a3.53 3.53 0 0 1-.328.298c-.258.214-.626.479-.99.674s-.732.314-.917.307c-.493-.011-.679-.14-1.066-.408a3.92 3.92 0 0 0-.589-.39c-.37-.198-.887-.415-1.52-.418-.467-.002-.878.104-1.209.259-.499.236-.811.525-1.079.69a1.48 1.48 0 0 1-.886.267 1.37 1.37 0 0 1-.603-.123c-.249-.107-.502-.327-.897-.589a2.95 2.95 0 0 0-1.673-.504 2.83 2.83 0 0 0-1.21.259c-.499.236-.811.526-1.079.691a1.49 1.49 0 0 1-.884.266c-.49-.007-.735-.168-1.158-.462-.207-.144-.44-.32-.744-.471s-.682-.268-1.107-.266c-.855.01-1.53.39-2.103.688-.565.315-1.054.531-1.236.511 0 0-.003 0-.021-.003-.069-.009-.258-.081-.466-.201-.316-.178-.688-.452-.993-.704l-.611-.555c-.017-.02-.035-.038-.054-.056l.968-1.786z" fill="#00a4cd"/><path d="M22.139 23.029h2.077v2.285h-2.077z" fill="#fff"/></svg>
+            </span>
+            <div class="defra-flood-status-item__text">
+               <strong>Flooding is expected - <a class="govuk-link" href="https://www.gov.uk/guidance/flood-alerts-and-warnings-what-they-are-and-what-to-do#flood-warning">act now</a></strong>
+            </div>
+         </div>
+     <!-- page title -->
+ <br> <br>
+    <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+     Flood warning for River Ouse at York - riverside properties
+    </h1>
+
+ <!-- Sign-up -->
+      <p><p>
+    <a href="https://www.gov.uk/sign-up-for-flood-warnings" class="defra-link-icon">
+        <svg viewBox="0 0 14 20" width="14" height="20" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" fill="currentColor"><path d="M9.27 15.747C9.27 16.99 8.26 18 7.016 18s-2.253-1.01-2.253-2.253H9.27zM6.015 1.86v-.859A1 1 0 0 1 7.016 0c.553 0 1.002.449 1.002 1.001v.859c2.284.465 4.006 2.487 4.006 4.907v4.357l1.628 1.661c.488.489.488 1.282 0 1.771a1.25 1.25 0 0 1-.886.366H1.252a1.25 1.25 0 0 1-.886-.366c-.488-.489-.488-1.282 0-1.771l1.643-1.661V6.767c0-2.42 1.721-4.442 4.006-4.907z"></path></svg>Get flood warnings by phone, text or email
+    </a>
+</p></p>
+ 
+
+<!-- Last situation change time -->
+     <p class="defra-flood-meta">
+         <time datetime="">
+          Updated {{ "now" | govukTime }} on  {{ "today" | govukDate }}
+       </time>
+      </p>
+
+      <!-- Situation description -->
+      <div class="govuk-!-padding-top-2">
+         <p>River levels are falling but remain high today, Monday 17 November 2025, and flooding is still expected. There is no further significant rainfall expected and levels will continue to fall slowly in the coming days. Locations most affected will be properties on King's Staith in York and riverside areas through York from Lendall Bridge to Millennium Bridge. We are closely monitoring the situation. The Foss Barrier is in operation. Take care and avoid walking, cycling or driving through flood water. Act on your flood plan if you have one. This message will be updated by 3:30PM on 17th November 2025 or as the situation changes.
+
+</p>  
+
+          <p> This message will be updated by 12:00PM on {{ "today" | govukDate }} or as the situation changes.</p>
+            
+
+      <!-- Map placeholder -->
+      <span id="map-live" >
+ <a href="https://check-for-flooding.service.gov.uk/target-area/122FWF710?v=map-live&lyr=mv,ts,tw,ta&fid=flood.122FWF710&ext=-1.096674,53.934091,-1.069932,53.961251" role="button" data-module="govuk-button" id="map-live-btn" class="defra-button-secondary govuk-!-margin-top-4"><span class="defra-button-secondary__icon"><svg focusable="false" width="15" height="20" viewBox="0 0 15 20"><path d="M15,7.5c0.009,3.778 -4.229,9.665 -7.5,12.5c-3.271,-2.835 -7.509,-8.722 -7.5,-12.5c0,-4.142 3.358,-7.5 7.5,-7.5c4.142,0 7.5,3.358 7.5,7.5Zm-7.5,5.461c3.016,0 5.461,-2.445 5.461,-5.461c0,-3.016 -2.445,-5.461 -5.461,-5.461c-3.016,0 -5.461,2.445 -5.461,5.461c0,3.016 2.445,5.461 5.461,5.461Z" fill="currentColor"></path></svg></span><span class="defra-button-secondary__text">View map of the flood alert area</span><span class="govuk-visually-hidden">(Visual only)</span></a>
+
+      </span>
+
+      <!-- Area description -->
+      <p> Flood warning area: Properties on King's Staith in York and riverside areas through York from Lendall Bridge to Millennium Bridge.</p>
+
+      <!-- Feedback link  -->
+  
+      <p>
+         <a href="#">
+            Give feedback on this flood warning information </a>
+      </p>
+
+       <!-- Latest water level information -->
+      
+      <output class="govuk-visually-hidden" data-live-status></output>
+
+<div class="defra-live">
+  <h2 class="defra-live__title">Latest level</h2>
+  
+  <div class="defra-live__item" data-item-timestamp="42 minutes ago" data-item-status="false" data-item-name="River Ouse" data-item-external-name="Viking Recorder"  data-item-id="8208">
+    
+      <p class="defra-flood-meta defra-flood-meta--no-border govuk-!-margin-bottom-0">
+        <strong data-item-time>42 minutes ago</strong>
+      </p>
+      <p>The River Ouse level at Viking Recorder was <span data-item-value>2.97</span> metres. Property flooding is possible when it goes above 3.00 metres.
+        
+      </p>
+      
+      <p>
+        <a href="/station/8208?tid=896836">Monitor the latest level at Viking Recorder</a>
+      </p>
+      
+    
+  </div>
+  
+  <p class="defra-live__supplementary">This level will update automatically</p>
+</div>
+
+
+
+<script src="/assets/js/latest-levels-auto-refresh.js"></script>
+<script>
+  (function () {
+    const autorefresh = new window.LatestLevelsAutoRefresh()
+    autorefresh.initializeTimeAgoUpdates()
+    autorefresh.nextUpdate()
+  })()
+</script>
+
+
+      <!-- Link to river, sea, groundwater, or rainfall levels in the area -->
+      <p>
+         <a href="/river-and-sea-levels/target-area/122FWF710">
+            Find a river, sea, groundwater or rainfall level in this area
+         </a><br><br>
+      </p>
+
+
+  </div>
+ 
+    <aside class="defra-context-footer">
+    <div>
+       <header class="govuk-heading-m">Contact Floodline for advice</header>
+       <p>
+          <strong>Floodline helpline</strong>
+          <br>Telephone: 0345 988 1188
+          <br>Textphone: 0345 602 6340
+          <br>Open 24 hours a day, 7 days a week <br>
+          <a href="https://gov.uk/call-charges">Find out more about call charges</a>
+       </p>
+       
+       <p class="govuk-!-margin-bottom-0">
+          <strong>Talk to a Floodline adviser over webchat</strong>
+          <br> We're running webchat as a trial.<br>
+		          <a href="#">Start chat</a>
+       </p>
+ 
+    </div>
+ </aside>
+  </div>
+ </div>
+
+  <div class="govuk-grid-column-one-third">
+    <div class="defra-related-items">
+  <h2 class="govuk-heading-s" id="subsection-title">
+    Related content
+  </h2>
+  <nav role="navigation" aria-labelledby="subsection-title">
+    <ul class="govuk-list govuk-!-font-size-16">
+      
+      <li>
+        <a class="govuk-link"  href="https://www.gov.uk/sign-up-for-flood-warnings">
+          Get flood warnings by phone, text or email
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/prepare-for-flooding">
+          Prepare for flooding
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/help-during-flood">
+          What to do before or during a flood
+        </a>
+      </li>
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/after-flood">
+          What to do after a flood
+        </a>
+      </li>
+      
+      <li>
+        <a class="govuk-link" href="https://www.gov.uk/report-flood-cause">
+          Report a flood
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+</div>
+
+
+{% endblock %}
+
