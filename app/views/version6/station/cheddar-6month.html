@@ -573,100 +573,161 @@ const verticalLinePlugin = {
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
 
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = '#cccccc';
+// Static selected line = thicker blue
+if (selectedX !== null) {
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#1d70b8';
+} else {
+  // Normal hover line
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#cccccc';
+}
 
-    ctx.stroke();
+ctx.stroke();
+
     ctx.restore();
   }
 };
 
 Chart.register(verticalLinePlugin);
 
+const keepSelectedTooltipPlugin = {
+  id: 'keepSelectedTooltip',
+
+  afterEvent(chart, args) {
+
+    // Nothing selected yet — allow normal hover behaviour
+    if (selectedIndex === null) return;
+
+    const element =
+      chart.getDatasetMeta(0).data[selectedIndex];
+
+    if (!element) return;
+
+    const active = [
+      {
+        datasetIndex: 0,
+        index: selectedIndex
+      }
+    ];
+
+    // Keep the selected point active
+    chart.setActiveElements(active);
+
+    // Keep the tooltip attached to that point
+    chart.tooltip.setActiveElements(
+      active,
+      {
+        x: element.x,
+        y: element.y
+      }
+    );
+
+    // Tell Chart.js to redraw
+    args.changed = true;
+  }
+};
+
+Chart.register(keepSelectedTooltipPlugin);
+
+
 const normalRangePointerPlugin = {
   id: 'normalRangePointer',
 
-  beforeDraw(chart) {+1
-
-    const annotation =
-      chart.options.plugins.annotation.annotations.normalLine;
-
-    if (!annotation || annotation.display === false) {
-      return;
-    }
-
-    if (!annotation.label || annotation.label.display === false) {
-      return;
-    }
-
+  afterDraw(chart) {
     const yScale = chart.scales.y1;
 
     if (!yScale) {
       return;
     }
 
-    // Get the Y position of the 0.36m line
-    const lineY = yScale.getPixelForValue(0.36);
-
-    // Chart area
     const { ctx, chartArea } = chart;
-
-    // Centre the pointer horizontally on the chart
-    const pointerX =
+    const labelX =
       chartArea.left +
       (chartArea.right - chartArea.left) / 2;
+    const labelHeight = 32;
+    const arrowWidth = 10;
+    const arrowHeight = 6;
 
-    /*
-     * The label is positioned 18px above the line.
-     *
-     * The pointer connects the bottom of the
-     * white label box to the green/black line.
-     */
-
-    const pointerWidth = 10;
-    const pointerHeight = 6;
-
-    // Approximate bottom edge of the label
-    const labelBottom = lineY - 18;
+    const labels = [
+      {
+        annotation: chart.options.plugins.annotation.annotations.normalLine,
+        value: 0.36,
+        text: '0.36m - Top of normal range',
+        minimumWidth: 178
+      },
+      {
+        annotation: chart.options.plugins.annotation.annotations.currentLevelLine,
+        value: 0.28,
+        text: '0.28m - Latest level',
+        minimumWidth: 178
+      },
+      {
+        annotation: chart.options.plugins.annotation.annotations.highestRecordedLine,
+        value: 0.64,
+        text: '0.64m - Highest level recorded (5 October 2020)',
+        minimumWidth: 178
+      }
+    ];
 
     ctx.save();
+    ctx.font = "bold 12px 'GDS Transport', Arial, sans-serif";
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-    ctx.beginPath();
+    labels.forEach(({ annotation, value, text, minimumWidth }) => {
+      if (!annotation || annotation.display === false) return;
 
-    // Left corner of pointer
-    ctx.moveTo(
-      pointerX - pointerWidth / 2,
-      labelBottom
-    );
+      const labelWidth = Math.max(
+        minimumWidth,
+        Math.ceil(ctx.measureText(text).width + 16)
+      );
+      const lineY = yScale.getPixelForValue(value);
+      const labelBottom = lineY - 8;
+      const labelTop = labelBottom - labelHeight;
+      const arrowTop = labelBottom - 1;
 
-    // Point of pointer
-    ctx.lineTo(
-      pointerX,
-      lineY
-    );
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#b1b4b6';
+      ctx.lineWidth = 1;
 
-    // Right corner of pointer
-    ctx.lineTo(
-      pointerX + pointerWidth / 2,
-      labelBottom
-    );
+      ctx.beginPath();
+      ctx.rect(
+        labelX - labelWidth / 2,
+        labelTop,
+        labelWidth,
+        labelHeight
+      );
+      ctx.fill();
+      ctx.stroke();
 
-    ctx.closePath();
+      ctx.fillStyle = '#0b0c0c';
+      ctx.fillText(text, labelX, labelTop + labelHeight / 2);
 
-    // White fill
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(labelX - arrowWidth / 2, arrowTop);
+      ctx.lineTo(labelX, labelBottom + arrowHeight);
+      ctx.lineTo(labelX + arrowWidth / 2, arrowTop);
+      ctx.closePath();
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.strokeStyle = '#b1b4b6';
+      ctx.stroke();
 
-    // GOV.UK grey border
-    ctx.strokeStyle = '#b1b4b6';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(labelX - arrowWidth / 2, arrowTop);
+      ctx.lineTo(labelX + arrowWidth / 2, arrowTop);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
 
     ctx.restore();
   }
 };
 
 Chart.register(normalRangePointerPlugin);
+
 
 
 // =============================
@@ -752,10 +813,14 @@ document.getElementById('latestBtn').onclick = () => {
 
   if (!myChart) return;
 
-  zoomLevel = 0;
-  selectedX = null;
+    zoomLevel = 0;
+    selectedX = null;
+    selectedIndex = null;
 
-  myChart.resetZoom();
+    myChart.setActiveElements([]);
+    myChart.tooltip.setActiveElements([]);
+
+    myChart.resetZoom();
 
   requestAnimationFrame(() => {
     updateControls();
@@ -936,7 +1001,7 @@ pan: {
   borderWidth: 2,
 
   label: {
-    display: true,
+    display: false,
     content: '0.36m - Top of normal range',
     position: 'center',
     yAdjust: -18,
@@ -978,13 +1043,33 @@ pan: {
   borderDash: [2, 2],       // subtle dashed line (optional)
   display: false,
   label: {
-    display: true,
+    display: false,
     content: '0.28m - Latest level',
     position: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
-       color: '#0b0c0c',
-    font: { size: 12, weight: 'bold' },
-    padding: 6
+    yAdjust: -18,
+    backgroundColor: '#ffffff',
+    borderColor: '#b1b4b6',
+    borderWidth: 1,
+    color: '#0b0c0c',
+    font: {
+      size: 12,
+      weight: 'bold',
+      family: "'GDS Transport', Arial, sans-serif"
+    },
+    padding: {
+      top: 6,
+      bottom: 6,
+      left: 8,
+      right: 8
+    },
+    borderRadius: 0,
+    callout: {
+      display: true,
+      borderColor: '#b1b4b6',
+      borderWidth: 1,
+      margin: 0,
+      side: 6
+    }
   }
 },
     highestRecordedLine: {
@@ -995,13 +1080,33 @@ pan: {
       borderWidth: 2,
       display: false,
       label: {
-        display: true,
+        display: false,
         content: '0.64m - Highest level recorded (5 October 2020)',
         position: 'center',
-        backgroundColor: 'rgba(255,255,255,0.9)',
-          color: '#0b0c0c',
-        font: { size: 12, weight: 'bold' },
-        padding: 6
+        yAdjust: -18,
+        backgroundColor: '#ffffff',
+        borderColor: '#b1b4b6',
+        borderWidth: 1,
+        color: '#0b0c0c',
+        font: {
+          size: 12,
+          weight: 'bold',
+          family: "'GDS Transport', Arial, sans-serif"
+        },
+        padding: {
+          top: 6,
+          bottom: 6,
+          left: 8,
+          right: 8
+        },
+        borderRadius: 0,
+        callout: {
+          display: true,
+          borderColor: '#b1b4b6',
+          borderWidth: 1,
+          margin: 0,
+          side: 6
+        }
       }
     }
   }
@@ -1018,12 +1123,20 @@ pan: {
           bodyColor: '#0b0c0c',
           borderColor: '#b1b4b6',
           borderWidth: 1,
-          caretSize: 0,
+          caretSize: 6,
+          caretPadding: 4,
           cornerRadius: 0,
           displayColors: false,
           padding: 10,
-          titleFont: { size: 18, weight: 'bold' },
-          bodyFont: { size: 14 },
+          titleFont: {
+            size: 18,
+            weight: 'bold',
+            family: "'GDS Transport', Arial, sans-serif"
+          },
+          bodyFont: {
+            size: 14,
+            family: "'GDS Transport', Arial, sans-serif"
+          },
           callbacks: {
             title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
             label: (item) => formatGovUKDateTime(item.raw.x)
@@ -1107,53 +1220,8 @@ canvas.addEventListener('touchend', (e) => {
   lastTap = now;
 }, { passive: false });
 
-// =============================
-// SELECT A POINT
-// - Click chart to fix vertical line
-// - Clicking again selects a new point
-// =============================
-
-canvas.addEventListener('click', (event) => {
-
-  if (!myChart) return;
-
-  const rect = canvas.getBoundingClientRect();
-
-  const xPixel =
-    event.clientX - rect.left;
-
-  // Convert the clicked pixel position into an x-axis value
-  selectedX = myChart.scales.x.getValueForPixel(xPixel);
-
-  // Find the nearest actual data point
-  const dataset = myChart.data.datasets[0];
-
-  if (dataset?.data?.length) {
-
-    let nearestPoint = dataset.data[0];
-    let smallestDistance =
-      Math.abs(nearestPoint.x - selectedX);
-
-    dataset.data.forEach(point => {
-
-      const distance =
-        Math.abs(point.x - selectedX);
-
-      if (distance < smallestDistance) {
-        smallestDistance = distance;
-        nearestPoint = point;
-      }
-
-    });
-
-    // Snap the static line to the nearest data point
-    selectedX = nearestPoint.x;
-  }
-
-  // Redraw immediately
-  myChart.draw();
-});
-
+ 
+ 
 // =============================
 // INTERACTIONS: DRAG / TOUCH PAN
 // - Mouse drag
@@ -1161,14 +1229,17 @@ canvas.addEventListener('click', (event) => {
 // =============================
 function updateCursor() {
 
+  if (!myChart) return;
+
   if (isZoomed()) {
     canvas.style.cursor = 'grab';
   } else {
     canvas.style.cursor = 'default';
   }
 
+  // Keep the selected point active
+  // so the vertical line AND tooltip stay together
   if (
-    myChart &&
     selectedIndex !== null &&
     myChart.data.datasets[0]?.data[selectedIndex]
   ) {
@@ -1200,7 +1271,7 @@ function updateCursor() {
     }
   }
 
-  myChart?.draw();
+  myChart.draw();
 }
 
 let isDragging = false;
@@ -1519,10 +1590,16 @@ function formatGovUKShortYearDate(iso) {
 document.getElementById('toggleNormalRange').addEventListener('change', (e) => {
   if (!myChart) return;
 
-  const annotation = myChart.options.plugins.annotation.annotations.normalLine;
+  const annotation =
+    myChart.options.plugins.annotation.annotations.normalLine;
 
+  // Show/hide the normal-range line
   annotation.display = e.target.checked;
- annotation.label.display = e.target.checked;
+
+  // The label is drawn by our custom normalRangePointerPlugin
+  // so Chart.js must NOT draw its own label.
+  annotation.label.display = false;
+
   myChart.update();
 });
 
@@ -1536,7 +1613,7 @@ highestCheckbox.addEventListener('change', () => {
     myChart.options.plugins.annotation.annotations.highestRecordedLine;
 
   annotation.display = highestCheckbox.checked;
-  annotation.label.display = highestCheckbox.checked;
+  annotation.label.display = false;
 
   myChart.update();
 });
@@ -1548,7 +1625,7 @@ document.getElementById('toggleCurrentLevel').addEventListener('change', (e) => 
     myChart.options.plugins.annotation.annotations.currentLevelLine;
 
   annotation.display = e.target.checked;
-  annotation.label.display = e.target.checked;
+  annotation.label.display = false;
 
   myChart.update();
 });
