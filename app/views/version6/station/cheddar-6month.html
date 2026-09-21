@@ -589,8 +589,6 @@ ctx.stroke();
   }
 };
 
-Chart.register(verticalLinePlugin);
-
 const keepSelectedTooltipPlugin = {
   id: 'keepSelectedTooltip',
 
@@ -629,6 +627,16 @@ const keepSelectedTooltipPlugin = {
 };
 
 Chart.register(keepSelectedTooltipPlugin);
+
+Chart.Tooltip.positioners.top = function (elements) {
+  const { chartArea } = this.chart;
+  const activeElement = elements[0];
+
+  return {
+    x: activeElement ? activeElement.element.x : chartArea.left + (chartArea.right - chartArea.left) / 2,
+    y: chartArea.top + 65
+  };
+};
 
 
 const normalRangePointerPlugin = {
@@ -727,6 +735,21 @@ const normalRangePointerPlugin = {
 };
 
 Chart.register(normalRangePointerPlugin);
+Chart.register(verticalLinePlugin);
+
+const tooltipForegroundPlugin = {
+  id: 'tooltipForeground',
+
+  afterDraw(chart) {
+    const { tooltip } = chart;
+
+    if (tooltip && tooltip.opacity > 0) {
+      tooltip.draw(chart.ctx);
+    }
+  }
+};
+
+Chart.register(tooltipForegroundPlugin);
 
 
 
@@ -806,7 +829,16 @@ let zoomLevel = 0;
 const ZOOM_LEVELS = [1, 0.8, 0.6, 0.4, 0.2];
 
 function isZoomed() {
-  return zoomLevel > 0;
+  if (!myChart || !originalXRange) return zoomLevel > 0;
+
+  const x = myChart.scales.x;
+  const tolerance = (originalXRange.max - originalXRange.min) * 0.001;
+
+  return (
+    zoomLevel > 0 ||
+    Math.abs(x.min - originalXRange.min) > tolerance ||
+    Math.abs(x.max - originalXRange.max) > tolerance
+  );
 }
 
 document.getElementById('latestBtn').onclick = () => {
@@ -1040,7 +1072,7 @@ pan: {
   value: 0.28,   // 👈 your latest level
   borderColor: '#000',
   borderWidth: 2,
-  borderDash: [2, 2],       // subtle dashed line (optional)
+
   display: false,
   label: {
     display: false,
@@ -1118,13 +1150,14 @@ pan: {
           animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'index',
           intersect: false,
+          position: 'top',
           backgroundColor: '#fff',
           titleColor: '#0b0c0c',
           bodyColor: '#0b0c0c',
           borderColor: '#b1b4b6',
           borderWidth: 1,
           caretSize: 6,
-          caretPadding: 4,
+          caretPadding: 1,
           cornerRadius: 0,
           displayColors: false,
           padding: 10,
