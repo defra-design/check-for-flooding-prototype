@@ -170,7 +170,7 @@
                 </dl>
 
             <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-              Normal range 0.24m to 0.36m </p>
+              Normal range 0.08m to 0.36m </p>
           </div>
 
       <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last year</h2>
@@ -307,7 +307,7 @@
 <div id="chart-long-desc" class="govuk-visually-hidden">
   River levels over the last 5 days ranged between 0.26 metres and 0.32 metres.
   The level peaked on 21 April and has gradually fallen since.
-  Current level is 0.28 metres, which is within the normal range.
+  Current level is 0.42 metres, which is above the normal range.
 </div>
 <!-- Unified controls row -->
  <div style="max-width: 100%; margin: 4px auto; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
@@ -444,7 +444,7 @@
     type="checkbox" 
      >
   <label class="govuk-label govuk-checkboxes__label" for="toggleCurrentLevel">
-    Show latest level (0.28m)
+    Show latest level (0.42m)
   </label>
 </div>
 
@@ -675,8 +675,8 @@ const normalRangePointerPlugin = {
       },
       {
         annotation: chart.options.plugins.annotation.annotations.currentLevelLine,
-        value: 0.28,
-        text: '0.28m - Latest level',
+        value: 0.42,
+        text: '0.42m - Latest level',
         minimumWidth: 178
       },
       {
@@ -1078,14 +1078,14 @@ pan: {
     currentLevelLine: {
   type: 'line',
   scaleID: 'y1',
-  value: 0.28,   // 👈 your latest level
+  value: 0.42,   // 👈 your latest level
   borderColor: '#000',
   borderWidth: 2,
 
   display: false,
   label: {
     display: false,
-    content: '0.28m - Latest level',
+    content: '0.42m - Latest level',
     position: 'center',
     yAdjust: -18,
     backgroundColor: '#ffffff',

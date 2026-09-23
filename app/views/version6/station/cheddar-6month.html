@@ -146,7 +146,7 @@ form.form::after {
 
                     <div class="defra-flood-statistics__item">
                         <h1 class="govuk-heading-m" style="font-weight: lighter;">
-                        <span class="govuk-caption-m">Height</span>0.38m </h1>    
+                        <span class="govuk-caption-m">Height</span>0.42m </h1>    
                     </div>
                     
                     <div class="defra-flood-statistics__item">
@@ -161,7 +161,7 @@ form.form::after {
                 </dl>
 
             <p class="govuk-caption-s govuk-!-margin-top-3 govuk-!-margin-bottom-0">
-              Normal range 0.24m to 0.36m </p>
+              Normal range 0.08m to 0.36m </p>
           </div>
 
       <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 6 months</h2>
@@ -298,7 +298,7 @@ form.form::after {
 <div id="chart-long-desc" class="govuk-visually-hidden">
   River levels over the last 5 days ranged between 0.26 metres and 0.32 metres.
   The level peaked on 21 April and has gradually fallen since.
-  Current level is 0.28 metres, which is within the normal range.
+  Current level is 0.42 metres, which is within the normal range.
 </div>
 <!-- Unified controls row -->
  <div style="max-width: 100%; margin: 4px auto; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap;">
@@ -435,7 +435,7 @@ form.form::after {
     type="checkbox" 
      >
   <label class="govuk-label govuk-checkboxes__label" for="toggleCurrentLevel">
-    Show latest level (0.28m)
+    Show latest level (0.42m)
   </label>
 </div>
 
@@ -666,8 +666,8 @@ const normalRangePointerPlugin = {
       },
       {
         annotation: chart.options.plugins.annotation.annotations.currentLevelLine,
-        value: 0.28,
-        text: '0.28m - Latest level',
+        value: 0.42,
+        text: '0.42m - Latest level',
         minimumWidth: 178
       },
       {
@@ -1069,14 +1069,14 @@ pan: {
     currentLevelLine: {
   type: 'line',
   scaleID: 'y1',
-  value: 0.28,   // 👈 your latest level
+  value: 0.42,   // 👈 your latest level
   borderColor: '#000',
   borderWidth: 2,
 
   display: false,
   label: {
     display: false,
-    content: '0.28m - Latest level',
+    content: '0.42m - Latest level',
     position: 'center',
     yAdjust: -18,
     backgroundColor: '#ffffff',
@@ -1588,7 +1588,7 @@ function formatGovUKShortYearDate(iso) {
 // =============================
 (async function init() {
   try {
-    const res = await fetch('/public/data/cheddar-6month30.csv', { cache: 'no-cache' });
+    const res = await fetch('/public/data/cheddar-6month.csv', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
 
     const text = await res.text();
