@@ -100,6 +100,16 @@ form.form::after {
 
 {% block content %}
 
+
+ 
+  <!-- If flood warnings within area  -->
+   
+ 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+
+
+
   <!-- If flood warnings within area  -->
 <div class="defra-flood-status govuk-!-margin-bottom-3">
   <div class="defra-flood-status-item defra-flood-status-item--warning">
@@ -112,12 +122,7 @@ form.form::after {
   </div>
 </div>
 
- 
-  <!-- If flood warnings within area  -->
-   
- 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+
     <h1 class="govuk-heading-xl govuk-!-margin-bottom-0">
       Cheddar Yeo level at Cheddar Gorge
     </h1>
@@ -174,11 +179,7 @@ form.form::after {
               Normal range 0.08m to 0.36m </p>
           </div>
 
-      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days and up to 36 hour forecast</h2>
-        <div class="defra-flood-statistics defra-flood-statistics">
-   
-          
-          <!--  automated model section-->
+                    <!--  automated model section-->
 
           <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -191,6 +192,12 @@ form.form::after {
 </div>
 </div>
 </div>
+
+      <h2 class="govuk-heading-s govuk-!-margin-top-4 govuk-!-margin-bottom-0" id="time">Height in metres over the last 5 days and up to 36 hour forecast</h2>
+        <div class="defra-flood-statistics defra-flood-statistics">
+   
+          
+
 
 <!-- chart --> 
  
@@ -500,7 +507,7 @@ const normalRangePointerPlugin = {
         annotation: chart.options.plugins.annotation.annotations.currentLevelLine,
         value: 0.42,
         text: '0.42m - Latest level',
-        minimumWidth: 178
+        minimumWidth: 123
       },
       {
         annotation: chart.options.plugins.annotation.annotations.highestRecordedLine,

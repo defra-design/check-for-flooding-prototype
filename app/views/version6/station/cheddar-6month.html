@@ -668,7 +668,7 @@ const normalRangePointerPlugin = {
         annotation: chart.options.plugins.annotation.annotations.currentLevelLine,
         value: 0.42,
         text: '0.42m - Latest level',
-        minimumWidth: 178
+        minimumWidth: 123
       },
       {
         annotation: chart.options.plugins.annotation.annotations.highestRecordedLine,
@@ -932,6 +932,15 @@ if (myChart) {
       nearestIndex = index;
     }
   });
+
+  if (selectedIndex === nearestIndex) {
+    selectedIndex = null;
+    selectedX = null;
+    myChart.setActiveElements([]);
+    myChart.tooltip.setActiveElements([]);
+    myChart.update('none');
+    return;
+  }
 
   const selectedPoint = dataset.data[nearestIndex];
 
