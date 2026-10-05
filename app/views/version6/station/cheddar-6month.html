@@ -211,6 +211,15 @@ form.form::after {
   overscroll-behavior: contain;
 }
 
+@media (max-width: 640px) {
+  .chart-container {
+    height: 310px;
+    width: calc(100% + 26px);
+    max-width: calc(100% + 26px);
+    margin-left: 3px;
+  }
+}
+
 .chart-container canvas {
   width: 100% !important;
   height: 100% !important;
@@ -445,7 +454,7 @@ form.form::after {
           id="toggleHighestCheckbox"
           type="checkbox">
         <label class="govuk-label govuk-checkboxes__label" for="toggleHighestCheckbox">
-          Show highest level recorded at this measuring station (0.64m) on 5 October 2020
+        Show highest level recorded at this measuring station (0.64m on 5 October 2020)
         </label>
     </div>
      <div class="govuk-checkboxes__item">
@@ -650,12 +659,11 @@ const normalRangePointerPlugin = {
     }
 
     const { ctx, chartArea } = chart;
-    const labelX =
-      chartArea.left +
-      (chartArea.right - chartArea.left) / 2;
+    const labelPadding = 12;
     const labelHeight = 32;
     const arrowWidth = 10;
     const arrowHeight = 6;
+    const arrowOffset = 20; // distance of the arrow from the label's left edge
 
     const labels = [
       {
@@ -680,7 +688,7 @@ const normalRangePointerPlugin = {
 
     ctx.save();
     ctx.font = "bold 12px 'GDS Transport', Arial, sans-serif";
-    ctx.textAlign = 'center';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
     labels.forEach(({ annotation, value, text, minimumWidth }) => {
@@ -690,6 +698,8 @@ const normalRangePointerPlugin = {
         minimumWidth,
         Math.ceil(ctx.measureText(text).width + 16)
       );
+      const labelLeft = chartArea.left + labelPadding;
+      const arrowX = labelLeft + arrowOffset;
       const lineY = yScale.getPixelForValue(value);
       const labelBottom = lineY - 8;
       const labelTop = labelBottom - labelHeight;
@@ -701,7 +711,7 @@ const normalRangePointerPlugin = {
 
       ctx.beginPath();
       ctx.rect(
-        labelX - labelWidth / 2,
+        labelLeft,
         labelTop,
         labelWidth,
         labelHeight
@@ -710,12 +720,12 @@ const normalRangePointerPlugin = {
       ctx.stroke();
 
       ctx.fillStyle = '#0b0c0c';
-      ctx.fillText(text, labelX, labelTop + labelHeight / 2);
+      ctx.fillText(text, labelLeft + 8, labelTop + labelHeight / 2);
 
       ctx.beginPath();
-      ctx.moveTo(labelX - arrowWidth / 2, arrowTop);
-      ctx.lineTo(labelX, labelBottom + arrowHeight);
-      ctx.lineTo(labelX + arrowWidth / 2, arrowTop);
+      ctx.moveTo(arrowX - arrowWidth / 2, arrowTop);
+      ctx.lineTo(arrowX, labelBottom + arrowHeight);
+      ctx.lineTo(arrowX + arrowWidth / 2, arrowTop);
       ctx.closePath();
       ctx.fillStyle = '#ffffff';
       ctx.fill();
@@ -723,8 +733,8 @@ const normalRangePointerPlugin = {
       ctx.stroke();
 
       ctx.beginPath();
-      ctx.moveTo(labelX - arrowWidth / 2, arrowTop);
-      ctx.lineTo(labelX + arrowWidth / 2, arrowTop);
+      ctx.moveTo(arrowX - arrowWidth / 2, arrowTop);
+      ctx.lineTo(arrowX + arrowWidth / 2, arrowTop);
       ctx.strokeStyle = '#ffffff';
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -826,7 +836,27 @@ function buildFiveEqualTicks(scale, anchorHour = 6) {
 
 let zoomLevel = 0;
 
-const ZOOM_LEVELS = [1, 0.8, 0.6, 0.4, 0.2];
+// Smallest x-axis span (ms) that any zoom method is allowed to reach -
+// kept in sync with the chartjs-plugin-zoom `limits.x.minRange` option.
+const MIN_RANGE_MS = 3600000;
+
+// Step-down scale factors (fraction of the original range) used by the
+// zoom buttons. Recomputed per-chart so the buttons can reach the same
+// minimum range as the mouse wheel / pinch zoom.
+let ZOOM_LEVELS = [1, 0.8, 0.6, 0.4, 0.2];
+
+function buildZoomLevels(originalSpan) {
+  const minScale = Math.min(0.2, MIN_RANGE_MS / originalSpan);
+  const levels = [1];
+  let level = 1;
+
+  while (level > minScale) {
+    level = Math.max(level * 0.6, minScale);
+    levels.push(level);
+  }
+
+  return levels;
+}
 
 function isZoomed() {
   if (!myChart || !originalXRange) return zoomLevel > 0;
@@ -913,11 +943,35 @@ if (myChart) {
 
   if (!dataset || !dataset.data.length) return;
 
+
   const rect = canvas.getBoundingClientRect();
+const clickX = event.clientX - rect.left;
 
-  const clickX = event.clientX - rect.left;
+// Give the selected vertical line a 40px invisible touch target
+if (selectedIndex !== null) {
+  const selectedElement = myChart.getDatasetMeta(0).data[selectedIndex];
 
-  // Convert the click position into a chart data value
+  if (selectedElement) {
+    const distanceFromSelectedLine = Math.abs(
+      clickX - selectedElement.x
+    );
+
+    // 20px either side = 40px total touch target
+    if (distanceFromSelectedLine <= 20) {
+      selectedIndex = null;
+      selectedX = null;
+
+      myChart.setActiveElements([]);
+      myChart.tooltip.setActiveElements([]);
+
+      myChart.update('none');
+      return;
+    }
+  }
+}
+
+// Convert the click position into a chart data value
+
   const clickedX = myChart.scales.x.getValueForPixel(clickX);
 
   // Find the nearest data point
@@ -995,7 +1049,7 @@ if (myChart) {
 
         zoom: {
   limits: {
-    x: { min: 'original', max: 'original', minRange: 3600000 }
+    x: { min: 'original', max: 'original', minRange: MIN_RANGE_MS }
   },
 pan: {
   enabled: true,
@@ -1180,7 +1234,7 @@ pan: {
             family: "'GDS Transport', Arial, sans-serif"
           },
           callbacks: {
-            title: (items) => `${Number(items[0].raw.y).toFixed(2)} m`,
+            title: (items) => `${Number(items[0].raw.y).toFixed(2)}m`,
             label: (item) => formatGovUKDateTime(item.raw.x)
           }
         }
@@ -1234,7 +1288,7 @@ pan: {
   ticks: {
     autoSkip: false,
     stepSize: 0.20,
-    callback: v => v.toFixed(2) + ' m',
+    callback: v => v.toFixed(1),
     font: {
       size: 14,
       family: "'GDS Transport', Arial, sans-serif"
@@ -1339,7 +1393,7 @@ canvas.addEventListener('mousemove', (e) => {
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
 
-myChart.pan({ x: -deltaX });
+myChart.pan({ x: deltaX });
 
 
 requestAnimationFrame(() => {
@@ -1352,6 +1406,7 @@ requestAnimationFrame(() => {
   const x = myChart.scales.x;
   originalXRange = { min: x.min, max: x.max };
   myChart.$context.originalXRange = originalXRange;
+  ZOOM_LEVELS = buildZoomLevels(originalXRange.max - originalXRange.min);
 
   attachControls();
   updateControls();
