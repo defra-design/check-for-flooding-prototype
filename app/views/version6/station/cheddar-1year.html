@@ -1095,7 +1095,7 @@ if (selectedIndex !== null) {
        layout: {
   autoPadding: false
 },
-      animation: true,   
+      animation: false,
       devicePixelRatio: Math.min(window.devicePixelRatio, 2),
       responsive: true,
       maintainAspectRatio: false,
@@ -1110,7 +1110,7 @@ if (selectedIndex !== null) {
 pan: {
   enabled: true,
   mode: 'x',
-   threshold: 10
+  threshold: 3
 },
   zoom: {
     wheel: { enabled: true },
@@ -1121,8 +1121,7 @@ pan: {
     drag: { enabled: false },
     mode: 'x',
 
-   onZoom: () => {
-      requestAnimationFrame(updateCursor);
+    onZoom: () => {
       updateControls();
     },
     onZoomComplete: () => {
@@ -1265,7 +1264,7 @@ pan: {
 
         tooltip: {
           enabled: true,
-          events: ['mousemove', 'mouseout',  'touchstart', 'touchmove'],
+          events: ['mousemove', 'mouseout'],
           animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'index',
           intersect: false,
