@@ -260,9 +260,13 @@ form.form::after {
   width: 100% !important;
   height: 100% !important;
   display: block;
-    touch-action: pan-y;
-  -webkit-touch-callout: none;
 
+  /* Let Chart.js own touch gestures */
+  touch-action: none;
+
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .pan-btn {
