@@ -488,6 +488,16 @@ const verticalLinePlugin = {
   }
 };
 
+Chart.Tooltip.positioners.top = function (elements) {
+  const { chartArea } = this.chart;
+  const activeElement = elements[0];
+
+  return {
+    x: activeElement ? activeElement.element.x : chartArea.left + (chartArea.right - chartArea.left) / 2,
+    y: chartArea.top + 65
+  };
+};
+
 const normalRangePointerPlugin = {
   id: 'normalRangePointer',
 
@@ -796,6 +806,7 @@ if (myChart) {
           animation: { duration: 120, easing: 'easeOutQuad'  },
           mode: 'nearest',
           intersect: false,
+          position: 'top',
           backgroundColor: '#fff',
           titleColor: '#0b0c0c',
           bodyColor: '#0b0c0c',
