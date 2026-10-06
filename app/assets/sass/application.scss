@@ -35,6 +35,11 @@ $govuk-assets-path: '/govuk/assets/';
 
 // Elements
 
+// Disable double-tap zoom on touch devices but keep pinch zoom
+html {
+    touch-action: manipulation;
+}
+
 .defra-search__input {
     display: table-cell;
     position: relative;
