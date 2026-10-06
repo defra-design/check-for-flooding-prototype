@@ -34,8 +34,8 @@
         }
         svg {
             vertical-align: middle;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
            
         }
     }
@@ -82,6 +82,10 @@
     display: table-cell;
     vertical-align: middle;
     padding: 7.5px 10px;
+}
+
+.defra-flood-status--flush-icon .defra-flood-status-item__icon {
+    padding: 0;
 }
 
 .defra-flood-status-item:after {
