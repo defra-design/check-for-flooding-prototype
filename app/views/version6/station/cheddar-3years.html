@@ -235,8 +235,11 @@
 <script src="https://cdn.jsdelivr.net/npm/luxon@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
+<!-- Required for touch gestures -->
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 <style>
 
 .chart-container {
@@ -1349,22 +1352,6 @@ pan: {
   });
 
 
-// =============================
-// PREVENT iOS DOUBLE-TAP ZOOM (chart only)
-// =============================
-let lastTap = 0;
-
-canvas.addEventListener('touchend', (e) => {
-  const now = Date.now();
-
-  if (now - lastTap < 300) {
-    e.preventDefault(); // stops iOS double-tap zoom on chart
-  }
-
-  lastTap = now;
-}, { passive: false });
-
- 
  
 // =============================
 // INTERACTIONS: DRAG / TOUCH PAN
