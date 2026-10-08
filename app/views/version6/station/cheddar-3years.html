@@ -196,8 +196,8 @@
           <div class="govuk-grid-column-two-thirds">
 
             <div class="forecast-notice"> 
-          <p class="forecast-notice__text">
-            This station includes an automated model. The highest level in the model is 0.64m on 13 June 2025.
+         <p class="forecast-notice__text">
+            This station includes an automated model. The highest level in the model is 0.47m on 13 December 2025.
             <a href="#" class="govuk-link">Read more about how we forecast river levels.</a>
           </p> 
             </div>
@@ -883,7 +883,7 @@ let zoomLevel = 0;
 
 // Smallest x-axis span (ms) that any zoom method is allowed to reach -
 // kept in sync with the chartjs-plugin-zoom `limits.x.minRange` option.
-const MIN_RANGE_MS = 3600000;
+const MIN_RANGE_MS = 5 * 24 * 60 * 60 * 1000;
 
 // Step-down scale factors (fraction of the original range) used by the
 // zoom buttons. Recomputed per-chart so the buttons can reach the same
@@ -1103,14 +1103,19 @@ pan: {
   mode: 'x',
   threshold: 3
 },
-  zoom: {
-    wheel: { enabled: true },
-    pinch: {
+   zoom: {
+  wheel: {
+    enabled: true,
+    modifierKey: undefined
+  },
+  pinch: {
     enabled: true,
     mode: 'x'
   },
-    drag: { enabled: false },
-    mode: 'x',
+  drag: {
+    enabled: false
+  },
+  mode: 'x',
 
       onZoom: () => {
       updateControls();
@@ -1327,12 +1332,12 @@ pan: {
      y: { display: false, grid: { display: false } },
  y1: {
   position: 'right',
-  grace: '10%',
-  suggestedMin: 0.25,
-  suggestedMax: 0.65,
+
+  min: 0,
+  max: 0.8,
 
   afterFit(scale) {
-    scale.width = 60;   // 🔥 THIS is the key fix
+    scale.width = 60;
   },
 
   ticks: {
@@ -1343,6 +1348,10 @@ pan: {
       size: 14,
       family: "'GDS Transport', Arial, sans-serif"
     }
+  },
+
+  grid: {
+    display: true
   }
 }
       }
