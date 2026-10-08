@@ -703,6 +703,9 @@ Chart.Tooltip.positioners.top = function (elements) {
 };
 
 
+const FIXED_CHART_LEFT = 0;
+const FIXED_CHART_RIGHT = 60;
+
 const normalRangePointerPlugin = {
   id: 'normalRangePointer',
 
@@ -868,6 +871,7 @@ function csvRowsToChartData(rows) {
 
 // Number of evenly spaced ticks on the x axis
 const X_TICK_COUNT = 7;
+const X_AXIS_LEFT_PADDING = 32;
 
 // Builds evenly spaced time ticks for consistent GOV.UK-style axis
 function buildEqualTicks(scale, count = X_TICK_COUNT, anchorHour = 6) {
@@ -1088,13 +1092,19 @@ if (selectedIndex !== null) {
 
   const ctx = canvas.getContext('2d');
  
-  myChart = new Chart(ctx, {
-    type: 'line',
-    data,
-    options: {
-       layout: {
-  autoPadding: false
-},
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data,
+        options: {
+        layout: {
+      autoPadding: false,
+      padding: {
+        left: FIXED_CHART_LEFT,
+        right: 0,
+        top: 0,
+        bottom: 0
+      }
+    },
       animation: false,
       devicePixelRatio: Math.min(window.devicePixelRatio, 2),
       responsive: true,
@@ -1312,10 +1322,15 @@ pan: {
         x: {
           offset: false, 
           type: 'time',
-          bounds: 'ticks',
+          bounds: 'data',
           afterBuildTicks: scale => {
     const count = window.innerWidth <= 640 ? 4 : X_TICK_COUNT;
     scale.ticks = buildEqualTicks(scale, count);
+  },
+  // Chart.js sizes the left padding from the first label's width, which
+  // changes as you zoom. Fix it so the plot doesn't shift sideways.
+  afterFit(scale) {
+    scale.paddingLeft = X_AXIS_LEFT_PADDING;
   },
         ticks: {
           source: 'data',
@@ -1345,7 +1360,8 @@ y1: {
   max: 0.8,
 
   afterFit(scale) {
-    scale.width = 60;
+    scale.width = FIXED_CHART_RIGHT;
+    scale.left = chart.width - FIXED_CHART_RIGHT;
   },
 
   ticks: {
@@ -1374,6 +1390,9 @@ y1: {
 // - Mouse drag
 // - Touch drag (Safari safe)
 // =============================
+// Expose to the zoom/pan button handlers defined outside renderChart
+window.updateCursor = updateCursor;
+
 function updateCursor() {
 
   if (!myChart) return;
