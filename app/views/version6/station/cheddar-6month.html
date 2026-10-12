@@ -1009,6 +1009,13 @@ if (myChart) {
  const canvas = document.getElementById('chart');
 
  canvas.addEventListener('click', (event) => {
+if (didDrag) {
+  didDrag = false;
+  event.preventDefault();
+  return;
+}
+
+
   if (!myChart) return;
 
   const dataset = myChart.data.datasets[0];
@@ -1468,11 +1475,12 @@ function updateCursor() {
 
 let isDragging = false;
 let lastX = 0;
+let didDrag = false;
 
 // mouse
 canvas.addEventListener('mousedown', (e) => {
   if (!isZoomed()) return;
-
+  didDrag = false;
   isDragging = true;
   lastX = e.clientX;
   canvas.style.cursor = 'grabbing';
@@ -1488,7 +1496,9 @@ canvas.addEventListener('mousemove', (e) => {
 
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
-
+if (Math.abs(deltaX) > 2) {
+  didDrag = true;
+}
 
 myChart.pan({ x: deltaX });
 
@@ -1668,7 +1678,8 @@ function attachControls() {
     myChart.pan({
       x: PAN_DISTANCE
     });
-
+releaseSelectionIfOffscreen(myChart);
+    
     requestAnimationFrame(() => {
       updateControls();
       updateCursor();
@@ -1686,6 +1697,7 @@ function attachControls() {
     myChart.pan({
       x: -PAN_DISTANCE
     });
+    releaseSelectionIfOffscreen(myChart);
 
     requestAnimationFrame(() => {
       updateControls();
