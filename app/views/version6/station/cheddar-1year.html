@@ -703,6 +703,9 @@ Chart.Tooltip.positioners.top = function (elements) {
 };
 
 
+const FIXED_CHART_LEFT = 0;
+const FIXED_CHART_RIGHT = 60;
+
 const normalRangePointerPlugin = {
   id: 'normalRangePointer',
 
@@ -868,6 +871,7 @@ function csvRowsToChartData(rows) {
 
 // Number of evenly spaced ticks on the x axis
 const X_TICK_COUNT = 7;
+const X_AXIS_LEFT_PADDING = 32;
 
 // Builds evenly spaced time ticks for consistent GOV.UK-style axis
 function buildEqualTicks(scale, count = X_TICK_COUNT, anchorHour = 6) {
@@ -894,7 +898,7 @@ let zoomLevel = 0;
 
 // Smallest x-axis span (ms) that any zoom method is allowed to reach -
 // kept in sync with the chartjs-plugin-zoom `limits.x.minRange` option.
-const MIN_RANGE_MS = 5 * 24 * 60 * 60 * 1000;
+const MIN_RANGE_MS = 6 * 24 * 60 * 60 * 1000;
 
 // Step-down scale factors (fraction of the original range) used by the
 // zoom buttons. Recomputed per-chart so the buttons can reach the same
@@ -979,6 +983,31 @@ let originalXRange = null;
 let myChart = null;
 let selectedX = null;
 let selectedIndex = null;
+
+
+function releaseSelectionIfOffscreen(chart) {
+
+  if (selectedIndex === null || !chart) return;
+
+  const element = chart.getDatasetMeta(0).data[selectedIndex];
+
+  if (!element) return;
+
+  const { left, right } = chart.chartArea;
+
+  // Keep the point fixed while it remains in view.
+  if (element.x >= left && element.x <= right) return;
+
+  // The selected point has moved beyond the visible chart.
+  selectedIndex = null;
+  selectedX = null;
+
+  chart.setActiveElements([]);
+  chart.tooltip.setActiveElements([]);
+
+  chart.update('none');
+}
+
 
 
 function renderChart(data) {
@@ -1088,13 +1117,19 @@ if (selectedIndex !== null) {
 
   const ctx = canvas.getContext('2d');
  
-  myChart = new Chart(ctx, {
-    type: 'line',
-    data,
-    options: {
-       layout: {
-  autoPadding: false
-},
+      myChart = new Chart(ctx, {
+        type: 'line',
+        data,
+        options: {
+        layout: {
+      autoPadding: false,
+      padding: {
+        left: FIXED_CHART_LEFT,
+        right: 0,
+        top: 0,
+        bottom: 0
+      }
+    },
       animation: false,
       devicePixelRatio: Math.min(window.devicePixelRatio, 2),
       responsive: true,
@@ -1129,20 +1164,35 @@ pan: {
     onZoom: () => {
       updateControls();
     },
-    onZoomComplete: () => {
+
+  onZoomComplete: ({ chart }) => {
+
+  releaseSelectionIfOffscreen(chart);
+
   requestAnimationFrame(() => {
+
     updateCursor();
+
     updateControls();
+
   });
+
 }
   },
 
-  onPan({ chart }) {
-    updateControls();
-  },
-  onPanComplete({ chart }) {
-    updateControls();
-  }
+ onPan({ chart }) {
+
+  updateControls();
+
+},
+
+onPanComplete({ chart }) {
+
+  releaseSelectionIfOffscreen(chart);
+
+  updateControls();
+
+}
 },
         legend: { display: false },
         annotation: {
@@ -1312,10 +1362,15 @@ pan: {
         x: {
           offset: false, 
           type: 'time',
-          bounds: 'ticks',
+          bounds: 'data',
           afterBuildTicks: scale => {
     const count = window.innerWidth <= 640 ? 4 : X_TICK_COUNT;
     scale.ticks = buildEqualTicks(scale, count);
+  },
+  // Chart.js sizes the left padding from the first label's width, which
+  // changes as you zoom. Fix it so the plot doesn't shift sideways.
+  afterFit(scale) {
+    scale.paddingLeft = X_AXIS_LEFT_PADDING;
   },
         ticks: {
           source: 'data',
@@ -1345,7 +1400,8 @@ y1: {
   max: 0.8,
 
   afterFit(scale) {
-    scale.width = 60;
+    scale.width = FIXED_CHART_RIGHT;
+    scale.left = chart.width - FIXED_CHART_RIGHT;
   },
 
   ticks: {
@@ -1374,6 +1430,9 @@ y1: {
 // - Mouse drag
 // - Touch drag (Safari safe)
 // =============================
+// Expose to the zoom/pan button handlers defined outside renderChart
+window.updateCursor = updateCursor;
+
 function updateCursor() {
 
   if (!myChart) return;
@@ -1444,12 +1503,17 @@ canvas.addEventListener('mousemove', (e) => {
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
 
+
 myChart.pan({ x: deltaX });
 
-
 requestAnimationFrame(() => {
+
+  releaseSelectionIfOffscreen(myChart);
+
   updateControls();
+
 });
+
 });
 
   
