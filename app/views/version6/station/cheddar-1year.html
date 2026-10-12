@@ -1489,14 +1489,18 @@ function updateCursor() {
 
 let isDragging = false;
 let lastX = 0;
+let dragStartX = 0;
 let didDrag = false;
 
 // mouse
 canvas.addEventListener('mousedown', (e) => {
   if (!isZoomed()) return;
+
   didDrag = false;
   isDragging = true;
   lastX = e.clientX;
+  dragStartX = e.clientX;
+
   canvas.style.cursor = 'grabbing';
 });
 
@@ -1511,7 +1515,7 @@ canvas.addEventListener('mousemove', (e) => {
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
 
-if (Math.abs(deltaX) > 2) {
+if (Math.abs(e.clientX - dragStartX) > 4) {
   didDrag = true;
 }
 myChart.pan({ x: deltaX });
