@@ -883,7 +883,7 @@ let zoomLevel = 0;
 
 // Smallest x-axis span (ms) that any zoom method is allowed to reach -
 // kept in sync with the chartjs-plugin-zoom `limits.x.minRange` option.
-const MIN_RANGE_MS = 5 * 24 * 60 * 60 * 1000;
+const MIN_RANGE_MS = 6 * 24 * 60 * 60 * 1000;
 
 // Step-down scale factors (fraction of the original range) used by the
 // zoom buttons. Recomputed per-chart so the buttons can reach the same
@@ -968,6 +968,32 @@ let originalXRange = null;
 let myChart = null;
 let selectedX = null;
 let selectedIndex = null;
+
+
+
+
+function releaseSelectionIfOffscreen(chart) {
+
+  if (selectedIndex === null || !chart) return;
+
+  const element = chart.getDatasetMeta(0).data[selectedIndex];
+
+  if (!element) return;
+
+  const { left, right } = chart.chartArea;
+
+  // Keep the point fixed while it remains in view.
+  if (element.x >= left && element.x <= right) return;
+
+  // The selected point has moved beyond the visible chart.
+  selectedIndex = null;
+  selectedX = null;
+
+  chart.setActiveElements([]);
+  chart.tooltip.setActiveElements([]);
+
+  chart.update('none');
+}
 
 
 function renderChart(data) {
@@ -1125,20 +1151,35 @@ pan: {
       onZoom: () => {
       updateControls();
     },
-    onZoomComplete: () => {
+
+onZoomComplete: ({ chart }) => {
+
+  releaseSelectionIfOffscreen(chart);
+
   requestAnimationFrame(() => {
+
     updateCursor();
+
     updateControls();
+
   });
+
 }
   },
 
   onPan({ chart }) {
-    updateControls();
-  },
-  onPanComplete({ chart }) {
-    updateControls();
-  }
+
+  updateControls();
+
+},
+
+onPanComplete({ chart }) {
+
+  releaseSelectionIfOffscreen(chart);
+
+  updateControls();
+
+}
 },
         legend: { display: false },
         annotation: {
@@ -1448,12 +1489,17 @@ canvas.addEventListener('mousemove', (e) => {
   const deltaX = e.clientX - lastX;
   lastX = e.clientX;
 
+
 myChart.pan({ x: deltaX });
 
-
 requestAnimationFrame(() => {
+
+  releaseSelectionIfOffscreen(myChart);
+
   updateControls();
+
 });
+
 });
 
   
