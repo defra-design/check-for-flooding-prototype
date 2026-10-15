@@ -675,20 +675,18 @@ function csvRowsToChartData(rows) {
 
  
 
-// Builds 5 evenly spaced time ticks for consistent GOV.UK-style axis
-function buildFiveEqualTicks(scale, anchorHour = 6) {
+// Builds 6 evenly spaced time ticks for consistent GOV.UK-style axis
+function buildSixEqualTicks(scale, anchorHour = 6) {
   if (!scale.min || !scale.max) return [];
 
-  const span = (scale.max - scale.min) / 4;
-  return Array.from({ length: 5 }, (_, i) => {
+  const span = (scale.max - scale.min) / 5;
+  return Array.from({ length: 6 }, (_, i) => {
     const d = new Date(scale.min + span * i);
     if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
     return { value: d.getTime() };
   });
 }
 
- 
- 
  
 
 // =============================
@@ -785,7 +783,7 @@ if (myChart) {
     forecastStartLine: {
   type: 'line',
   scaleID: 'x',
-  value: forecastStartTime,
+  value: window.forecastStartTime,
   borderColor: '#505a5f',
   borderWidth: 1,
   
@@ -848,72 +846,72 @@ if (myChart) {
     
       scales: {
         x: {
-          offset: false, 
+          offset: false,
           type: 'time',
           bounds: 'ticks',
-          afterBuildTicks: scale => { scale.ticks = buildFiveEqualTicks(scale); },
+          afterBuildTicks: scale => {
+            scale.ticks = buildSixEqualTicks(scale);
+          },
           ticks: {
-  source: 'data',
-  autoSkip: true,
-  
-  maxTicksLimit: 5,
-  callback: (v, index) => {
-    // Hide the first tick label
-    if (index === 0) {
-      return '';
-    }
+            source: 'data',
+            autoSkip: false,
+            maxTicksLimit: 6,
+            callback: (v, index) => {
+              // Hide the first tick label
+              if (index === 0) {
+                return '';
+              }
 
-    const iso = new Date(v).toISOString();
-    return [formatGovUKTime(iso), formatGovUKShortYearDate(iso)];
-  }
-},
-       
- 
-           font: (ctx) => {
-    const ticks = ctx.chart.scales.x.ticks;
-    const lastTick = ticks[ticks.length - 1]?.value;
-
-    return {
-      weight: ctx.tick.value === lastTick ? 'bold' : 'normal'
-    };}
+              const iso = new Date(v).toISOString();
+              return [
+                formatGovUKTime(iso),
+                formatGovUKShortYearDate(iso)
+              ];
+            },
+            font: ctx => {
+              const targetTick = new Date(2025, 11, 13, 6).getTime();
+              return {
+                weight: ctx.tick?.value === targetTick ? 'bold' : 'normal'
+              };
+            }
+          }
         },
 
-     y: { display: false, grid: { display: false } },
- y1: {
-  position: 'right',
-  grace: '10%',
-  suggestedMin: 0.25,
-  suggestedMax: 0.65,
+        y: {
+          display: false,
+          grid: { display: false }
+        },
 
-  afterFit(scale) {
-    scale.width = 60;   // 🔥 THIS is the key fix
-  },
+        y1: {
+          position: 'right',
+          grace: '10%',
+          suggestedMin: 0.25,
+          suggestedMax: 0.65,
 
-  ticks: {
-    autoSkip: false,
-    stepSize: 0.20,
-    callback: v => v.toFixed(1) + ' ',
-    font: {
-      size: 14,
-      family: "'GDS Transport', Arial, sans-serif"
-    }
-  }
-}
+          afterFit(scale) {
+            scale.width = 60;
+          },
+
+          ticks: {
+            autoSkip: false,
+            stepSize: 0.20,
+            callback: v => v.toFixed(1) + ' ',
+            font: {
+              size: 14,
+              family: "'GDS Transport', Arial, sans-serif"
+            }
+          }
+        }
       }
     }
-    
   });
 
-
-  
-
-  
   // store original x-axis limits for comparison
   const x = myChart.scales.x;
   originalXRange = { min: x.min, max: x.max };
   myChart.$context.originalXRange = originalXRange;
 
-} ;
+};
 
   
 
