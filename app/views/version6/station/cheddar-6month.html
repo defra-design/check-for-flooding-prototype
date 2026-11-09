@@ -467,10 +467,6 @@ form.form::after {
  
 </section>
 
-<p id="pinnedZoomHint" class="govuk-body govuk-!-margin-top-1 govuk-!-margin-bottom-2" style="display: none; text-align: center;">
-  Zoom in to explore river levels around this time.
-</p>
-
 <div style="clear: both;"></div>
  
  <hr>
@@ -635,35 +631,6 @@ if (selectedX !== null) {
 }
 
 ctx.stroke();
-
-// Show a label only when a point is pinned
-if (selectedX !== null) {
-  const label = 'Pinned';
-  const labelWidth = 58;
-  const labelHeight = 24;
-  const labelX = Math.max(
-    chartArea.left,
-    Math.min(
-      x - labelWidth / 2,
-      chartArea.right - labelWidth
-    )
-  );
-  const labelY = chartArea.top + 6;
-
-  ctx.fillStyle = '#1d70b8';
-  ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = "bold 12px 'GDS Transport', Arial, sans-serif";
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  ctx.fillText(
-    label,
-    labelX + labelWidth / 2,
-    labelY + labelHeight / 2
-  );
-}
 
 ctx.restore();
   }
@@ -953,7 +920,6 @@ document.getElementById('latestBtn').onclick = () => {
     zoomLevel = 0;
     selectedX = null;
     selectedIndex = null;
-updatePinnedZoomHint();
     myChart.setActiveElements([]);
     myChart.tooltip.setActiveElements([]);
 
@@ -999,14 +965,6 @@ let myChart = null;
 let selectedX = null;
 let selectedIndex = null;
 
-function updatePinnedZoomHint() {
-  const hint = document.getElementById('pinnedZoomHint');
-
-  if (hint) {
-    hint.style.display = selectedX !== null ? 'block' : 'none';
-  }
-}
-
 
 function releaseSelectionIfOffscreen(chart) {
 
@@ -1024,7 +982,6 @@ function releaseSelectionIfOffscreen(chart) {
   // The selected point has moved beyond the visible chart.
   selectedIndex = null;
   selectedX = null;
-  updatePinnedZoomHint();
 
   chart.setActiveElements([]);
   chart.tooltip.setActiveElements([]);
@@ -1076,7 +1033,6 @@ if (selectedIndex !== null) {
     if (distanceFromSelectedLine <= 20) {
       selectedIndex = null;
       selectedX = null;
-      updatePinnedZoomHint();
       myChart.setActiveElements([]);
       myChart.tooltip.setActiveElements([]);
 
@@ -1106,7 +1062,6 @@ if (selectedIndex !== null) {
   if (selectedIndex === nearestIndex) {
     selectedIndex = null;
     selectedX = null;
-    updatePinnedZoomHint();
     myChart.setActiveElements([]);
     myChart.tooltip.setActiveElements([]);
     myChart.update('none');
@@ -1117,7 +1072,6 @@ if (selectedIndex !== null) {
 
   selectedIndex = nearestIndex;
   selectedX = selectedPoint.x;
-  updatePinnedZoomHint();
 
   // Tell Chart.js to keep this point active
   myChart.setActiveElements([
