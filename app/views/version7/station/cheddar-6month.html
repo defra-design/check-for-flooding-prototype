@@ -6,88 +6,7 @@
 <!-- GOV.UK Frontend CSS (prototype-friendly CDN) -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/govuk-frontend@4.0.0/govuk-frontend.min.css">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <style>
-    /* Small page tweaks to make the example a little lighter/cleaner */
-
-html, body {
-  touch-action: pan-x pan-y;
-}
-
-body { 
-  padding: 2rem; 
-}
-
-.pan-btn {
-  flex: 0 0 auto;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-pre.sample-csv { background:#f3f2f1; padding:1rem; border-radius:2px; overflow:auto }
-
- 
-/* Keep buttons a consistent size */
-.chart-zoom-controls .govuk-button {
-  width: 120px;      /* fixed width for all buttons */
-  flex: 0 0 auto;    /* prevent shrinking or growing */
-  text-align: center;
-  white-space: nowrap;
-}
-
-/* Optional: smaller width on very small screens if needed */
-@media (max-width: 480px) {
-  .chart-zoom-controls .govuk-button {
-    width: 100px;
-  }
-}
-
-.chart-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.chart-controls .govuk-form-group {
-  float: none !important;   /* 🔥 kills the problem */
-   margin: 0 !important;     /* remove left offsets */
-}
-
-.chart-controls .govuk-button {
-  margin-bottom: 0;
-}
-
-.chart-section {
-  margin-top: 1rem;
-  position: relative;
-  height: auto;        /* let chart-wrap control height */
-  clear: both;
-}
-
-form.form::after {
-  content: "";
-  display: block;
-  clear: both;
-}
-
-.pan-btn svg {
-  width: 24px;
-  height: 24px;
-}
-
-.defra-line-chart__reset-full {
-  width: 22px;
-  height: 22px;
-}
-
-.chart-download-link {
-  display: inline-block;
-  margin-top: 4px;
-}
-  </style>
+  
 
 
 {% block beforeContent %}
@@ -237,6 +156,7 @@ form.form::after {
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
 <style>
+  
 
 .chart-container {
   overflow: hidden;
@@ -245,7 +165,7 @@ form.form::after {
   position: relative;
   width: 100%;
   max-width: 100%;
-  height: 454px; /* taller chart */
+  height: 440px; /* taller chart */
   overscroll-behavior: contain;
 }
 
@@ -278,11 +198,24 @@ form.form::after {
   padding: 0;              /* remove default padding for perfect centering */
 }
 
-/* Disabled state */
-.pan-btn:disabled {
-  opacity: 0.5;
-  pointer-events: none;
+
+.pan-btn:not(:disabled):focus {
+  background-color: #1d70b8;
+  color: #fff;
+  box-shadow: 0 2px 0 #007cba;
 }
+
+.pan-btn:not(:disabled):not(:focus) {
+  background-color: #1d70b8;
+  color: #fff;
+  
+}
+
+.pan-btn:not(:disabled):not(:focus):hover {
+  background-color: #007cba;
+}
+
+ 
 
 /* Responsive adjustments */
 @media (max-width: 480px) {
@@ -463,11 +396,12 @@ form.form::after {
 </div>
  
 </section>
-
+<!-- zoom hint -->
+ <!-- 
 <p id="pinnedZoomHint" class="govuk-body govuk-!-margin-top-1 govuk-!-margin-bottom-2" style="display: none; text-align: center;">
   Zoom in to explore river levels around this time.
 </p>
-
+-->
 <div style="clear: both;"></div>
  
  <hr>
@@ -635,8 +569,8 @@ ctx.stroke();
 
 // Show a label only when a point is pinned
 if (selectedX !== null) {
-  const label = 'Pinned';
-  const labelWidth = 58;
+  const label = 'Fixed - Zoom to explore';
+  const labelWidth = 148;
   const labelHeight = 24;
   const labelX = Math.max(
     chartArea.left,
@@ -704,6 +638,85 @@ const keepSelectedTooltipPlugin = {
 };
 
 Chart.register(keepSelectedTooltipPlugin);
+// ========================================
+// MOBILE PEAK SNAPPING
+// Select the highest point near the finger
+// ========================================
+
+const mobilePeakSnapPlugin = {
+  id: 'mobilePeakSnap',
+
+  afterEvent(chart, args) {
+
+    // Only apply to touch interactions
+    if (!['touchstart', 'touchmove'].includes(args.event.type)) {
+      return;
+    }
+
+    // Don't interfere with a manually pinned point
+    if (selectedIndex !== null) return;
+
+    const dataset = chart.data.datasets[0];
+
+    if (!dataset || !dataset.data.length) return;
+
+    const touchX = args.event.x;
+
+    // Search radius in CSS pixels
+    const SNAP_RADIUS = 45;
+
+    const meta = chart.getDatasetMeta(0);
+
+    let candidates = [];
+
+    dataset.data.forEach((point, index) => {
+
+      const element = meta.data[index];
+
+      if (!element) return;
+
+      const distance = Math.abs(element.x - touchX);
+
+      if (
+        distance <= SNAP_RADIUS &&
+        element.x >= chart.chartArea.left &&
+        element.x <= chart.chartArea.right
+      ) {
+        candidates.push({
+          index,
+          x: element.x,
+          y: element.y,
+          value: point.y,
+          distance
+        });
+      }
+
+    });
+
+    if (!candidates.length) return;
+
+    // Find the highest river level within the touch area
+    candidates.sort((a, b) => b.value - a.value);
+
+    const peak = candidates[0];
+
+    const active = [{
+      datasetIndex: 0,
+      index: peak.index
+    }];
+
+    chart.setActiveElements(active);
+
+    chart.tooltip.setActiveElements(active, {
+      x: peak.x,
+      y: peak.y
+    });
+
+    args.changed = true;
+  }
+};
+
+Chart.register(mobilePeakSnapPlugin);
 
 Chart.Tooltip.positioners.top = function (elements) {
   const { chartArea } = this.chart;
@@ -842,7 +855,7 @@ function parseCSV(text) {
   return lines.map(line => line.split(','));
 }
 
-function smoothData(data, windowSize = 3) {
+function smoothData(data, windowSize = 1) {
   return data.map((point, i, arr) => {
     const start = Math.max(0, i - windowSize);
     const end = Math.min(arr.length - 1, i + windowSize);
@@ -891,6 +904,7 @@ function buildEqualTicks(scale, count = X_TICK_COUNT, anchorHour = 6) {
 
   const span = (scale.max - scale.min) / (count - 1);
   return Array.from({ length: count }, (_, i) => {
+    if (i === 0) return { value: scale.min };
     const d = new Date(scale.min + span * i);
     if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
     return { value: d.getTime() };
@@ -1404,13 +1418,9 @@ onPanComplete({ chart }) {
           ticks: {
   source: 'data',
   autoSkip: false,
+  align: 'inner',
   maxTicksLimit: X_TICK_COUNT,
-  callback: (v, index) => {
-    // Hide the first x-axis label completely
-    if (index === 0) {
-      return '';
-    }
-
+  callback: v => {
     const iso = new Date(v).toISOString();
     return formatGovUKShortYearDate(iso);
   }
