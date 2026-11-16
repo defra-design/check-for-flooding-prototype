@@ -156,36 +156,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
 
 <style>
-  
 
-.chart-container {
-  overflow: hidden;
-   user-select: none;
-    -webkit-user-select: none;
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  height: 440px; /* taller chart */
-  overscroll-behavior: contain;
-}
-
-@media (max-width: 640px) {
-  .chart-container {
-    height: 310px;
-    width: calc(100% + 26px);
-    max-width: calc(100% + 26px);
-    margin-left: 3px;
-  }
-}
-
-.chart-container canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-    touch-action: manipulation;
-  -webkit-touch-callout: none;
-
-}
 .pan-btn {
   width: 48px;             /* GOV.UK recommended touch target */
   height: 48px;            /* GOV.UK recommended touch target */
@@ -197,22 +168,23 @@
   flex: 0 0 auto;
   padding: 0;              /* remove default padding for perfect centering */
 }
+ 
 
-
-.pan-btn:not(:disabled):focus {
-  background-color: #1d70b8;
-  color: #fff;
-  box-shadow: 0 2px 0 #007cba;
+/* Disabled state */
+.pan-btn:disabled {
+  opacity: 0.3;
+  pointer-events: none;
 }
 
-.pan-btn:not(:disabled):not(:focus) {
-  background-color: #1d70b8;
-  color: #fff;
-  
+.pan-btn:not(:disabled):not(:hover) {
+  background-color: #eeeeee;
+  box-shadow: 0 2px 0 #000000;
 }
 
+ 
 .pan-btn:not(:disabled):not(:focus):hover {
   background-color: #007cba;
+  color: white;
 }
 
  
@@ -258,7 +230,7 @@
   height: 24px;
 }
 
-.defra-line-chart__reset-full {
+.pan-btn .defra-line-chart__reset-full {
   width: 22px;
   height: 22px;
 }
@@ -266,6 +238,34 @@
 .chart-download-link {
   display: inline-block;
   margin-top: 4px;
+}
+
+.chart-container {
+  overflow: hidden;
+   user-select: none;
+    -webkit-user-select: none;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  height: 440px; /* taller chart */
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 640px) {
+  .chart-container {
+    height: 310px;
+    width: calc(100% + 26px);
+    max-width: calc(100% + 26px);
+    margin-left: 3px;
+  }
+}
+
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+    touch-action: manipulation;
+  -webkit-touch-callout: none;
 }
  
 </style>
@@ -396,12 +396,7 @@
 </div>
  
 </section>
-<!-- zoom hint -->
- <!-- 
-<p id="pinnedZoomHint" class="govuk-body govuk-!-margin-top-1 govuk-!-margin-bottom-2" style="display: none; text-align: center;">
-  Zoom in to explore river levels around this time.
-</p>
--->
+ 
 <div style="clear: both;"></div>
  
  <hr>
@@ -544,33 +539,20 @@ const verticalLinePlugin = {
       }
     }
 
-    if (x === null) return;
-
-    // Don't draw outside the chart area
-    if (x < chartArea.left || x > chartArea.right) return;
+    if (x === null || x < chartArea.left || x > chartArea.right) return;
 
     ctx.save();
 
     ctx.beginPath();
     ctx.moveTo(x, chartArea.top);
     ctx.lineTo(x, chartArea.bottom);
+    ctx.lineWidth = selectedX !== null ? 2 : 1;
+    ctx.strokeStyle = selectedX !== null ? '#1d70b8' : '#cccccc';
+    ctx.stroke();
 
-// Static selected line = thicker blue
-if (selectedX !== null) {
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = '#1d70b8';
-} else {
-  // Normal hover line
-  ctx.lineWidth = 1;
-  ctx.strokeStyle = '#cccccc';
-}
-
-ctx.stroke();
-
-// Show a label only when a point is pinned
-if (selectedX !== null) {
-  const label = 'Fixed - Zoom to explore';
-  const labelWidth = 148;
+  const isSelected = selectedX !== null;
+  const label = isSelected ? 'Fixed, zoom to explore' : 'Select to fix';
+  const labelWidth = isSelected ? 148 : 90;
   const labelHeight = 24;
   const labelX = Math.max(
     chartArea.left,
@@ -581,7 +563,7 @@ if (selectedX !== null) {
   );
   const labelY = chartArea.top + 6;
 
-  ctx.fillStyle = '#1d70b8';
+  ctx.fillStyle = isSelected ? '#1d70b8' : '#505a5f';
   ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
   ctx.fillStyle = '#ffffff';
@@ -594,8 +576,6 @@ if (selectedX !== null) {
     labelX + labelWidth / 2,
     labelY + labelHeight / 2
   );
-}
-
 ctx.restore();
   }
 };

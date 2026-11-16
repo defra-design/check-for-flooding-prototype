@@ -172,6 +172,13 @@
   pointer-events: none;
 }
 
+
+.pan-btn:not(:disabled):not(:hover) {
+  background-color: #eeeeee;
+  box-shadow: 0 2px 0 #999999;
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .pan-btn {
@@ -213,7 +220,7 @@
   height: 24px;
 }
 
-.defra-line-chart__reset-full {
+.pan-btn .defra-line-chart__reset-full {
   width: 22px;
   height: 22px;
 }
@@ -551,10 +558,9 @@ if (selectedX !== null) {
 
 ctx.stroke();
 
-// Show a label only when a point is pinned
-if (selectedX !== null) {
-  const label = 'Fixed point';
-  const labelWidth = 68;
+  const isSelected = selectedX !== null;
+  const label = isSelected ? 'Fixed, zoom to explore' : 'Select to fix';
+  const labelWidth = isSelected ? 148 : 90;
   const labelHeight = 24;
   const labelX = Math.max(
     chartArea.left,
@@ -565,7 +571,7 @@ if (selectedX !== null) {
   );
   const labelY = chartArea.top + 6;
 
-  ctx.fillStyle = '#1d70b8';
+  ctx.fillStyle = isSelected ? '#1d70b8' : '#505a5f';
   ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
   ctx.fillStyle = '#ffffff';
@@ -578,8 +584,6 @@ if (selectedX !== null) {
     labelX + labelWidth / 2,
     labelY + labelHeight / 2
   );
-}
-
     ctx.restore();
   }
 };
