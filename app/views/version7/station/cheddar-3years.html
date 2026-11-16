@@ -172,10 +172,9 @@
   pointer-events: none;
 }
 
-
 .pan-btn:not(:disabled):not(:hover) {
   background-color: #eeeeee;
-  box-shadow: 0 2px 0 #999999;
+  box-shadow: 0 2px 0 #000000;
 }
 
 
@@ -389,10 +388,6 @@
  
 </section>
 
-<p id="pinnedZoomHint" class="govuk-body govuk-!-margin-top-1 govuk-!-margin-bottom-2" style="display: none; text-align: center;">
-  Zoom in to explore river levels around this time.
-</p>
-
 <div style="clear: both;"></div>
  
  <hr>
@@ -559,9 +554,9 @@ if (selectedX !== null) {
 ctx.stroke();
 
   const isSelected = selectedX !== null;
-  const label = isSelected ? 'Fixed, zoom to explore' : 'Select to fix';
-  const labelWidth = isSelected ? 148 : 90;
-  const labelHeight = 24;
+  const label = isSelected ? 'Zoom for more detail' : 'Click to select a date';
+  const labelWidth = isSelected ? 145 : 145;
+  const labelHeight = 28;
   const labelX = Math.max(
     chartArea.left,
     Math.min(
@@ -569,13 +564,13 @@ ctx.stroke();
       chartArea.right - labelWidth
     )
   );
-  const labelY = chartArea.top + 6;
+  const labelY = chartArea.top + 0;
 
-  ctx.fillStyle = isSelected ? '#1d70b8' : '#505a5f';
+  ctx.fillStyle = isSelected ? '#d2e2f1' : '#cecece';
   ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = "bold 12px 'GDS Transport', Arial, sans-serif";
+  ctx.fillStyle = isSelected ? '#0f385c' : '#0b0c0c';
+  ctx.font = "regular 1.1875rem 'GDS Transport', Arial, sans-serif";
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -953,7 +948,6 @@ document.getElementById('latestBtn').onclick = () => {
     zoomLevel = 0;
     selectedX = null;
     selectedIndex = null;
-    updatePinnedZoomHint();
 
     myChart.setActiveElements([]);
     myChart.tooltip.setActiveElements([]);
@@ -1001,15 +995,6 @@ let myChart = null;
 let selectedX = null;
 let selectedIndex = null;
 
-function updatePinnedZoomHint() {
-  const hint = document.getElementById('pinnedZoomHint');
-
-  if (hint) {
-    hint.style.display = selectedX !== null ? 'block' : 'none';
-  }
-}
-
-
 function releaseSelectionIfOffscreen(chart) {
 
   if (selectedIndex === null || !chart) return;
@@ -1026,7 +1011,6 @@ function releaseSelectionIfOffscreen(chart) {
   // The selected point has moved beyond the visible chart.
   selectedIndex = null;
   selectedX = null;
-  updatePinnedZoomHint();
 
   chart.setActiveElements([]);
   chart.tooltip.setActiveElements([]);
@@ -1076,7 +1060,6 @@ if (selectedIndex !== null) {
     if (distanceFromSelectedLine <= 20) {
       selectedIndex = null;
       selectedX = null;
-      updatePinnedZoomHint();
 
       myChart.setActiveElements([]);
       myChart.tooltip.setActiveElements([]);
@@ -1108,7 +1091,6 @@ if (selectedIndex !== null) {
   if (selectedIndex === nearestIndex) {
     selectedIndex = null;
     selectedX = null;
-    updatePinnedZoomHint();
     myChart.setActiveElements([]);
     myChart.tooltip.setActiveElements([]);
     myChart.update('none');
@@ -1119,7 +1101,6 @@ if (selectedIndex !== null) {
 
   selectedIndex = nearestIndex;
   selectedX = selectedPoint.x;
-  updatePinnedZoomHint();
 
   // Tell Chart.js to keep this point active
   myChart.setActiveElements([
@@ -1180,7 +1161,8 @@ if (selectedIndex !== null) {
 pan: {
   enabled: true,
   mode: 'x',
-  threshold: 3
+  threshold: 3,
+  onPanStart: () => isZoomed()
 },
    zoom: {
   wheel: {
