@@ -879,16 +879,13 @@ const X_TICK_COUNT = 7;
 const X_AXIS_LEFT_PADDING = 5;
 
 // Builds evenly spaced time ticks for consistent GOV.UK-style axis
-function buildEqualTicks(scale, count = X_TICK_COUNT, anchorHour = 6) {
-  if (!scale.min || !scale.max) return [];
+function buildEqualTicks(scale, count = X_TICK_COUNT) {
+  if (!Number.isFinite(scale.min) || !Number.isFinite(scale.max)) return [];
 
   const span = (scale.max - scale.min) / (count - 1);
-  return Array.from({ length: count }, (_, i) => {
-    if (i === 0) return { value: scale.min };
-    const d = new Date(scale.min + span * i);
-    if (span >= 86400000) d.setHours(anchorHour, 0, 0, 0);
-    return { value: d.getTime() };
-  });
+  return Array.from({ length: count }, (_, i) => ({
+    value: i === count - 1 ? scale.max : scale.min + span * i
+  }));
 }
 
 // =============================
