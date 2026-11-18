@@ -1159,7 +1159,14 @@ pan: {
   enabled: true,
   mode: 'x',
   threshold: 3,
-  onPanStart: () => isZoomed()
+  // Touch moves the tooltip; panning is done with the pan buttons
+  onPanStart: ({ event }) => {
+    const isTouch =
+      event?.pointerType === 'touch' ||
+      event?.srcEvent?.pointerType === 'touch' ||
+      (event?.srcEvent?.type || '').startsWith('touch');
+    return isTouch ? false : isZoomed();
+  }
 },
    zoom: {
   wheel: {
